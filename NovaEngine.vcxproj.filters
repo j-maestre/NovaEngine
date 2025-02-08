@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Archivos de origen">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Archivos de encabezado">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Archivos de recursos">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Archivos de recursos\src">
+      <UniqueIdentifier>{f84cea7a-3552-41e5-8824-66965f7c4bd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\include">
+      <UniqueIdentifier>{357d66c2-4e69-4c6a-9c71-bd77ba49abd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\include\Core">
+      <UniqueIdentifier>{51e832d7-41c7-4fc4-8e48-b88f63c62058}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\include\Render">
+      <UniqueIdentifier>{4c5c0b8b-654c-452d-814c-9fbe96f6fb28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de recursos\src\Render">
+      <UniqueIdentifier>{238c1fb7-e6e4-4b31-a7c2-6376b0cfcbd1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Archivos de recursos</Filter>
+    </ClCompile>
+    <ClCompile Include="src\window.cpp">
+      <Filter>Archivos de recursos\src\Render</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\render\window.h">
+      <Filter>Archivos de encabezado\include\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\defines.h">
+      <Filter>Archivos de encabezado\include\Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
