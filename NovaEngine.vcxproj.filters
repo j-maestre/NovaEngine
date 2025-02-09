@@ -28,13 +28,19 @@
     <Filter Include="Archivos de recursos\src\Render">
       <UniqueIdentifier>{238c1fb7-e6e4-4b31-a7c2-6376b0cfcbd1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de recursos\src\Core">
+      <UniqueIdentifier>{726bfbca-b31e-413e-bd79-424863947ccb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Archivos de recursos</Filter>
     </ClCompile>
-    <ClCompile Include="src\window.cpp">
+    <ClCompile Include="src\Render\window.cpp">
       <Filter>Archivos de recursos\src\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\engine.cpp">
+      <Filter>Archivos de recursos\src\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +48,9 @@
       <Filter>Archivos de encabezado\include\Render</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\defines.h">
+      <Filter>Archivos de encabezado\include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\engine.h">
       <Filter>Archivos de encabezado\include\Core</Filter>
     </ClInclude>
   </ItemGroup>

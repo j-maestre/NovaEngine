@@ -3,12 +3,30 @@
 #include "Core/defines.h"
 
 
+LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam) {
+
+	switch (msg) {
+	case WM_DESTROY:
+	{
+		// close the entire aplication
+		PostQuitMessage(0);
+		return 0;
+	}
+	break;
+	}
+
+	// Handle other messages
+	return DefWindowProc(handle, msg, wParam, lParam);
+}
+
 Window::Window() : m_window_info(){
 	m_initialized = false;
 }
 
-Window::Window(const Window&){
-
+Window::Window(Window&& other) : m_window_info(other.m_window_info){
+	m_initialized = other.m_initialized;
+	other.m_window_info.reset();
+	other.m_initialized = false;
 }
 
 Window::~Window(){
@@ -54,7 +72,24 @@ void Window::init(const WindowProperties* props){
 
 	m_window_info = std::make_shared<WindowInfo>(tmp);
 	
+	m_initialized = true;
 	// Display window on screen
 	ShowWindow(window_handle, props->nCmdShow);
 
+}
+
+bool Window::update(){
+
+	// Window event messages
+
+	MSG msg;
+	bool ret = GetMessage(&msg, NULL, 0, 0);
+
+	// Translate keystroke messages into the right format
+	TranslateMessage(&msg);
+
+	// Send message to the WinProc function
+	DispatchMessage(&msg);
+
+	return ret;
 }

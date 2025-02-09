@@ -140,10 +140,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="src\window.cpp" />
+    <ClCompile Include="src\Core\engine.cpp" />
+    <ClCompile Include="src\Render\window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Core\defines.h" />
+    <ClInclude Include="include\Core\engine.h" />
     <ClInclude Include="include\render\window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

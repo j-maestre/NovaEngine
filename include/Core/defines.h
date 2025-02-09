@@ -27,5 +27,7 @@ struct WindowProperties {
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
+BOOL AdjustWindowRect(LPRECT lpRect, DWORD dwStyle, bool bMenu);
+
 
 #endif
