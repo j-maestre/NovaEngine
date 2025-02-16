@@ -54,6 +54,10 @@ void Window::init(const WindowProperties* props){
 	// Register window class
 	RegisterClassEx(&window_info);
 
+	RECT wr = { 0, 0, props->width, props->height};    // set the size, but not the position
+	AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);    // adjust the size
+
+
 	// Create window and use the result as the handle
 	window_handle = CreateWindowEx(NULL, props->name.c_str(), props->name.c_str(), WS_OVERLAPPEDWINDOW,
 		props->pos_x,		// x position 
@@ -82,14 +86,15 @@ bool Window::update(){
 
 	// Window event messages
 
+	bool ret = true;
 	MSG msg;
-	bool ret = GetMessage(&msg, NULL, 0, 0);
+	if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+		// Translate keystroke messages into the right format
+		TranslateMessage(&msg);
+		// Send message to the WinProc function
+		DispatchMessage(&msg);
 
-	// Translate keystroke messages into the right format
-	TranslateMessage(&msg);
-
-	// Send message to the WinProc function
-	DispatchMessage(&msg);
-
+		ret = msg.message != WM_QUIT;
+	}
 	return ret;
 }

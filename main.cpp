@@ -17,10 +17,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	props.nCmdShow = nCmdShow;
 	props.pos_x = 0;
 	props.pos_y = 0;
-	
+
 	win.init(&props);
 
-	while (win.update()) {
+	while (true) {
+
+		// if true no execute game code?
+		if (!win.update()) {
+			printf("window update return false\n");
+			break;
+		}
 
 	}
 
