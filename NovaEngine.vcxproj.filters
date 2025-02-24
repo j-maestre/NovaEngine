@@ -53,5 +53,8 @@
     <ClInclude Include="include\Core\engine.h">
       <Filter>Archivos de encabezado\include\Core</Filter>
     </ClInclude>
+    <ClInclude Include="include\nova_engine.h">
+      <Filter>Archivos de encabezado\include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

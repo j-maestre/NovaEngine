@@ -98,3 +98,8 @@ bool Window::update(){
 	}
 	return ret;
 }
+
+WindowInfo* Window::get_window_info(){
+
+	return m_window_info.get();
+}

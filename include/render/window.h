@@ -15,6 +15,8 @@ public:
 
 	void init(const WindowProperties* props);
 	bool update();
+
+	WindowInfo* get_window_info();
 private:
 
 	std::shared_ptr<WindowInfo> m_window_info;

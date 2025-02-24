@@ -1,10 +1,31 @@
+#pragma once
+
 #define DIRECTX11
 
 #ifdef DIRECTX11
-#include <stdio.h>
+// include the Direct3D Library file
+#pragma comment (lib, "d3d11.lib")
+
 #include "windows.h"
 #include "windowsx.h"
+
+/*** Directx11 include files ***/
+#include <d3d11.h>
+#include <DirectXMath.h>
+/*******************************/
+
+
+/*** Deprecated ***/
+// #include <d3dx11.h>
+// #include <d3dx10.h>
+/******************/
+
+#include <stdio.h>
 #include <string>
+
+
+typedef unsigned int uint32;
+
 
 
 struct WindowInfo {

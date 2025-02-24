@@ -1,11 +1,10 @@
-
-#include "Core/defines.h"
-#include "render/window.h"
+#include "nova_engine.h"
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	
 	
+	Engine engine;
 	
 	Window win;
 	struct WindowProperties props;
@@ -20,6 +19,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	win.init(&props);
 
+	engine.init(win.get_window_info());
+
+
 	while (true) {
 
 		// if true no execute game code?
@@ -29,6 +31,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 	}
+
+	engine.release();
 
 	return 0;
 }
