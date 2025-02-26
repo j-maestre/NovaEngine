@@ -4,6 +4,9 @@
 struct WindowInfo;
 struct WindowProperties;
 
+struct IDXGISwapChain;
+struct ID3D11Device;
+struct ID3D11DeviceContext;
 
 class Window {
 
@@ -14,11 +17,24 @@ public:
 	~Window();
 
 	void init(const WindowProperties* props);
+	void begin_frame();
+	void end_frame();
 	bool update();
 
+	void release();
+
 	WindowInfo* get_window_info();
+	WindowProperties* get_window_properties();
+
+	friend class Engine;
 private:
 
+	// Render stuff
+	IDXGISwapChain* m_swapChain;
+	ID3D11Device* m_deviceInterface;
+	ID3D11DeviceContext* m_inmediateDeviceContext;
+
 	std::shared_ptr<WindowInfo> m_window_info;
+	std::shared_ptr<WindowProperties> m_window_props;
 	bool m_initialized;
 };

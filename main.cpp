@@ -7,8 +7,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Engine engine;
 	
 	Window win;
-	struct WindowProperties props;
-	props.clear_color = (HBRUSH)COLOR_WINDOW;
+	WindowProperties props;
+	Color c = { 0.0f, 1.0f, 0.0f, 1.0f };
+	props.clear_color = c;
 	props.width = 1200;
 	props.height = 900;
 	props.hInstance = hInstance;
@@ -18,17 +19,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	props.pos_y = 0;
 
 	win.init(&props);
-
-	engine.init(win.get_window_info());
+	engine.init(&win);
 
 
 	while (true) {
 
 		// if true no execute game code?
 		if (!win.update()) {
+
 			printf("window update return false\n");
 			break;
 		}
+
+		win.begin_frame();
+		
+		
+		win.end_frame();
 
 	}
 

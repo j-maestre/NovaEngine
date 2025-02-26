@@ -21,6 +21,9 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
 
 Window::Window() : m_window_info(){
 	m_initialized = false;
+	m_swapChain = nullptr;
+	m_deviceInterface = nullptr;
+	m_inmediateDeviceContext = nullptr;
 }
 
 Window::Window(Window&& other) : m_window_info(other.m_window_info){
@@ -48,7 +51,7 @@ void Window::init(const WindowProperties* props){
 	window_info.lpfnWndProc = WindowProc;
 	window_info.hInstance = props->hInstance;
 	window_info.hCursor = LoadCursor(NULL, IDC_ARROW);
-	window_info.hbrBackground = props->clear_color;
+	window_info.hbrBackground = (HBRUSH)COLOR_WINDOW;
 	window_info.lpszClassName = props->name.c_str();
 
 	// Register window class
@@ -75,11 +78,23 @@ void Window::init(const WindowProperties* props){
 	tmp.window_info = window_info;
 
 	m_window_info = std::make_shared<WindowInfo>(tmp);
-	
 	m_initialized = true;
+
+	m_window_props = std::make_shared<WindowProperties>(*props);
 	// Display window on screen
 	ShowWindow(window_handle, props->nCmdShow);
 
+}
+
+void Window::begin_frame(){
+	
+	m_inmediateDeviceContext->ClearRenderTargetView(m_window_info->backbuffer, (FLOAT*) &(m_window_props->clear_color));
+}
+
+void Window::end_frame(){
+
+	// Switch the backbuffer and the front buffer
+	m_swapChain->Present(0,0);
 }
 
 bool Window::update(){
@@ -99,7 +114,18 @@ bool Window::update(){
 	return ret;
 }
 
+void Window::release(){
+	m_window_info->backbuffer->Release();
+}
+
 WindowInfo* Window::get_window_info(){
 
 	return m_window_info.get();
 }
+
+WindowProperties* Window::get_window_properties(){
+
+	return m_window_props.get();
+}
+
+
