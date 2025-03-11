@@ -16,7 +16,6 @@ public:
 	Engine(const Engine&) = delete;
 	~Engine();
 
-
 	void init(Window* window);
 	void update();
 	void release();
@@ -25,6 +24,9 @@ public:
 	float get_fps();
 
 private:
+	friend class Renderer;
+
+	inline std::shared_ptr<EngineProps> get_engine_props() { return m_props; }
 
 	std::shared_ptr<EngineProps> m_props;
 	

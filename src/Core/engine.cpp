@@ -33,11 +33,14 @@ void Engine::init(Window* window){
 		
 	m_props->scd.BufferCount = 1;	// One back buffer
 	m_props->scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;	// 32 bit color
+	m_props->scd.BufferDesc.Width = SCREEN_WIDTH;					// Backbuffer width
+	m_props->scd.BufferDesc.Height = SCREEN_HEIGHT;					// Backbuffer height
 	m_props->scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;		// How swap chain is going to be used
 	m_props->scd.OutputWindow = window_info->window_handle;			// The window to be used
 	m_props->scd.SampleDesc.Count = 4;								// How many multisamples (anti aliasing, TODO: maybe change to 1 or parametrize in the future) (minium 1 max 4)
 	m_props->scd.Windowed = TRUE;
-	m_props->driverType = D3D_DRIVER_TYPE_HARDWARE;			// Uses advance gpu hardware for rendering		
+	m_props->scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;	// Allows full screen switching
+	//m_props->driverType = D3D_DRIVER_TYPE_HARDWARE;		// Uses advance gpu hardware for rendering	TODO: enable to check performance
 	// m_props->driverType = D3D_DRIVER_TYPE_REFERENCE;		// If your hardware can't run D3D11
 	// m_props->driverType = D3D_DRIVER_TYPE_NULL;			// for non-graphics purpouses
 #ifdef _DEBUG
@@ -77,8 +80,8 @@ void Engine::init(Window* window){
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 	viewport.TopLeftX = 0;
 	viewport.TopLeftX = 0;
-	viewport.Width = win_props->width;
-	viewport.Height = win_props->height;
+	viewport.Width = win_props->width; // SCREEN_WIDTH
+	viewport.Height = win_props->height; // SCREEN_HEIGHT
 
 	m_props->inmediateDeviceContext->RSSetViewports(1, &viewport);
 	window->m_swapChain = m_props->swapChain;
@@ -94,6 +97,7 @@ void Engine::update(){
 }
 
 void Engine::release(){
+	m_props->swapChain->SetFullscreenState(FALSE, NULL);	// TODO: method to change full screen?
 	m_props->swapChain->Release();
 	m_props->deviceInterface->Release();
 	m_props->inmediateDeviceContext->Release();

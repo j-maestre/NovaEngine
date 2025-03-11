@@ -10,8 +10,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	WindowProperties props;
 	Color c = { 0.0f, 1.0f, 0.0f, 1.0f };
 	props.clear_color = c;
-	props.width = 1200;
-	props.height = 900;
+	props.width = SCREEN_WIDTH;
+	props.height = SCREEN_HEIGHT;
 	props.hInstance = hInstance;
 	props.name = L"Window de locos";
 	props.nCmdShow = nCmdShow;
@@ -20,6 +20,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	win.init(&props);
 	engine.init(&win);
+
+	Renderer render;
+	render.init_pipeline(&engine);
 
 
 	while (true) {

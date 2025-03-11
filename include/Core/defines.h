@@ -2,6 +2,11 @@
 
 #define DIRECTX11
 
+constexpr unsigned int SCREEN_WIDTH = 1920;
+constexpr unsigned int SCREEN_HEIGHT = 1200;
+
+
+
 #ifdef DIRECTX11
 // include the Direct3D Library file
 #pragma comment (lib, "d3d11.lib")
@@ -22,6 +27,27 @@
 
 #include <stdio.h>
 #include <string>
+
+#define SHADER_PATH_FORWARD "data/shaders/forward";
+#define SHADER_PATH_DEFERRED "data/shaders/deferred";
+
+struct ShaderFiles {
+	ID3D11VertexShader* VS_directional = nullptr;
+	ID3D11PixelShader* PS_directional = nullptr;
+};
+
+enum class ShaderType {
+	DirectionalLight = 0,
+	SpotLight,
+	PointLight,
+};
+
+enum class ErrorCode {
+	OK = 0,
+	UNKNOW,
+};
+
+
 
 
 typedef unsigned int uint32;
@@ -71,3 +97,9 @@ BOOL AdjustWindowRect(LPRECT lpRect, DWORD dwStyle, bool bMenu);
 
 
 #endif
+
+struct Vertex {
+	float pos_x, pos_y, pos_z;
+	float nrm_x, nrm_y, nrm_z;
+	float uv_x, uv_y;
+};

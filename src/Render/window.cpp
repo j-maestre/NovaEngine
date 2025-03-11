@@ -51,7 +51,7 @@ void Window::init(const WindowProperties* props){
 	window_info.lpfnWndProc = WindowProc;
 	window_info.hInstance = props->hInstance;
 	window_info.hCursor = LoadCursor(NULL, IDC_ARROW);
-	window_info.hbrBackground = (HBRUSH)COLOR_WINDOW;
+	//window_info.hbrBackground = (HBRUSH)COLOR_WINDOW;
 	window_info.lpszClassName = props->name.c_str();
 
 	// Register window class

@@ -31,6 +31,12 @@
     <Filter Include="Archivos de recursos\src\Core">
       <UniqueIdentifier>{726bfbca-b31e-413e-bd79-424863947ccb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{6eef1059-c720-4a19-878f-903149903897}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\Forward">
+      <UniqueIdentifier>{f963af28-d48b-4c0a-9c83-2d6a7498f170}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -41,6 +47,9 @@
     </ClCompile>
     <ClCompile Include="src\Core\engine.cpp">
       <Filter>Archivos de recursos\src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\renderer.cpp">
+      <Filter>Archivos de recursos\src\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -56,5 +65,13 @@
     <ClInclude Include="include\nova_engine.h">
       <Filter>Archivos de encabezado\include</Filter>
     </ClInclude>
+    <ClInclude Include="include\render\renderer.h">
+      <Filter>Archivos de encabezado\include\Render</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\shaders\forward\vs_directional.hlsl">
+      <Filter>Shaders\Forward</Filter>
+    </None>
   </ItemGroup>
 </Project>
