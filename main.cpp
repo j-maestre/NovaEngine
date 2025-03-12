@@ -8,7 +8,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	
 	Window win;
 	WindowProperties props;
-	Color c = { 0.0f, 1.0f, 0.0f, 1.0f };
+	Color c = { 0.0f, 0.5f, 0.0f, 1.0f };
 	props.clear_color = c;
 	props.width = SCREEN_WIDTH;
 	props.height = SCREEN_HEIGHT;
@@ -22,20 +22,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	engine.init(&win);
 
 	Renderer render;
-	render.init_pipeline(&engine);
+	bool ret = render.init_pipeline(&engine);
 
 
 	while (true) {
 
 		// if true no execute game code?
 		if (!win.update()) {
-
 			printf("window update return false\n");
 			break;
 		}
 
 		win.begin_frame();
 		
+		render.draw_triangle();
 		
 		win.end_frame();
 

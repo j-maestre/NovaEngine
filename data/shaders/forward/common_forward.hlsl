@@ -1,3 +1,6 @@
+#ifndef COMMON_FORWARD
+#define COMMON_FORWARD
+
 struct VOut
 {
     float4 position : SV_POSITION;
@@ -5,9 +8,5 @@ struct VOut
     float2 uv : UV;
 };
 
-float4 PShader(VOut input) : SV_TARGET
-{
 
-    return float4(1.0f, 1.0f, 1.0f, 1.0f);
-}
-
+#endif

@@ -70,8 +70,14 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\shaders\forward\vs_directional.hlsl">
+    <FxCompile Include="data\shaders\forward\ps_directional.hlsl">
       <Filter>Shaders\Forward</Filter>
-    </None>
+    </FxCompile>
+    <FxCompile Include="data\shaders\forward\vs_directional.hlsl">
+      <Filter>Shaders\Forward</Filter>
+    </FxCompile>
+    <FxCompile Include="data\shaders\forward\common_forward.hlsl">
+      <Filter>Shaders\Forward</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
