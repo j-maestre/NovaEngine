@@ -98,8 +98,8 @@ bool Renderer::init_pipeline(Engine* engine){
 void Renderer::active_shader(ShaderType type){
 	switch (type){
 	case ShaderType::DirectionalLight:
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_directional, 0, 0);
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_directional, 0, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_directional, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_directional, nullptr, 0);
 	break;
 	case ShaderType::SpotLight:
 		break;
@@ -136,7 +136,14 @@ void Renderer::upload_triangle(){
 
 void Renderer::draw_triangle(){
 
-	active_shader(ShaderType::DirectionalLight);
+	//active_shader(ShaderType::DirectionalLight);
+
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_directional, nullptr, 0);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_directional, nullptr, 0);
+
+	//printf("VS active %p\n PS active %p\n", m_shader_files.VS_directional, m_shader_files.PS_directional);
+	//fflush(stdout);
+	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout); //debug
 	
 	// Select wich vertex buffer to display
 	UINT stride = sizeof(Vertex);

@@ -2,9 +2,6 @@
 #include <Core/defines.h>
 #include <assert.h>
 
-
-
-
 Engine::Engine() : m_props(std::make_shared<EngineProps>()){
 	
 }
@@ -16,7 +13,7 @@ Engine::Engine(const Engine&){
 */
 
 Engine::~Engine(){
-
+	m_raster_state->Release();
 }
 
 void Engine::init(Window* window){
@@ -72,18 +69,35 @@ void Engine::init(Window* window){
 	m_props->deviceInterface->CreateRenderTargetView(pBackbuffer, NULL, &(window_info->backbuffer));
 	m_props->inmediateDeviceContext->OMSetRenderTargets(1, &(window_info->backbuffer), NULL);			// last argument is depth stencill view
 
+	// Setting rasterizer
+	ZeroMemory(&m_raster, sizeof(D3D11_RASTERIZER_DESC));
+	m_raster.CullMode = D3D11_CULL_FRONT;    // Desactiva el culling
+	m_raster.FillMode = D3D11_FILL_SOLID;   // Rellenar las caras con un color sólido
+	m_raster.FrontCounterClockwise = FALSE; // La orientación de las caras frontales no cambia
+	m_raster.DepthBias = 0;
+	m_raster.SlopeScaledDepthBias = 0.0f;
+	m_raster.DepthBiasClamp = 0.0f;
+	m_raster.ScissorEnable = FALSE;         // No se usa el scissor test
+	m_raster.MultisampleEnable = FALSE;     // No multisampling
+	m_raster.AntialiasedLineEnable = FALSE; // No se usan líneas antialiasing
+
+	HRESULT hr = m_props->deviceInterface->CreateRasterizerState(&m_raster, &m_raster_state);
+	assert(!FAILED(hr));
+	m_props->inmediateDeviceContext->RSSetState(m_raster_state);
+
 
 
 	// Setting the viewport
 	WindowProperties* win_props = window->get_window_properties();
-	D3D11_VIEWPORT viewport;
-	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
-	viewport.TopLeftX = 0;
-	viewport.TopLeftX = 0;
-	viewport.Width = win_props->width; // SCREEN_WIDTH
-	viewport.Height = win_props->height; // SCREEN_HEIGHT
+	ZeroMemory(&m_viewport, sizeof(D3D11_VIEWPORT));
+	m_viewport.TopLeftX = 0;
+	m_viewport.TopLeftX = 0;
+	m_viewport.Width = win_props->width; // SCREEN_WIDTH
+	m_viewport.Height = win_props->height; // SCREEN_HEIGHT
+	m_viewport.MinDepth = 0.0f;
+	m_viewport.MaxDepth = 1.0f;
 
-	m_props->inmediateDeviceContext->RSSetViewports(1, &viewport);
+	m_props->inmediateDeviceContext->RSSetViewports(1, &m_viewport);
 	window->m_swapChain = m_props->swapChain;
 	window->m_deviceInterface = m_props->deviceInterface;
 	window->m_inmediateDeviceContext = m_props->inmediateDeviceContext;
@@ -93,7 +107,7 @@ void Engine::init(Window* window){
 
 void Engine::update(){
 
-	
+	m_props->inmediateDeviceContext->RSSetViewports(1, &m_viewport);
 }
 
 void Engine::release(){

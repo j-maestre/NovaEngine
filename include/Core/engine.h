@@ -29,6 +29,8 @@ private:
 	inline std::shared_ptr<EngineProps> get_engine_props() { return m_props; }
 
 	std::shared_ptr<EngineProps> m_props;
-	
+	D3D11_VIEWPORT m_viewport;
+	D3D11_RASTERIZER_DESC m_raster;
+	ID3D11RasterizerState* m_raster_state;
 
 };
