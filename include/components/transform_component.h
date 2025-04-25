@@ -41,6 +41,7 @@ public:
 
 private:
 
+
 	Mat4 m_transform;
 	Mat4 m_inverse_transform;
 
