@@ -102,6 +102,7 @@ void Engine::init(Window* window){
 	window->m_deviceInterface = m_props->deviceInterface;
 	window->m_inmediateDeviceContext = m_props->inmediateDeviceContext;
 	
+	init_geometries();
 }
 
 
@@ -126,4 +127,29 @@ float Engine::get_delta_time(){
 float Engine::get_fps(){
 
 	return 0.0f;
+}
+
+const std::vector<Vertex>& Engine::get_cube(){
+	return m_geometry_cube;
+}
+
+const std::vector<Vertex>& Engine::get_sphere()
+{
+	return m_geometry_sphere;
+}
+
+void Engine::init_geometries(){
+
+	Vertex v1(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
+	Vertex v2(0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
+	Vertex v3(0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+	Vertex v4(-0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
+
+	m_geometry_cube.push_back(v1);
+	m_geometry_cube.push_back(v2);
+	m_geometry_cube.push_back(v3);
+	m_geometry_cube.push_back(v4);
+
+	// TODO: make sphere
+	
 }
