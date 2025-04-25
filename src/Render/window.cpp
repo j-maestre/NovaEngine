@@ -57,7 +57,7 @@ void Window::init(const WindowProperties* props){
 	// Register window class
 	RegisterClassEx(&window_info);
 
-	RECT wr = { 0, 0, props->width, props->height};    // set the size, but not the position
+	RECT wr = { 0.0f, 0.0f, props->width, props->height};    // set the size, but not the position
 	AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);    // adjust the size
 
 

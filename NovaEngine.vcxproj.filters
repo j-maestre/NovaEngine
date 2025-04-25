@@ -37,6 +37,12 @@
     <Filter Include="Shaders\Forward">
       <UniqueIdentifier>{f963af28-d48b-4c0a-9c83-2d6a7498f170}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\include\Components">
+      <UniqueIdentifier>{cc104b11-8c33-4cbc-95c3-b6c202b31633}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de recursos\src\Components">
+      <UniqueIdentifier>{025b138c-fd13-4878-8d5e-053ac5c6c8cc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -50,6 +56,12 @@
     </ClCompile>
     <ClCompile Include="src\Render\renderer.cpp">
       <Filter>Archivos de recursos\src\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Components\camera_component.cpp">
+      <Filter>Archivos de recursos\src\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Components\transform_component.cpp">
+      <Filter>Archivos de recursos\src\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +79,12 @@
     </ClInclude>
     <ClInclude Include="include\render\renderer.h">
       <Filter>Archivos de encabezado\include\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\components\camera_component.h">
+      <Filter>Archivos de encabezado\include\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\components\transform_component.h">
+      <Filter>Archivos de encabezado\include\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

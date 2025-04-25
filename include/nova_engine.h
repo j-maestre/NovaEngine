@@ -3,3 +3,5 @@
 #include <Core/engine.h>
 #include <render/window.h>
 #include <render/renderer.h>
+#include <components/transform_component.h>
+#include <components/camera_component.h>

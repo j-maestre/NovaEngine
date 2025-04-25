@@ -24,6 +24,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Renderer render;
 	bool ret = render.init_pipeline(&engine);
 
+	TransformComponent trans({1.0f, 5.0f, 2.0f});
+	trans.update();
 
 	while (true) {
 
