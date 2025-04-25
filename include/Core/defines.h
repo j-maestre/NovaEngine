@@ -7,6 +7,20 @@ constexpr unsigned int SCREEN_WIDTH = 1920;
 constexpr unsigned int SCREEN_HEIGHT = 1200;
 
 
+constexpr float kfPi = 3.14159265f;
+constexpr float kfDegToRad = kfPi / 180.0f;
+constexpr float kfRadToDeg = 180.0f / kfPi;
+
+
+static inline float degToRad(const float degrees) {
+	return degrees * kfDegToRad;
+}
+
+
+static inline float radToDeg(const float radians) {
+	return radians * kfRadToDeg;
+}
+
 
 #ifdef DIRECTX11
 // include the Direct3D Library file
@@ -57,11 +71,10 @@ typedef DirectX::XMFLOAT3 Vec3;
 typedef DirectX::XMFLOAT4 Vec4;
 /*****************************/
 
-typedef DirectX::XMVECTOR FVec4;		// Used for calculations
+typedef DirectX::XMVECTOR FVector;		// Used for calculations
 typedef DirectX::CXMVECTOR CVec4;		// Const ref of XMVector
 
 typedef DirectX::XMMATRIX Mat4;
-
 
 struct Color {
 	float rgba[4];
