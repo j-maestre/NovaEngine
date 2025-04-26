@@ -12,6 +12,13 @@ public:
 	~CameraComponent();
 
 	void update();
+
+	void set_position(Vec3 pos) { m_position = pos; }
+	Vec3 get_position() { return m_position; }
+
+	const Mat4* get_view() noexcept { return &m_view; }
+	const Mat4* get_projection() noexcept { return &m_projection; }
+	const Mat4* get_view_projection() noexcept { return &m_view_projection; }
 	
 
 
@@ -23,8 +30,8 @@ private:
 	Mat4 m_projection;
 	Mat4 m_view_projection;	// View * projection combinated
 
-	float m_pitch;
-	float m_yaw;
+	float m_pitch = 0.0f;
+	float m_yaw = 0.0f;
 
 	float m_aspect_ratio;
 

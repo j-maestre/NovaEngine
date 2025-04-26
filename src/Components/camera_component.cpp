@@ -8,6 +8,8 @@ CameraComponent::CameraComponent(){
 
 	m_fov = 90.0f;
 
+	m_position = { 0.0f, 0.0f, 0.0f };
+
 }
 
 CameraComponent::CameraComponent(const CameraComponent&)
