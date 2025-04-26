@@ -76,6 +76,12 @@ typedef DirectX::CXMVECTOR CVec4;		// Const ref of XMVector
 
 typedef DirectX::XMMATRIX Mat4;
 
+struct CameraConstantBuffer {
+	Mat4 view;
+	Mat4 projection;
+	Mat4 model;
+};
+
 struct Color {
 	float rgba[4];
 };
@@ -109,8 +115,6 @@ struct EngineProps {
 	D3D_DRIVER_TYPE  driverType;
 	uint32 flags = 0;
 	D3D_FEATURE_LEVEL feature_level;
-
-
 };
 
 
