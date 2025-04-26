@@ -54,12 +54,16 @@ void TransformComponent::update(){
 	m_is_calculated = true;
 }
 
+void TransformComponent::force_update(){
+	m_is_calculated = false;
+}
+
 void TransformComponent::rotateX(float angle){
 
 }
 
 void TransformComponent::rotateY(float angle){
-
+	m_rotation.y = angle;
 }
 
 void TransformComponent::rotateZ(float angle){
@@ -115,12 +119,10 @@ const Vec3 TransformComponent::get_up_vector()
 	return Vec3();
 }
 
-const Mat4 TransformComponent::get_transform()
-{
+const Mat4 TransformComponent::get_transform() const {
 	return m_transform;
 }
 
-const Mat4 TransformComponent::get_inverse_transform()
-{
+const Mat4 TransformComponent::get_inverse_transform() const {
 	return m_inverse_transform;
 }

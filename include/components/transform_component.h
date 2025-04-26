@@ -15,6 +15,7 @@ public:
 	~TransformComponent();
 
 	void update();
+	void force_update();
 
 	void rotateX(float angle);
 	void rotateY(float angle);
@@ -36,8 +37,8 @@ public:
 	const Vec3 get_up_vector();
 
 
-	const Mat4 get_transform();
-	const Mat4 get_inverse_transform();
+	const Mat4 get_transform() const;
+	const Mat4 get_inverse_transform() const;
 
 private:
 
