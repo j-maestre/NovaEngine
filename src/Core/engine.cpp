@@ -71,7 +71,7 @@ void Engine::init(Window* window){
 
 	// Setting rasterizer
 	ZeroMemory(&m_raster, sizeof(D3D11_RASTERIZER_DESC));
-	m_raster.CullMode = D3D11_CULL_FRONT;    // Desactiva el culling
+	m_raster.CullMode = D3D11_CULL_BACK;    // Desactiva el culling
 	m_raster.FillMode = D3D11_FILL_SOLID;   // Rellenar las caras con un color sólido
 	m_raster.FrontCounterClockwise = FALSE; // La orientación de las caras frontales no cambia
 	m_raster.DepthBias = 0;
@@ -121,7 +121,7 @@ void Engine::release(){
 
 float Engine::get_delta_time(){
 
-	return 0.0f;
+	return 1.0f / 500.0f;
 }
 
 float Engine::get_fps(){

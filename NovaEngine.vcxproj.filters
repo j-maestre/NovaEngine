@@ -63,6 +63,9 @@
     <ClCompile Include="src\Components\transform_component.cpp">
       <Filter>Archivos de recursos\src\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\game_object.cpp">
+      <Filter>Archivos de recursos\src\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\render\window.h">
@@ -85,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="include\components\transform_component.h">
       <Filter>Archivos de encabezado\include\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\game_object.h">
+      <Filter>Archivos de encabezado\include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

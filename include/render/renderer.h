@@ -2,6 +2,8 @@
 #include "memory"
 #include <Core/defines.h>
 #include <Core/engine.h>
+#include <components/camera_component.h>
+#include <components/transform_component.h>
 
 class Renderer {
 
@@ -16,9 +18,13 @@ public:
 	bool init_pipeline(Engine* engine);
 	void active_shader(ShaderType type);
 
+	void render_forward(const TransformComponent* trans );
+
 	void upload_triangle();
 	void draw_triangle();
+	void draw_cube();
 
+	void set_camera(CameraComponent* cam);
 
 	void release();
 private:
@@ -27,8 +33,23 @@ private:
 	ShaderFiles m_shader_files;
 	Engine* m_engine_ptr;
 
+	D3D11_BUFFER_DESC m_cube_index_buffer_desc; // tmp
+	ID3D11Buffer* m_cube_index_buffer; // tmp
+
+	D3D11_BUFFER_DESC m_buffer_description;
+	D3D11_BUFFER_DESC m_buffer_description_cube;
+
+	D3D11_BUFFER_DESC m_cam_constant_buffer;
+	ID3D11Buffer* m_pVBufferConstantCamera;
+
 	ID3D11Buffer* m_pVBuffer;
+	ID3D11Buffer* m_pVBufferCube;
+
 	ID3D11InputLayout* m_pLayout;
+
+
+
+	CameraComponent* m_cam;
 
 	bool m_isInitialized;
 	

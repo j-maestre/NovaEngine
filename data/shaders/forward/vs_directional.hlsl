@@ -7,20 +7,29 @@ struct VS_IN
     
 struct VOut{
     float4 position : SV_POSITION;
+    float3 world_position : WORLD_POSITION;
     float3 normal : NORMAL;
     float2 uv : UV;
 };
 
-//VOut VShader(float3 position : POSITION, float3 normal : NORMAL, float2 uv : UV)
+cbuffer CameraObject : register(b0){
+    float4x4 view;
+    float4x4 projection;
+    float4x4 model;
+}
+
+
 VOut VShader(VS_IN input)
 {
+    
+    float4x4 vpm = mul(model, mul(view, projection));
+    
     VOut output;
 
-    output.position = float4(input.position, 1.0f);
-    output.normal = float3(input.normal);
+    output.position = mul(float4(input.position, 1.0f), vpm);
+    output.world_position = mul(float4(input.position, 1.0f), model).xyz;
+    output.normal = mul(float4(input.normal, 0.0f), model).xyz;
     output.uv = float2(input.uv);
-    //output.normal = float3(1.0f, 1.0f, 1.0f);
-    //output.uv = float2(1.0f, 1.0f);
 
     return output;
 }
