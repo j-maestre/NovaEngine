@@ -66,6 +66,9 @@
     <ClCompile Include="src\Core\game_object.cpp">
       <Filter>Archivos de recursos\src\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\input.cpp">
+      <Filter>Archivos de recursos\src\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\render\window.h">
@@ -90,6 +93,12 @@
       <Filter>Archivos de encabezado\include\Components</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\game_object.h">
+      <Filter>Archivos de encabezado\include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\input.h">
+      <Filter>Archivos de encabezado\include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\keys.h">
       <Filter>Archivos de encabezado\include\Core</Filter>
     </ClInclude>
   </ItemGroup>

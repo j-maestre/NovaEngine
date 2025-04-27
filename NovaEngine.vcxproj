@@ -150,6 +150,7 @@
     <ClCompile Include="src\Components\transform_component.cpp" />
     <ClCompile Include="src\Core\engine.cpp" />
     <ClCompile Include="src\Core\game_object.cpp" />
+    <ClCompile Include="src\Core\input.cpp" />
     <ClCompile Include="src\Render\renderer.cpp" />
     <ClCompile Include="src\Render\window.cpp" />
   </ItemGroup>
@@ -159,6 +160,8 @@
     <ClInclude Include="include\Core\defines.h" />
     <ClInclude Include="include\Core\engine.h" />
     <ClInclude Include="include\Core\game_object.h" />
+    <ClInclude Include="include\Core\input.h" />
+    <ClInclude Include="include\Core\keys.h" />
     <ClInclude Include="include\nova_engine.h" />
     <ClInclude Include="include\render\renderer.h" />
     <ClInclude Include="include\render\window.h" />

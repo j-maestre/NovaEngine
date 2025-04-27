@@ -1,5 +1,6 @@
 #pragma once
 #include "memory"
+#include "Core/input.h"
 
 struct WindowInfo;
 struct WindowProperties;
@@ -26,8 +27,14 @@ public:
 	WindowInfo* get_window_info();
 	WindowProperties* get_window_properties();
 
+	void process_key(WPARAM param);
+	void process_mouse(LPARAM param);
+
 	friend class Engine;
 private:
+
+	Input m_input;
+
 
 	// Render stuff
 	IDXGISwapChain* m_swapChain;

@@ -1,25 +1,38 @@
 
 #include "render/window.h"
 #include "Core/defines.h"
+#include "Core/input.h"
 
 
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam) {
 
+	Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(handle, GWLP_USERDATA));
+
 	switch (msg) {
 	case WM_DESTROY:
-	{
-		// close the entire aplication
-		PostQuitMessage(0);
-		return 0;
-	}
-	break;
+		{
+			// close the entire aplication
+			PostQuitMessage(0);
+			return 0;
+		}
+		break;
+	case WM_KEYDOWN:
+	case WM_SYSKEYDOWN:
+		{
+			window->process_key(wParam);
+		}
+	case WM_MOUSEMOVE:
+		{
+		window->process_mouse(lParam);
+		}
+	return 0;
 	}
 
 	// Handle other messages
 	return DefWindowProc(handle, msg, wParam, lParam);
 }
 
-Window::Window() : m_window_info(){
+Window::Window() : m_window_info(), m_input(){
 	m_initialized = false;
 	m_swapChain = nullptr;
 	m_deviceInterface = nullptr;
@@ -73,6 +86,9 @@ void Window::init(const WindowProperties* props){
 		NULL				// Used with multiple windows
 	);
 
+	// Store this class in the window class
+	SetWindowLongPtr(window_handle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+
 	WindowInfo tmp;
 	tmp.window_handle = window_handle;
 	tmp.window_info = window_info;
@@ -89,6 +105,9 @@ void Window::init(const WindowProperties* props){
 void Window::begin_frame(){
 	
 	m_inmediateDeviceContext->ClearRenderTargetView(m_window_info->backbuffer, (FLOAT*) &(m_window_props->clear_color));
+	for (auto& key : m_input.m_keyboard) {
+		key.second = Key::KeyState::Up;
+	}
 }
 
 void Window::end_frame(){
@@ -126,6 +145,18 @@ WindowInfo* Window::get_window_info(){
 WindowProperties* Window::get_window_properties(){
 
 	return m_window_props.get();
+}
+
+void Window::process_key(WPARAM param){
+
+	Key::Keyboard key = static_cast<Key::Keyboard>(param);
+	m_input.m_keyboard[key] = Key::KeyState::Down;
+}
+
+void Window::process_mouse(LPARAM param){
+	
+	m_input.m_mouse_x  = GET_X_LPARAM(param);
+	m_input.m_mouse_y = GET_Y_LPARAM(param);	
 }
 
 
