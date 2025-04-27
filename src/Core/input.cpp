@@ -180,20 +180,20 @@ Input::~Input()
 {
 }
 
-void Input::is_key_down()
-{
+bool Input::is_key_down(Key::Keyboard key) const{
+	return m_keyboard.at(key) == Key::KeyState::Down;
 }
 
-void Input::is_key_up()
-{
+bool Input::is_key_up(Key::Keyboard key) const{
+	return m_keyboard.at(key) == Key::KeyState::Up;
 }
 
-int Input::get_mouse_x()
+float Input::get_mouse_x() const
 {
-	return 0;
+	return m_mouse_x;
 }
 
-int Input::get_mouse_y()
+float Input::get_mouse_y() const
 {
-	return 0;
+	return m_mouse_y;
 }

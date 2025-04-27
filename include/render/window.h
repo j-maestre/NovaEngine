@@ -28,13 +28,14 @@ public:
 	WindowProperties* get_window_properties();
 
 	void process_key(WPARAM param);
-	void process_mouse(LPARAM param);
+	void process_mouse(HWND handle);
+	void process_mouse_button(Key::Mouse btn, Key::KeyState state);
 
 	friend class Engine;
+
 private:
 
-	Input m_input;
-
+	Input* m_input;
 
 	// Render stuff
 	IDXGISwapChain* m_swapChain;
@@ -44,4 +45,7 @@ private:
 	std::shared_ptr<WindowInfo> m_window_info;
 	std::shared_ptr<WindowProperties> m_window_props;
 	bool m_initialized;
+
+	float m_width;
+	float m_height;
 };

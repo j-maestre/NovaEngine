@@ -17,11 +17,11 @@ public:
 	Input(const Input&) = delete;
 	~Input();
 
-	static void is_key_down();
-	static void is_key_up();
+	bool is_key_down(Key::Keyboard key) const;
+	bool is_key_up(Key::Keyboard key) const;
 
-	static int get_mouse_x();
-	static int get_mouse_y();
+	float get_mouse_x() const;
+	float get_mouse_y() const;
 
 private:
 

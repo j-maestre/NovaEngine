@@ -27,7 +27,12 @@ public:
 	const std::vector<Vertex>& get_cube();
 	const std::vector<Vertex>& get_sphere();
 
+	const Input* get_input() { return &m_input; }
+
 private:
+
+	Input m_input;
+
 	friend class Renderer;
 	inline std::shared_ptr<EngineProps> get_engine_props() { return m_props; }
 

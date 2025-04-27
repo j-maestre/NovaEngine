@@ -2,6 +2,7 @@
 #include "render/window.h"
 #include "Core/defines.h"
 #include "Core/input.h"
+#include "Windows.h"
 
 
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -21,10 +22,27 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 			window->process_key(wParam);
 		}
+		break;
 	case WM_MOUSEMOVE:
 		{
-		window->process_mouse(lParam);
+		window->process_mouse(handle);
 		}
+		break;
+	case WM_LBUTTONDOWN: 
+		window->process_mouse_button(Key::Mouse::LBUTTON, Key::KeyState::Down);
+		break;
+
+	case WM_LBUTTONUP:
+		window->process_mouse_button(Key::Mouse::LBUTTON, Key::KeyState::Up);
+		return 0;
+
+	case WM_RBUTTONDOWN:
+		window->process_mouse_button(Key::Mouse::RBUTTON, Key::KeyState::Down);
+		return 0;
+
+	case WM_RBUTTONUP:
+		window->process_mouse_button(Key::Mouse::RBUTTON, Key::KeyState::Up);
+		return 0;
 	return 0;
 	}
 
@@ -32,7 +50,7 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(handle, msg, wParam, lParam);
 }
 
-Window::Window() : m_window_info(), m_input(){
+Window::Window() : m_window_info(){
 	m_initialized = false;
 	m_swapChain = nullptr;
 	m_deviceInterface = nullptr;
@@ -86,6 +104,9 @@ void Window::init(const WindowProperties* props){
 		NULL				// Used with multiple windows
 	);
 
+	m_width = static_cast<float>(props->width);
+	m_height = static_cast<float>(props->height);
+
 	// Store this class in the window class
 	SetWindowLongPtr(window_handle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
@@ -105,7 +126,7 @@ void Window::init(const WindowProperties* props){
 void Window::begin_frame(){
 	
 	m_inmediateDeviceContext->ClearRenderTargetView(m_window_info->backbuffer, (FLOAT*) &(m_window_props->clear_color));
-	for (auto& key : m_input.m_keyboard) {
+	for (auto& key : m_input->m_keyboard) {
 		key.second = Key::KeyState::Up;
 	}
 }
@@ -150,13 +171,33 @@ WindowProperties* Window::get_window_properties(){
 void Window::process_key(WPARAM param){
 
 	Key::Keyboard key = static_cast<Key::Keyboard>(param);
-	m_input.m_keyboard[key] = Key::KeyState::Down;
+	m_input->m_keyboard[key] = Key::KeyState::Down;
 }
 
-void Window::process_mouse(LPARAM param){
+void Window::process_mouse(HWND handle){
 	
-	m_input.m_mouse_x  = GET_X_LPARAM(param);
-	m_input.m_mouse_y = GET_Y_LPARAM(param);	
+	//int x = GET_X_LPARAM(param);
+	//int y = GET_Y_LPARAM(param);
+
+	POINT cursorPos;
+	GetCursorPos(&cursorPos);  // Obtener las coordenadas globales del ratón
+
+	ScreenToClient(handle, &cursorPos);  // Convertir a coordenadas relativas a la ventana
+
+	RECT windowRect;
+	GetClientRect(handle, &windowRect);  // Obtener el tamaño de la ventana
+
+	// Normalizar las coordenadas del ratón a un rango entre 0 y 1
+	m_input->m_mouse_x = static_cast<float>(cursorPos.x) / static_cast<float>(windowRect.right - windowRect.left);
+	m_input->m_mouse_y = static_cast<float>(cursorPos.y) / static_cast<float>(windowRect.bottom - windowRect.top);
+	//m_input->m_mouse_x  = static_cast<float>(x) / m_width;
+	//m_input->m_mouse_y = static_cast<float>(y) / m_height;	
+
+
+}
+
+void Window::process_mouse_button(Key::Mouse btn, Key::KeyState state){
+	m_input->m_mouse[btn] = state;
 }
 
 

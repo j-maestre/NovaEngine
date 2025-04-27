@@ -1,8 +1,9 @@
 #include "Core/engine.h"
 #include <Core/defines.h>
+#include <Core/input.h>
 #include <assert.h>
 
-Engine::Engine() : m_props(std::make_shared<EngineProps>()){
+Engine::Engine() : m_props(std::make_shared<EngineProps>()), m_input(){
 	
 }
 
@@ -22,6 +23,7 @@ void Engine::init(Window* window){
 
 	//window_used->window_handle
 
+	window->m_input = &m_input;
 
 	// clear out the struct for use
 	ZeroMemory(&(m_props->scd), sizeof(DXGI_SWAP_CHAIN_DESC));
