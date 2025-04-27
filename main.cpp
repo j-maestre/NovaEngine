@@ -24,17 +24,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Renderer render;
 	bool ret = render.init_pipeline(&engine);
 
-	CameraComponent cam;
+	CameraComponent cam(engine.get_input());
 
 	float scale = 1.0f;
 
 	TransformComponent trans({-2.0f, -4.0f, 10.0f}, { scale ,scale ,scale }, {0.0f, 90.0f, 0.0f});
-	TransformComponent trans2({0.0f, 0.0f, -40.0f}, { scale ,scale ,scale });
+	TransformComponent trans2({0.0f, 0.0f, -10.0f}, { scale ,scale ,scale });
 
 	render.set_camera(&cam);
 	
 	while (true) {
 
+		win.begin_frame();
 		// if true no execute game code?
 		if (!win.update()) {
 			printf("window update return false\n");
@@ -42,13 +43,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 		engine.update();
-		win.begin_frame();
+		cam.fly();
 
-		/*
-		Vec3 pos = cam.get_position();
-		//pos.y += 0.9f * engine.get_delta_time();
-		cam.set_position(pos);
-		*/
+	
 
 		Vec3 rotation = trans.get_rotation();
 		trans.rotateY(rotation.y + 0.2f * engine.get_delta_time());
@@ -59,7 +56,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		
 		render.render_forward(&trans);
-		//render.render_forward(&trans2);
+		render.render_forward(&trans2);
 		
 		win.end_frame();
 		trans.force_update();

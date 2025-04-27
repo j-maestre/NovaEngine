@@ -1,17 +1,19 @@
 #pragma once
 #include "Core/defines.h"
+#include "Core/input.h"
 #include "memory"
 
 
 class CameraComponent {
 
 public:
-	CameraComponent();
+	CameraComponent(const Input* input);
 	CameraComponent(const CameraComponent&);
 	CameraComponent(CameraComponent&&);
 	~CameraComponent();
 
 	void update();
+	void fly();
 
 	void set_position(Vec3 pos) { m_position = pos; }
 	Vec3 get_position() { return m_position; }
@@ -26,12 +28,14 @@ private:
 	void update_view_matrix();
 	void update_projection_matrix();
 
+	const Input* m_input;
+
 	Mat4 m_view;
 	Mat4 m_projection;
 	Mat4 m_view_projection;	// View * projection combinated
 
 	float m_pitch = 0.0f;
-	float m_yaw = 0.0f;
+	float m_yaw;
 
 	float m_aspect_ratio;
 
@@ -41,5 +45,7 @@ private:
 
 	Vec3 m_position;
 
-
+	float m_mouse_sensitivity = 0.1f;
+	float m_last_mouse_x = 0.0f;
+	float m_last_mouse_y = 0.0f;
 };

@@ -1,7 +1,10 @@
 
 #include "components/camera_component.h"
+#include "Core/input.h"
+#include "render/window.h"
+#include "Core/engine.h"
 
-CameraComponent::CameraComponent(){
+CameraComponent::CameraComponent(const Input* input){
 	m_aspect_ratio = 16.0f / 9.0f;
 	m_near = 0.1f;
 	m_far = 1000.0f;
@@ -9,7 +12,9 @@ CameraComponent::CameraComponent(){
 	m_fov = 90.0f;
 
 	m_position = { 0.0f, 0.0f, 0.0f };
+	m_yaw = -90.0f;
 
+	m_input = input;
 }
 
 CameraComponent::CameraComponent(const CameraComponent&)
@@ -29,6 +34,30 @@ void CameraComponent::update(){
 	update_projection_matrix();
 
 	m_view_projection = (m_projection * m_view);
+}
+
+void CameraComponent::fly(){
+
+	if (m_input->is_key_down(Key::Keyboard::CONTROL)) {
+
+		Vec3 direction;
+		direction.x = cosf(degToRad(m_yaw));
+		direction.x = sinf(degToRad(m_pitch));
+		direction.z = sinf(degToRad(m_yaw));
+
+		float mouse_x = m_input->get_mouse_x();
+		float mouse_y = m_input->get_mouse_y();
+
+		float xoffset = (mouse_x - m_last_mouse_x) * m_mouse_sensitivity;
+		float yoffset = (mouse_y - m_last_mouse_y) * m_mouse_sensitivity;
+
+		m_yaw += xoffset;
+		m_pitch += yoffset;
+
+
+		m_last_mouse_x = mouse_x;
+		m_last_mouse_y = mouse_y;
+	}
 }
 
 void CameraComponent::update_view_matrix(){
