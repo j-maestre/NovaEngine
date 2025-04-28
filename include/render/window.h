@@ -28,7 +28,7 @@ public:
 	WindowProperties* get_window_properties();
 
 	void process_key(WPARAM param);
-	void process_mouse(HWND handle);
+	void process_mouse(LPARAM param);
 	void process_mouse_button(Key::Mouse btn, Key::KeyState state);
 
 	friend class Engine;

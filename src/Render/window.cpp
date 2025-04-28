@@ -17,6 +17,8 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
 			return 0;
 		}
 		break;
+
+	
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:
 		{
@@ -25,7 +27,7 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_MOUSEMOVE:
 		{
-		window->process_mouse(handle);
+		window->process_mouse(lParam);
 		}
 		break;
 	case WM_LBUTTONDOWN: 
@@ -43,6 +45,7 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_RBUTTONUP:
 		window->process_mouse_button(Key::Mouse::RBUTTON, Key::KeyState::Up);
 		return 0;
+		
 	return 0;
 	}
 
@@ -174,11 +177,12 @@ void Window::process_key(WPARAM param){
 	m_input->m_keyboard[key] = Key::KeyState::Down;
 }
 
-void Window::process_mouse(HWND handle){
+void Window::process_mouse(LPARAM param){
 	
-	//int x = GET_X_LPARAM(param);
-	//int y = GET_Y_LPARAM(param);
+	m_input->m_mouse_x = GET_X_LPARAM(param);
+	m_input->m_mouse_y = GET_Y_LPARAM(param);
 
+	/*
 	POINT cursorPos;
 	GetCursorPos(&cursorPos);  // Obtener las coordenadas globales del ratón
 
@@ -190,8 +194,7 @@ void Window::process_mouse(HWND handle){
 	// Normalizar las coordenadas del ratón a un rango entre 0 y 1
 	m_input->m_mouse_x = static_cast<float>(cursorPos.x) / static_cast<float>(windowRect.right - windowRect.left);
 	m_input->m_mouse_y = static_cast<float>(cursorPos.y) / static_cast<float>(windowRect.bottom - windowRect.top);
-	//m_input->m_mouse_x  = static_cast<float>(x) / m_width;
-	//m_input->m_mouse_y = static_cast<float>(y) / m_height;	
+	*/
 
 
 }

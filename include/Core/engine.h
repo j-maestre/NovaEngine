@@ -3,7 +3,7 @@
 #include <render/window.h>
 #include <memory>
 #include <vector>
-
+#include <chrono>
 
 struct EngineProps;
 
@@ -47,4 +47,7 @@ private:
 	void init_geometries();
 	std::vector<Vertex> m_geometry_cube;
 	std::vector<Vertex> m_geometry_sphere;
+
+	std::chrono::high_resolution_clock::time_point m_last_time;
+	float m_delta_time;
 };

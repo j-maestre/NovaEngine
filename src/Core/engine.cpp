@@ -2,6 +2,8 @@
 #include <Core/defines.h>
 #include <Core/input.h>
 #include <assert.h>
+#include <chrono>
+#include <Windows.h>
 
 Engine::Engine() : m_props(std::make_shared<EngineProps>()), m_input(){
 	
@@ -103,6 +105,14 @@ void Engine::init(Window* window){
 	window->m_swapChain = m_props->swapChain;
 	window->m_deviceInterface = m_props->deviceInterface;
 	window->m_inmediateDeviceContext = m_props->inmediateDeviceContext;
+
+	// Open console
+	AllocConsole(); // Crea una nueva consola
+	FILE* file;
+	freopen_s(&file, "CONOUT$", "w", stdout); // Redirige stdout a la consola
+	freopen_s(&file, "CONOUT$", "w", stderr); // Redirige stderr a la consola
+	freopen_s(&file, "CONIN$", "r", stdin);   // Redirige stdin a la consola
+	printf("\n*** Console opened succesfully ***\n");
 	
 	init_geometries();
 }
@@ -111,6 +121,11 @@ void Engine::init(Window* window){
 void Engine::update(){
 
 	m_props->inmediateDeviceContext->RSSetViewports(1, &m_viewport);
+
+	auto currentTime = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<float> delta = currentTime - m_last_time;
+	m_last_time = currentTime;
+	m_delta_time = delta.count();
 }
 
 void Engine::release(){
@@ -123,12 +138,12 @@ void Engine::release(){
 
 float Engine::get_delta_time(){
 
-	return 1.0f / 500.0f;
+	return m_delta_time;
 }
 
 float Engine::get_fps(){
 
-	return 0.0f;
+	return 1.0f / m_delta_time;
 }
 
 const std::vector<Vertex>& Engine::get_cube(){

@@ -41,26 +41,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			printf("window update return false\n");
 			break;
 		}
+		//printf("hola");
+		std::string dt_s = std::string("DT: ") + std::to_string(engine.get_delta_time());
+		std::string fps_s = std::string("FPS: ") + std::to_string(engine.get_fps());
+		//OutputDebugStringA(dt_s.c_str());
+		//OutputDebugStringA(fps_s.c_str());
+		//printf("%s\n", fps_s.c_str());
 
+		
+		
 		engine.update();
-		cam.fly();
+		cam.fly(engine.get_delta_time());
+		cam.update();
 
 	
 
 		Vec3 rotation = trans.get_rotation();
-		trans.rotateY(rotation.y + 0.2f * engine.get_delta_time());
+		Vec3 rotation2 = trans2.get_rotation();
+		//trans.rotateY(rotation.y + 5.0f * (1.0f / 5000.0f));
+		//trans.rotateY(rotation.y + 5.0f * engine.get_delta_time());
+		//trans2.rotateY(rotation2.y + 50.0f * engine.get_delta_time());
 
-		cam.update();
 		trans.update();
 		trans2.update();
 
 		
 		render.render_forward(&trans);
-		render.render_forward(&trans2);
+		//render.render_forward(&trans2);
 		
 		win.end_frame();
 		trans.force_update();
 		trans2.force_update();
+
+		auto start = std::chrono::high_resolution_clock::now();
+		bool done = false;
+		do {
+			auto end = std::chrono::high_resolution_clock::now();
+			auto elapsed = end - start;
+			done = elapsed >= std::chrono::milliseconds(16);
+		} while (!done);
 
 	}
 
