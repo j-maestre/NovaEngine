@@ -72,12 +72,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PublicIncludeDirectories>(SolutionDir)include;$(PublicIncludeDirectories)</PublicIncludeDirectories>
-    <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\external;$(SolutionDir)include;$(IncludePath)</IncludePath>
     <SourcePath>$(SolutionDir)src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PublicIncludeDirectories>$(SolutionDir)include\;$(PublicIncludeDirectories)</PublicIncludeDirectories>
-    <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)deps\external;$(SolutionDir)include;$(IncludePath)</IncludePath>
     <SourcePath>$(SolutionDir)src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -151,7 +151,9 @@
     <ClCompile Include="src\Core\engine.cpp" />
     <ClCompile Include="src\Core\game_object.cpp" />
     <ClCompile Include="src\Core\input.cpp" />
+    <ClCompile Include="src\Core\ResourceManager.cpp" />
     <ClCompile Include="src\Render\renderer.cpp" />
+    <ClCompile Include="src\Render\texture.cpp" />
     <ClCompile Include="src\Render\window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -162,8 +164,10 @@
     <ClInclude Include="include\Core\game_object.h" />
     <ClInclude Include="include\Core\input.h" />
     <ClInclude Include="include\Core\keys.h" />
+    <ClInclude Include="include\Core\ResourceManager.h" />
     <ClInclude Include="include\nova_engine.h" />
     <ClInclude Include="include\render\renderer.h" />
+    <ClInclude Include="include\render\texture.h" />
     <ClInclude Include="include\render\window.h" />
   </ItemGroup>
   <ItemGroup>

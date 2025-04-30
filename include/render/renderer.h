@@ -18,7 +18,7 @@ public:
 	bool init_pipeline(Engine* engine);
 	void active_shader(ShaderType type);
 
-	void render_forward(const TransformComponent* trans );
+	void render_forward(const TransformComponent* trans, Texture t);
 
 	void upload_triangle();
 	void draw_triangle();
@@ -46,6 +46,9 @@ private:
 	ID3D11Buffer* m_pVBufferCube;
 
 	ID3D11InputLayout* m_pLayout;
+	
+	ID3D11SamplerState* m_sampler_state;
+	D3D11_SAMPLER_DESC m_sampler_desc;
 
 
 

@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <chrono>
+#include "Core/ResourceManager.h"
 
 struct EngineProps;
 
@@ -24,16 +25,22 @@ public:
 	float get_delta_time();
 	float get_fps();
 
+	void load_default_textures();
+	Texture get_default_albedo_texture();
+
 	const std::vector<Vertex>& get_cube();
 	const std::vector<Vertex>& get_sphere();
 
 	const Input* get_input() { return &m_input; }
+
+	ResourceManager m_resource;
 
 private:
 
 	Input m_input;
 
 	friend class Renderer;
+	friend class ResourceManager;
 	inline std::shared_ptr<EngineProps> get_engine_props() { return m_props; }
 
 
@@ -50,4 +57,6 @@ private:
 
 	std::chrono::high_resolution_clock::time_point m_last_time;
 	float m_delta_time;
+
+	unsigned int m_default_texture_albedo;
 };

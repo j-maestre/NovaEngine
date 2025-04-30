@@ -15,7 +15,7 @@ static inline bool  CheckShaderError(HRESULT hr, ID3DBlob* error_msg = nullptr) 
 	return true;
 }
 
-Renderer::Renderer() : m_shader_files(){
+Renderer::Renderer() : m_shader_files(), m_sampler_desc{} {
 	m_isInitialized = false;
 	m_pVBuffer = nullptr;
 }
@@ -103,6 +103,16 @@ bool Renderer::init_pipeline(Engine* engine){
 	engine->get_engine_props()->deviceInterface->CreateInputLayout(ied,3,VS->GetBufferPointer(), VS->GetBufferSize(), &m_pLayout);
 	engine->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
 
+	m_sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	m_sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	m_sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	m_sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	m_sampler_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	m_sampler_desc.MinLOD = 0;
+	m_sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	m_sampler_state = nullptr;
+	engine->get_engine_props()->deviceInterface->CreateSamplerState(&m_sampler_desc, &m_sampler_state);
 	
 
 	upload_triangle();
@@ -124,7 +134,7 @@ void Renderer::active_shader(ShaderType type){
 	}
 }
 
-void Renderer::render_forward(const TransformComponent* trans){
+void Renderer::render_forward(const TransformComponent* trans, Texture t){
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetConstantBuffers(0,1,&m_pVBufferConstantCamera);
 
@@ -146,6 +156,10 @@ void Renderer::render_forward(const TransformComponent* trans){
 	UINT offset = 0;
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBufferCube, &stride, &offset);
 
+	
+
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetSamplers(0,1,&m_sampler_state);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0,1,&(t.m_data.texture_view));
 	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m_cube_index_buffer, DXGI_FORMAT_R32_UINT, 0);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

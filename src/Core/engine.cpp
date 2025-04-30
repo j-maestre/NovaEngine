@@ -5,7 +5,9 @@
 #include <chrono>
 #include <Windows.h>
 
-Engine::Engine() : m_props(std::make_shared<EngineProps>()), m_input(){
+Engine::Engine() : m_props(std::make_shared<EngineProps>()), m_input(), m_resource(){
+
+	m_resource.set_engine(this);
 	
 }
 
@@ -115,6 +117,7 @@ void Engine::init(Window* window){
 	printf("\n*** Console opened succesfully ***\n");
 	
 	init_geometries();
+	load_default_textures();
 }
 
 
@@ -144,6 +147,18 @@ float Engine::get_delta_time(){
 float Engine::get_fps(){
 
 	return 1.0f / m_delta_time;
+}
+
+void Engine::load_default_textures(){
+	Texture t = m_resource.load_texture("data/textures/jou.jpg");
+	Texture t2 = m_resource.load_texture("data/textures/kirby.png");
+
+	m_default_texture_albedo = t.get_id();
+}
+
+Texture Engine::get_default_albedo_texture(){
+
+	return m_resource.get_texture(m_default_texture_albedo);
 }
 
 const std::vector<Vertex>& Engine::get_cube(){

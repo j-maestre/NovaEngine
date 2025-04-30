@@ -46,7 +46,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		std::string fps_s = std::string("FPS: ") + std::to_string(engine.get_fps());
 		//OutputDebugStringA(dt_s.c_str());
 		//OutputDebugStringA(fps_s.c_str());
-		//printf("%s\n", fps_s.c_str());
+		printf("%s\n", fps_s.c_str());
 
 		
 		
@@ -66,7 +66,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		trans2.update();
 
 		
-		render.render_forward(&trans);
+		render.render_forward(&trans, engine.get_default_albedo_texture());
 		//render.render_forward(&trans2);
 		
 		win.end_frame();

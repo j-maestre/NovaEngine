@@ -36,7 +36,7 @@ private:
 	Mat4 m_projection;
 	Mat4 m_view_projection;	// View * projection combinated
 
-	Vec3 m_direction;
+	FVector m_direction;
 	Vec3 m_up;
 	Vec3 m_right;
 
@@ -52,6 +52,7 @@ private:
 	Vec3 m_position;
 
 	float m_speed = 1.0f;
+	float m_movement_speed = 5.0f;
 	float m_mouse_sensitivity = 0.1f;
 	float m_last_mouse_x = 0.0f;
 	float m_last_mouse_y = 0.0f;

@@ -42,11 +42,39 @@ void CameraComponent::update(){
 
 void CameraComponent::fly(float dt){
 	//glm::vec3 position = glm::make_vec3(GetPosition());
-	Vec3 forward = m_direction;
+	Vec3 forward = { DirectX::XMVectorGetX(m_direction), DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction) };
 	Vec3 up(0.0f, -1.0f, 0.0f);
+
+	FVector up_vec({ 0.0f, 1.0f, 0.0f });
+	FVector right = DirectX::XMVector3Cross(m_direction, up_vec);
+
+	Vec3 right_float = { DirectX::XMVectorGetX(right),DirectX::XMVectorGetY(right), DirectX::XMVectorGetZ(right) };
 
 	const float speed = m_speed * dt;
 
+
+	if (m_input->is_key_down(Key::Keyboard::W)) {
+		m_position.x += forward.x * m_movement_speed * dt;
+		m_position.y += forward.y * m_movement_speed * dt;
+		m_position.z += forward.z * m_movement_speed * dt;
+	}
+	if (m_input->is_key_down(Key::Keyboard::S)) {
+		m_position.x -= forward.x * m_movement_speed * dt;
+		m_position.y -= forward.y * m_movement_speed * dt;
+		m_position.z -= forward.z * m_movement_speed * dt;
+	}
+	
+	if (m_input->is_key_down(Key::Keyboard::D)) {
+		m_position.x -= right_float.x * m_movement_speed * dt;
+		m_position.y -= right_float.y * m_movement_speed * dt;
+		m_position.z -= right_float.z * m_movement_speed * dt;
+	}
+	
+	if (m_input->is_key_down(Key::Keyboard::A)) {
+		m_position.x += right_float.x * m_movement_speed * dt;
+		m_position.y += right_float.y * m_movement_speed * dt;
+		m_position.z += right_float.z * m_movement_speed * dt;
+	}
 
 	const float MouseX = static_cast<float>(m_input->get_mouse_x());
 	const float MouseY = static_cast<float>(m_input->get_mouse_y());
@@ -80,7 +108,8 @@ void CameraComponent::fly(float dt){
 		forward.y = sinf(degToRad(m_pitch));
 		forward.z = sinf(degToRad(m_yaw)) * cosf(degToRad(m_pitch));
 
-		m_direction = forward;
+		m_direction = DirectX::XMVector3Normalize(FVector({ forward.x, forward.y, forward.z, 0.0f}));
+		//printf("Forward: X:%f Y:%f Z:%f\n", m_direction.x, m_direction.y, m_direction.z);
 	//}
 
 	m_last_mouse_x = MouseX;
@@ -106,13 +135,12 @@ void CameraComponent::update_view_matrix(){
 		
 	 
 	FVector position({ m_position.x, m_position.y, m_position.z, 1.0f });
-	FVector direction({ -m_direction.x, m_direction.y, m_direction.z, 0.0f });
+	FVector direction({ DirectX::XMVectorGetX(m_direction) * -1.0f, DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction), 0.0f });
 	FVector up({ 0.0f, 1.0f, 0.0f, 0.0f });
 
 
-		
-		FVector cameraRight = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(up, direction));
-		FVector cameraUp = DirectX::XMVector3Cross(direction, cameraRight);
+		FVector cameraRight = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(direction, up));
+		FVector cameraUp = DirectX::XMVector3Cross(cameraRight, direction);
 
 		m_up.x = DirectX::XMVectorGetX(cameraUp);
 		m_up.y = DirectX::XMVectorGetY(cameraUp);
@@ -123,8 +151,8 @@ void CameraComponent::update_view_matrix(){
 		m_right.z = DirectX::XMVectorGetZ(cameraRight);
 
 		
-		FVector dir_normalized = DirectX::XMVector3Normalize(direction);
-		FVector eye = DirectX::XMVectorAdd(position, dir_normalized);
+		m_direction = DirectX::XMVector3Normalize(direction);
+		FVector eye = DirectX::XMVectorAdd(position, m_direction);
 		m_view = DirectX::XMMatrixLookAtLH(position, eye, up);
 
 

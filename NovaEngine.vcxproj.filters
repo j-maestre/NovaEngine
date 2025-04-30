@@ -69,6 +69,12 @@
     <ClCompile Include="src\Core\input.cpp">
       <Filter>Archivos de recursos\src\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\ResourceManager.cpp">
+      <Filter>Archivos de recursos\src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\texture.cpp">
+      <Filter>Archivos de recursos\src\Render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\render\window.h">
@@ -100,6 +106,12 @@
     </ClInclude>
     <ClInclude Include="include\Core\keys.h">
       <Filter>Archivos de encabezado\include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\ResourceManager.h">
+      <Filter>Archivos de encabezado\include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\render\texture.h">
+      <Filter>Archivos de encabezado\include\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
