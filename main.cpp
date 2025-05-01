@@ -59,7 +59,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		Vec3 rotation = trans.get_rotation();
 		Vec3 rotation2 = trans2.get_rotation();
 		//trans.rotateY(rotation.y + 5.0f * (1.0f / 5000.0f));
-		//trans.rotateY(rotation.y + 5.0f * engine.get_delta_time());
+		//trans.rotateY(rotation.y + 2.0f * engine.get_delta_time());
 		//trans2.rotateY(rotation2.y + 50.0f * engine.get_delta_time());
 
 		trans.update();

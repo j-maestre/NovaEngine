@@ -10,12 +10,14 @@ struct VOut{
     float3 world_position : WORLD_POSITION;
     float3 normal : NORMAL;
     float2 uv : UV;
+    float3 cam_pos : CAMERA_POSITION;
 };
 
 cbuffer CameraObject : register(b0){
     float4x4 view;
     float4x4 projection;
     float4x4 model;
+    float3 cam_pos;
 }
 
 
@@ -31,6 +33,7 @@ VOut VShader(VS_IN input)
     output.normal = mul(float4(input.normal, 0.0f), model).xyz;
     //output.normal = input.normal;
     output.uv = float2(input.uv);
+    output.cam_pos = cam_pos;
 
     return output;
 }

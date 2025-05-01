@@ -80,6 +80,7 @@ struct CameraConstantBuffer {
 	Mat4 view;
 	Mat4 projection;
 	Mat4 model;
+	Vec3 camera_position;
 };
 
 struct Color {

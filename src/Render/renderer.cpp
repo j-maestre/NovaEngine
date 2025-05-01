@@ -145,6 +145,7 @@ void Renderer::render_forward(const TransformComponent* trans, Texture t){
 	cam_buffer.view = DirectX::XMMatrixTranspose(*view);
 	cam_buffer.projection = DirectX::XMMatrixTranspose(*proj);
 	cam_buffer.model = DirectX::XMMatrixTranspose(trans->get_transform());
+	cam_buffer.camera_position = m_cam->get_position();
 	active_shader(ShaderType::DirectionalLight);
 	
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, &cam_buffer, 0,0);
