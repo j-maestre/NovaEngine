@@ -7,7 +7,7 @@
 class CameraComponent {
 
 public:
-	CameraComponent(const Input* input);
+	CameraComponent(const Input* input, Window* win);
 	CameraComponent(const CameraComponent&);
 	CameraComponent(CameraComponent&&);
 	~CameraComponent();
@@ -28,7 +28,8 @@ private:
 	void update_view_matrix();
 	void update_projection_matrix();
 
-
+	HWND m_window_handle;
+	POINT m_window_center;
 
 	const Input* m_input;
 
@@ -39,6 +40,9 @@ private:
 	FVector m_direction;
 	Vec3 m_up;
 	Vec3 m_right;
+
+	float m_center_x;
+	float m_center_y;
 
 	float m_pitch = 0.0f;
 	float m_yaw;
@@ -53,7 +57,7 @@ private:
 
 	float m_speed = 1.0f;
 	float m_movement_speed = 5.0f;
-	float m_mouse_sensitivity = 0.1f;
+	float m_mouse_sensitivity = 40.0f;
 	float m_last_mouse_x = 0.0f;
 	float m_last_mouse_y = 0.0f;
 

@@ -4,7 +4,7 @@
 #include "render/window.h"
 #include "Core/engine.h"
 
-CameraComponent::CameraComponent(const Input* input){
+CameraComponent::CameraComponent(const Input* input, Window* win){
 	m_aspect_ratio = 16.0f / 9.0f;
 	m_near = 0.1f;
 	m_far = 1000.0f;
@@ -12,12 +12,27 @@ CameraComponent::CameraComponent(const Input* input){
 	m_fov = 90.0f;
 
 	m_position = { 0.0f, 0.0f, 0.0f };
-	m_pitch = 4.23f;
-	m_yaw = -56.0f;
+	m_pitch = -15.0f;
+	m_yaw = 76.0f;
 
 	m_input = input;
 	
 	m_direction = { 0.0f, 0.0f, -1.0f };
+
+	WindowInfo* info = win->get_window_info();
+	WindowProperties* props = win->get_window_properties();
+
+	m_center_x = ((float)props->width) * 0.5f;
+	m_center_y = ((float)props->height) * 0.5f;
+
+	POINT center_tmp = {m_center_x, m_center_y};
+	m_window_center = center_tmp;
+
+	m_window_handle = info->window_handle;
+
+	ClientToScreen(m_window_handle, &m_window_center);
+	SetCursorPos(center_tmp.x, center_tmp.y);
+	
 }
 
 CameraComponent::CameraComponent(const CameraComponent&)
@@ -42,6 +57,8 @@ void CameraComponent::update(){
 
 void CameraComponent::fly(float dt){
 	//glm::vec3 position = glm::make_vec3(GetPosition());
+
+	//printf("Pitch %f Yaw %f\n", m_pitch, m_yaw);
 	Vec3 forward = { DirectX::XMVectorGetX(m_direction), DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction) };
 	Vec3 up(0.0f, -1.0f, 0.0f);
 
@@ -77,25 +94,39 @@ void CameraComponent::fly(float dt){
 		m_position.z += right_float.z * m_movement_speed * dt;
 	}
 
-	const float MouseX = static_cast<float>(m_input->get_mouse_x());
-	const float MouseY = static_cast<float>(m_input->get_mouse_y());
+	float MouseX = static_cast<float>(m_input->get_mouse_x());
+	float MouseY = static_cast<float>(m_input->get_mouse_y());
 
-	//if (m_input->is_key_down(Key::Keyboard::CONTROL)){
+	POINT center_tmp = { m_center_x, m_center_y };
+	POINT mouse_pos = {MouseX, MouseY};
+	ScreenToClient(m_window_handle, &mouse_pos);
+
+	
+
+
+	//if (m_input->is_key_pressed(Key::Keyboard::CONTROL)){
 
 		if (m_first_move)
 		{
+			if(MouseX != 0.0f && MouseY != 0.0f)m_first_move = false;
+			MouseX = center_tmp.x;
+			MouseY = center_tmp.y;
 			m_last_mouse_x = MouseX;
 			m_last_mouse_y = MouseY;
+			SetCursorPos(m_center_x, m_center_y);
+
 			//m_Pitch = asin(forward.y / forward.length());
 			//m_Yaw = asin(forward.x / (cos(m_Pitch) * forward.length()));
-			m_first_move = false;
+			
 		}
 
-		float OffsetX = MouseX - m_last_mouse_x;
-		float OffsetY = MouseY - m_last_mouse_y;
+		//float OffsetX = MouseX - m_last_mouse_x;
+		//float OffsetY = MouseY - m_last_mouse_y;
+		float OffsetX = static_cast<float>(MouseX - m_center_x);
+		float OffsetY = static_cast<float>(MouseY - m_center_y);
 
-		OffsetX *= m_mouse_sensitivity;
-		OffsetY *= m_mouse_sensitivity;
+		OffsetX *= m_mouse_sensitivity * dt;
+		OffsetY *= m_mouse_sensitivity * dt;
 
 		m_yaw += OffsetX;
 		m_pitch -= OffsetY;
@@ -104,6 +135,11 @@ void CameraComponent::fly(float dt){
 			m_pitch = 89.0f;
 		if (m_pitch < -89.0f)
 			m_pitch = -89.0f;
+
+		if (m_yaw > 360.0f)
+			m_yaw -= 360.0f;
+		if (m_yaw < 0.0f)
+			m_yaw += 360.0f;
 
 		forward.x = cosf(degToRad(m_yaw)) * cosf(degToRad(m_pitch));
 		forward.y = sinf(degToRad(m_pitch));
@@ -116,7 +152,9 @@ void CameraComponent::fly(float dt){
 	m_last_mouse_x = MouseX;
 	m_last_mouse_y = MouseY;
 
-	//SetPosition(position.x, position.y, position.z);
+	ClientToScreen(m_window_handle, &center_tmp);
+	SetCursorPos(center_tmp.x, center_tmp.y);
+
 }
 
 
