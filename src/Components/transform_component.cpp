@@ -59,15 +59,15 @@ void TransformComponent::force_update(){
 }
 
 void TransformComponent::rotateX(float angle){
-
+	m_rotation.x += angle;
 }
 
 void TransformComponent::rotateY(float angle){
-	m_rotation.y = angle;
+	m_rotation.y += angle;
 }
 
 void TransformComponent::rotateZ(float angle){
-
+	m_rotation.z += angle;
 }
 
 void TransformComponent::rotateXYZ(float x, float y, float z){
