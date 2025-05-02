@@ -8,6 +8,7 @@
 Engine::Engine() : m_props(std::make_shared<EngineProps>()), m_input(), m_resource(){
 
 	m_resource.set_engine(this);
+	m_last_time = std::chrono::high_resolution_clock::now();
 	
 }
 
@@ -78,14 +79,14 @@ void Engine::init(Window* window){
 	// Setting rasterizer
 	ZeroMemory(&m_raster, sizeof(D3D11_RASTERIZER_DESC));
 	m_raster.CullMode = D3D11_CULL_BACK;    // Desactiva el culling
-	m_raster.FillMode = D3D11_FILL_SOLID;   // Rellenar las caras con un color sólido
-	m_raster.FrontCounterClockwise = FALSE; // La orientación de las caras frontales no cambia
+	m_raster.FillMode = D3D11_FILL_SOLID;   // Rellenar las caras con un color sï¿½lido
+	m_raster.FrontCounterClockwise = FALSE; // La orientaciï¿½n de las caras frontales no cambia
 	m_raster.DepthBias = 0;
 	m_raster.SlopeScaledDepthBias = 0.0f;
 	m_raster.DepthBiasClamp = 0.0f;
 	m_raster.ScissorEnable = FALSE;         // No se usa el scissor test
 	m_raster.MultisampleEnable = FALSE;     // No multisampling
-	m_raster.AntialiasedLineEnable = FALSE; // No se usan líneas antialiasing
+	m_raster.AntialiasedLineEnable = FALSE; // No se usan lï¿½neas antialiasing
 
 	HRESULT hr = m_props->deviceInterface->CreateRasterizerState(&m_raster, &m_raster_state);
 	assert(!FAILED(hr));
