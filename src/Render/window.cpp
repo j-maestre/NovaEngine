@@ -125,6 +125,9 @@ void Window::init(const WindowProperties* props){
 	m_initialized = true;
 
 	m_window_props = std::make_shared<WindowProperties>(*props);
+	
+	ShowCursor(FALSE);
+
 	// Display window on screen
 	ShowWindow(window_handle, props->nCmdShow);
 
@@ -132,6 +135,10 @@ void Window::init(const WindowProperties* props){
 
 void Window::begin_frame(){
 	
+	if (m_input->is_key_down(Key::Keyboard::ESCAPE)) {
+		PostQuitMessage(0);
+	}
+
 	m_inmediateDeviceContext->ClearRenderTargetView(m_window_info->backbuffer, (FLOAT*) &(m_window_props->clear_color));
 	for (auto& key : m_input->m_keyboard) {
 
@@ -147,6 +154,8 @@ void Window::begin_frame(){
 
 void Window::end_frame(){
 
+	
+
 	// Switch the backbuffer and the front buffer
 	m_swapChain->Present(0,0);
 }
@@ -157,7 +166,9 @@ bool Window::update(){
 
 	bool ret = true;
 	MSG msg;
-	if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+
+
+	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) && ret) {
 		// Translate keystroke messages into the right format
 		TranslateMessage(&msg);
 		// Send message to the WinProc function
@@ -165,6 +176,7 @@ bool Window::update(){
 
 		ret = msg.message != WM_QUIT;
 	}
+	
 	return ret;
 }
 
