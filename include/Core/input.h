@@ -18,6 +18,7 @@ public:
 	~Input();
 
 	bool is_key_down(Key::Keyboard key) const;
+	bool is_key_pressed(Key::Keyboard key) const;
 	bool is_key_up(Key::Keyboard key) const;
 
 	float get_mouse_x() const;

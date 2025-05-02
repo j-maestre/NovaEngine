@@ -4,8 +4,9 @@ namespace Key {
 
     enum class KeyState {
         Down,
+        Pressed,
         Release,
-        Up
+        None,
     };
 
 	enum class Keyboard {

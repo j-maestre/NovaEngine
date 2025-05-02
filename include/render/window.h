@@ -27,7 +27,7 @@ public:
 	WindowInfo* get_window_info();
 	WindowProperties* get_window_properties();
 
-	void process_key(WPARAM param);
+	void process_key(WPARAM param, bool down = true);
 	void process_mouse(LPARAM param);
 	void process_mouse_button(Key::Mouse btn, Key::KeyState state);
 

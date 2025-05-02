@@ -22,8 +22,12 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:
 		{
-			window->process_key(wParam);
+			window->process_key(wParam, true);
 		}
+		break;
+	case WM_KEYUP:
+	case WM_SYSKEYUP:
+		window->process_key(wParam, false);
 		break;
 	case WM_MOUSEMOVE:
 		{
@@ -35,7 +39,7 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_LBUTTONUP:
-		window->process_mouse_button(Key::Mouse::LBUTTON, Key::KeyState::Up);
+		window->process_mouse_button(Key::Mouse::LBUTTON, Key::KeyState::Release);
 		return 0;
 
 	case WM_RBUTTONDOWN:
@@ -43,7 +47,7 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_RBUTTONUP:
-		window->process_mouse_button(Key::Mouse::RBUTTON, Key::KeyState::Up);
+		window->process_mouse_button(Key::Mouse::RBUTTON, Key::KeyState::Release);
 		return 0;
 		
 	return 0;
@@ -130,7 +134,14 @@ void Window::begin_frame(){
 	
 	m_inmediateDeviceContext->ClearRenderTargetView(m_window_info->backbuffer, (FLOAT*) &(m_window_props->clear_color));
 	for (auto& key : m_input->m_keyboard) {
-		key.second = Key::KeyState::Up;
+
+		switch (key.second) {
+			case Key::KeyState::Down: key.second = Key::KeyState::Pressed; break;
+			case Key::KeyState::Release: key.second = Key::KeyState::None; break;
+			default:break;
+		}
+
+		
 	}
 }
 
@@ -171,10 +182,17 @@ WindowProperties* Window::get_window_properties(){
 	return m_window_props.get();
 }
 
-void Window::process_key(WPARAM param){
+void Window::process_key(WPARAM param, bool down){
 
 	Key::Keyboard key = static_cast<Key::Keyboard>(param);
-	m_input->m_keyboard[key] = Key::KeyState::Down;
+	if (down) {
+		if (m_input->m_keyboard[key] != Key::KeyState::Pressed) {
+			m_input->m_keyboard[key] = Key::KeyState::Down;
+		}
+	}else {
+		m_input->m_keyboard[key] = Key::KeyState::Release;
+	}
+
 }
 
 void Window::process_mouse(LPARAM param){

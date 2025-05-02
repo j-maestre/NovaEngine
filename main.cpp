@@ -46,9 +46,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		std::string fps_s = std::string("FPS: ") + std::to_string(engine.get_fps());
 		//OutputDebugStringA(dt_s.c_str());
 		//OutputDebugStringA(fps_s.c_str());
-		printf("%s\n", fps_s.c_str());
+		//printf("%s\n", fps_s.c_str());
 
 		
+		if (engine.get_input()->is_key_down(Key::Keyboard::W)) {
+			printf("Down\n");
+		}
+		if (engine.get_input()->is_key_pressed(Key::Keyboard::W)) {
+			printf("Pressed\n");
+		}
+		if (engine.get_input()->is_key_up(Key::Keyboard::W)) {
+			printf("Up\n");
+		}
+
 		
 		engine.update();
 		cam.fly(engine.get_delta_time());

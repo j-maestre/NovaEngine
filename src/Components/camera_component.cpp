@@ -53,24 +53,25 @@ void CameraComponent::fly(float dt){
 	const float speed = m_speed * dt;
 
 
-	if (m_input->is_key_down(Key::Keyboard::W)) {
+	if (m_input->is_key_pressed(Key::Keyboard::W)) {
+		
 		m_position.x += forward.x * m_movement_speed * dt;
 		m_position.y += forward.y * m_movement_speed * dt;
 		m_position.z += forward.z * m_movement_speed * dt;
 	}
-	if (m_input->is_key_down(Key::Keyboard::S)) {
+	if (m_input->is_key_pressed(Key::Keyboard::S)) {
 		m_position.x -= forward.x * m_movement_speed * dt;
 		m_position.y -= forward.y * m_movement_speed * dt;
 		m_position.z -= forward.z * m_movement_speed * dt;
 	}
 	
-	if (m_input->is_key_down(Key::Keyboard::D)) {
+	if (m_input->is_key_pressed(Key::Keyboard::D)) {
 		m_position.x -= right_float.x * m_movement_speed * dt;
 		m_position.y -= right_float.y * m_movement_speed * dt;
 		m_position.z -= right_float.z * m_movement_speed * dt;
 	}
 	
-	if (m_input->is_key_down(Key::Keyboard::A)) {
+	if (m_input->is_key_pressed(Key::Keyboard::A)) {
 		m_position.x += right_float.x * m_movement_speed * dt;
 		m_position.y += right_float.y * m_movement_speed * dt;
 		m_position.z += right_float.z * m_movement_speed * dt;
