@@ -11,9 +11,14 @@ struct EngineProps;
 class Engine final {
 
 private:
+	Engine();
 
 public:
-	Engine();
+
+	static Engine* get_instance() {
+		static Engine engine;
+		return &engine;
+	}
 	Engine(Engine&&) = delete;
 	Engine(const Engine&) = delete;
 	~Engine();
@@ -26,7 +31,7 @@ public:
 	float get_fps();
 
 	void load_default_textures();
-	Texture get_default_albedo_texture();
+	Texture* get_default_albedo_texture();
 
 	const std::vector<Vertex>& get_cube();
 	const std::vector<Vertex>& get_sphere();

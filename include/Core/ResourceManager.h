@@ -20,8 +20,8 @@ public:
 	ResourceManager(ResourceManager&&);
 	~ResourceManager();
 
-	Texture load_texture(std::string path);
-	Texture get_texture(unsigned int id);
+	Texture* load_texture(std::string path);
+	Texture* get_texture(unsigned int id);
 
 private:
 

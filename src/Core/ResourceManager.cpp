@@ -21,18 +21,17 @@ ResourceManager::ResourceManager(ResourceManager&&)
 }
 
 ResourceManager::~ResourceManager(){
-
-	for (auto& t : m_textures) {
-		stbi_image_free(t.second.get_data()->pixels);
+	for (auto t : m_textures) {
+		t.second.get_data()->texture_view->Release();
 	}
 }
 
-Texture ResourceManager::load_texture(std::string path){
+Texture* ResourceManager::load_texture(std::string path){
 
 	unsigned int hash = std::hash<std::string>{}(path);
 	
 	if (m_textures.contains(hash)) {
-		return Texture(m_textures.find(hash)->first);
+		return &(m_textures.find(hash)->second);
 	}
 
 	Texture t(hash);
@@ -40,11 +39,11 @@ Texture ResourceManager::load_texture(std::string path){
 
 	stbi_set_flip_vertically_on_load_thread(1);
 	//stbi_set_flip_vertically_on_load(true);
-	data->pixels = stbi_load(path.c_str(), &data->width, &data->height, &data->channels,4);
+	unsigned char* pixels = stbi_load(path.c_str(), &data->width, &data->height, &data->channels,4);
 
-	if (!data->pixels) {
+	if (!pixels) {
 		printf("*** Error loading image %s ***\n", path.c_str());
-		return Texture();
+		return nullptr;
 	}
 
 	
@@ -59,23 +58,32 @@ Texture ResourceManager::load_texture(std::string path){
 	texture_desc.BindFlags= D3D11_BIND_SHADER_RESOURCE;
 	
 	D3D11_SUBRESOURCE_DATA init_data{};
-	init_data.pSysMem = data->pixels;
+	init_data.pSysMem = pixels;
 	init_data.SysMemPitch = data->width * 4;
 	
 	ID3D11Texture2D* texture = nullptr;
 	HRESULT hr = m_engine->get_engine_props()->deviceInterface->CreateTexture2D(&texture_desc, &init_data, &texture);
-	if (FAILED(hr)) return Texture();
+	if (FAILED(hr)) {
+		stbi_image_free(pixels);
+		return nullptr;
+	}
 	
 	data->texture_view = nullptr;
 	hr = m_engine->get_engine_props()->deviceInterface->CreateShaderResourceView(texture, nullptr, &data->texture_view);
 	texture->Release();
-	if (FAILED(hr)) return Texture();
+	if (FAILED(hr)) {
+		stbi_image_free(pixels);
+		return nullptr;
+	}
 
+	stbi_image_free(pixels);
+	
 	m_textures.insert(std::pair(hash, t));
-	return t;
+	return &(m_textures.find(t.get_id())->second);
+	
 }
 
-Texture ResourceManager::get_texture(unsigned int id){
+Texture* ResourceManager::get_texture(unsigned int id){
 
-	return m_textures.find(id)->second;
+	return &(m_textures.find(id)->second);
 }

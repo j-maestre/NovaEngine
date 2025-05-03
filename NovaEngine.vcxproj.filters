@@ -84,6 +84,9 @@
     <ClCompile Include="src\Core\Scene.cpp">
       <Filter>Archivos de recursos\src\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Render\material.cpp">
+      <Filter>Archivos de recursos\src\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\render\window.h">
@@ -130,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="include\Core\Scene.h">
       <Filter>Archivos de encabezado\include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\render\material.h">
+      <Filter>Archivos de encabezado\include\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

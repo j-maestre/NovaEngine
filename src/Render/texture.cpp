@@ -22,10 +22,34 @@ Texture::Texture(Texture&& other){
 }
 
 Texture::~Texture(){
-
 }
 
 ImageData* Texture::get_data(){
 
 	return &m_data;
+}
+
+Texture& Texture::operator=(const Texture& other){
+	if (this != &other) {
+		m_data = other.m_data;
+		m_id = other.m_id;
+	}
+
+	return *this;
+}
+
+Texture& Texture::operator=(Texture&& other){
+	
+	if (this != &other) {
+		m_data = other.m_data;
+		m_id = other.m_id;
+
+	}
+
+	return *this;
+}
+
+unsigned int Texture::get_id(){
+
+	return m_id;
 }

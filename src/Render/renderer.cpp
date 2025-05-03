@@ -134,7 +134,7 @@ void Renderer::active_shader(ShaderType type){
 	}
 }
 
-void Renderer::render_forward(EntityComponentSystem& ecs, Texture t){
+void Renderer::render_forward(EntityComponentSystem& ecs){
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetConstantBuffers(0,1,&m_pVBufferConstantCamera);
 
@@ -146,9 +146,9 @@ void Renderer::render_forward(EntityComponentSystem& ecs, Texture t){
 	cam_buffer.projection = DirectX::XMMatrixTranspose(*proj);
 	cam_buffer.camera_position = m_cam->get_position();
 	
-	auto transforms = ecs.viewComponents<TransformComponent>();
+	auto transforms = ecs.viewComponents<TransformComponent, MaterialComponent>();
 
-	for (auto [entity, trans] : transforms.each()) {
+	for (auto [entity, trans, material] : transforms.each()) {
 
 		cam_buffer.model = DirectX::XMMatrixTranspose(trans.get_transform());
 		active_shader(ShaderType::DirectionalLight);
@@ -165,12 +165,16 @@ void Renderer::render_forward(EntityComponentSystem& ecs, Texture t){
 	
 
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetSamplers(0,1,&m_sampler_state);
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0,1,&(t.m_data.texture_view));
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0,1,&(material.get_albedo()->m_data.texture_view));
 		//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m_cube_index_buffer, DXGI_FORMAT_R32_UINT, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->DrawIndexed(36, 0, 0);
 	}
+
+}
+
+void Renderer::set_cull_mode(){
 
 }
 

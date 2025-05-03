@@ -119,6 +119,7 @@ struct EngineProps {
 };
 
 
+
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 

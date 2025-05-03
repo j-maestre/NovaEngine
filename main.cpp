@@ -4,7 +4,7 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	
 	
-	Engine engine;
+	Engine* engine = Engine::get_instance();;
 	
 	Window win;
 	WindowProperties props;
@@ -19,12 +19,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	props.pos_y = 0;
 
 	win.init(&props);
-	engine.init(&win);
+	engine->init(&win);
 
 	Renderer render;
-	bool ret = render.init_pipeline(&engine);
+	bool ret = render.init_pipeline(engine);
 
-	CameraComponent cam(engine.get_input(), &win);
+	CameraComponent cam(engine->get_input(), &win);
 
 	float scale = 1.0f;
 
@@ -35,10 +35,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Entity cube = scene.m_ecs.create_entity();
 	Entity cube2 = scene.m_ecs.create_entity();
 	TransformComponent& t = scene.m_ecs.add_component<TransformComponent>(cube);
+	MaterialComponent& mat = scene.m_ecs.add_component<MaterialComponent>(cube);
+
 	t.set_position({ -2.0f, -4.0f, 10.0f });
 	t.set_scale({scale,scale,scale});
 	
 	TransformComponent& t2 = scene.m_ecs.add_component<TransformComponent>(cube2);
+	MaterialComponent& mat2 = scene.m_ecs.add_component<MaterialComponent>(cube2);
 	t2.set_position({ 2.0f, -4.0f, 10.0f });
 	t2.set_scale({scale,scale,scale});
 
@@ -53,26 +56,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			break;
 		}
 		//printf("hola");
-		std::string dt_s = std::string("DT: ") + std::to_string(engine.get_delta_time());
-		std::string fps_s = std::string("FPS: ") + std::to_string(engine.get_fps());
+		std::string dt_s = std::string("DT: ") + std::to_string(engine->get_delta_time());
+		std::string fps_s = std::string("FPS: ") + std::to_string(engine->get_fps());
 		//OutputDebugStringA(dt_s.c_str());
 		//OutputDebugStringA(fps_s.c_str());
-		//printf("%s\n", fps_s.c_str());
+		printf("%s\n", fps_s.c_str());
 
 		
-		engine.update();
-		cam.fly(engine.get_delta_time());
+		engine->update();
+		cam.fly(engine->get_delta_time());
 		cam.update();
 
 
 	
 		TransformComponent* t = scene.m_ecs.get_component<TransformComponent>(cube);
-		float dt = engine.get_delta_time() * 2.0f;
+		float dt = engine->get_delta_time() * 2.0f;
 		t->rotateXYZ(dt,dt,dt);
 
 		
 		scene.update();
-		render.render_forward(scene.m_ecs, engine.get_default_albedo_texture());
+		render.render_forward(scene.m_ecs);
 		//render.render_forward(&trans2);
 		
 		win.end_frame();
@@ -89,7 +92,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	}
 
-	engine.release();
+	engine->release();
 
 	return 0;
 }

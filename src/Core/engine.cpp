@@ -91,6 +91,8 @@ void Engine::init(Window* window){
 	HRESULT hr = m_props->deviceInterface->CreateRasterizerState(&m_raster, &m_raster_state);
 	assert(!FAILED(hr));
 	m_props->inmediateDeviceContext->RSSetState(m_raster_state);
+	
+	
 
 
 
@@ -151,13 +153,13 @@ float Engine::get_fps(){
 }
 
 void Engine::load_default_textures(){
-	Texture t = m_resource.load_texture("data/textures/jou.jpg");
-	Texture t2 = m_resource.load_texture("data/textures/kirby.png");
+	Texture* t = m_resource.load_texture("data/textures/jou.jpg");
+	Texture* t2 = m_resource.load_texture("data/textures/kirby.png");
 
-	m_default_texture_albedo = t.get_id();
+	m_default_texture_albedo = t->get_id();
 }
 
-Texture Engine::get_default_albedo_texture(){
+Texture* Engine::get_default_albedo_texture(){
 
 	return m_resource.get_texture(m_default_texture_albedo);
 }

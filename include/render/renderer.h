@@ -4,9 +4,18 @@
 #include <Core/engine.h>
 #include <components/camera_component.h>
 #include <components/transform_component.h>
+#include <render/material.h>
 #include <Core/ECS.h>
 
 class Renderer {
+
+
+	enum classCullMode {
+		Front,
+		Back,
+		Always,
+		None
+	};
 
 
 
@@ -19,7 +28,9 @@ public:
 	bool init_pipeline(Engine* engine);
 	void active_shader(ShaderType type);
 
-	void render_forward(EntityComponentSystem& ecs, Texture t);
+	void render_forward(EntityComponentSystem& ecs);
+
+	void set_cull_mode();
 
 	void upload_triangle();
 	void draw_triangle();
