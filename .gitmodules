@@ -1,3 +1,6 @@
 [submodule "deps/external/stb"]
 	path = deps/external/stb
 	url = https://github.com/nothings/stb.git
+[submodule "deps/external/entt"]
+	path = deps/external/entt
+	url = https://github.com/skypjack/entt.git
