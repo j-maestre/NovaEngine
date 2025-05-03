@@ -134,7 +134,7 @@ void Renderer::active_shader(ShaderType type){
 	}
 }
 
-void Renderer::render_forward(const TransformComponent* trans, Texture t){
+void Renderer::render_forward(EntityComponentSystem& ecs, Texture t){
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetConstantBuffers(0,1,&m_pVBufferConstantCamera);
 
@@ -144,27 +144,33 @@ void Renderer::render_forward(const TransformComponent* trans, Texture t){
 	CameraConstantBuffer cam_buffer;
 	cam_buffer.view = DirectX::XMMatrixTranspose(*view);
 	cam_buffer.projection = DirectX::XMMatrixTranspose(*proj);
-	cam_buffer.model = DirectX::XMMatrixTranspose(trans->get_transform());
 	cam_buffer.camera_position = m_cam->get_position();
-	active_shader(ShaderType::DirectionalLight);
 	
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, &cam_buffer, 0,0);
+	auto transforms = ecs.viewComponents<TransformComponent>();
 
-	// Buffer de la camara y la model del objeto subido, ahora draw cube
-	const std::vector<Vertex> cube = m_engine_ptr->get_cube();
+	for (auto [entity, trans] : transforms.each()) {
 
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBufferCube, &stride, &offset);
+		cam_buffer.model = DirectX::XMMatrixTranspose(trans.get_transform());
+		active_shader(ShaderType::DirectionalLight);
+	
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, &cam_buffer, 0,0);
+
+		// Buffer de la camara y la model del objeto subido, ahora draw cube
+		const std::vector<Vertex> cube = m_engine_ptr->get_cube();
+
+		UINT stride = sizeof(Vertex);
+		UINT offset = 0;
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBufferCube, &stride, &offset);
 
 	
 
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetSamplers(0,1,&m_sampler_state);
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0,1,&(t.m_data.texture_view));
-	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m_cube_index_buffer, DXGI_FORMAT_R32_UINT, 0);
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->DrawIndexed(36, 0, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetSamplers(0,1,&m_sampler_state);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0,1,&(t.m_data.texture_view));
+		//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m_cube_index_buffer, DXGI_FORMAT_R32_UINT, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->DrawIndexed(36, 0, 0);
+	}
 
 }
 

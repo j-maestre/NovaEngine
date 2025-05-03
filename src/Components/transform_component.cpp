@@ -60,33 +60,44 @@ void TransformComponent::force_update(){
 
 void TransformComponent::rotateX(float angle){
 	m_rotation.x += angle;
+	m_is_calculated = false;
 }
 
 void TransformComponent::rotateY(float angle){
 	m_rotation.y += angle;
+	m_is_calculated = false;
 }
 
 void TransformComponent::rotateZ(float angle){
 	m_rotation.z += angle;
+	m_is_calculated = false;
 }
 
 void TransformComponent::rotateXYZ(float x, float y, float z){
 
-	m_rotation = Vec3(x,y,z);
+	m_rotation.x += x;
+	m_rotation.y += y;
+	m_rotation.z += z;
+	m_is_calculated = false;
 }
 
 void TransformComponent::rotateXYZ(const Vec3& rotation){
-	m_rotation = rotation;
+	m_rotation.x += rotation.x;
+	m_rotation.y += rotation.y;
+	m_rotation.z += rotation.z;
+	m_is_calculated = false;
 }
 
 void TransformComponent::set_position(const Vec3& position){
 
 	m_position = position;
+	m_is_calculated = false;
 }
 
 void TransformComponent::set_scale(const Vec3& scale){
 
 	m_scale = scale;
+	m_is_calculated = false;
 }
 
 const Vec3 TransformComponent::get_position(){

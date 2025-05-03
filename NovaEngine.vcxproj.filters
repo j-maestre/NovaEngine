@@ -75,6 +75,15 @@
     <ClCompile Include="src\Render\texture.cpp">
       <Filter>Archivos de recursos\src\Render</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\entity.cpp">
+      <Filter>Archivos de recursos\src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\ECS.cpp">
+      <Filter>Archivos de recursos\src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\Scene.cpp">
+      <Filter>Archivos de recursos\src\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\render\window.h">
@@ -112,6 +121,15 @@
     </ClInclude>
     <ClInclude Include="include\render\texture.h">
       <Filter>Archivos de encabezado\include\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\entity.h">
+      <Filter>Archivos de encabezado\include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\ECS.h">
+      <Filter>Archivos de encabezado\include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Scene.h">
+      <Filter>Archivos de encabezado\include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

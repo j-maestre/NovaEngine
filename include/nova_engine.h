@@ -7,3 +7,4 @@
 #include <components/camera_component.h>
 #include <Core/input.h>
 #include <Core/keys.h>
+#include <Core/Scene.h>

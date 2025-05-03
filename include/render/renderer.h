@@ -4,6 +4,7 @@
 #include <Core/engine.h>
 #include <components/camera_component.h>
 #include <components/transform_component.h>
+#include <Core/ECS.h>
 
 class Renderer {
 
@@ -18,7 +19,7 @@ public:
 	bool init_pipeline(Engine* engine);
 	void active_shader(ShaderType type);
 
-	void render_forward(const TransformComponent* trans, Texture t);
+	void render_forward(EntityComponentSystem& ecs, Texture t);
 
 	void upload_triangle();
 	void draw_triangle();

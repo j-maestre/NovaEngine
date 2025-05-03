@@ -4,12 +4,13 @@
 class Entity {
 
 public:
-	Entity();
+	Entity(unsigned int id);
 	Entity(const Entity&);
 	Entity(Entity&&);
 	~Entity();
 
+	unsigned int get_id();
 private:
 
-	int m_id;
+	unsigned int m_id;
 };

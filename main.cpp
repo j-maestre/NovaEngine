@@ -28,11 +28,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	float scale = 1.0f;
 
-	TransformComponent trans({-2.0f, -4.0f, 10.0f}, { scale ,scale ,scale }, {0.0f, 90.0f, 0.0f});
-	TransformComponent trans2({0.0f, 0.0f, -10.0f}, { scale ,scale ,scale });
 
 	render.set_camera(&cam);
+
+	Scene scene;
+	Entity cube = scene.m_ecs.create_entity();
+	Entity cube2 = scene.m_ecs.create_entity();
+	TransformComponent& t = scene.m_ecs.add_component<TransformComponent>(cube);
+	t.set_position({ -2.0f, -4.0f, 10.0f });
+	t.set_scale({scale,scale,scale});
 	
+	TransformComponent& t2 = scene.m_ecs.add_component<TransformComponent>(cube2);
+	t2.set_position({ 2.0f, -4.0f, 10.0f });
+	t2.set_scale({scale,scale,scale});
+
+
+
 	while (true) {
 
 		win.begin_frame();
@@ -49,42 +60,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		//printf("%s\n", fps_s.c_str());
 
 		
-		if (engine.get_input()->is_key_down(Key::Keyboard::W)) {
-			printf("Down\n");
-		}
-		if (engine.get_input()->is_key_pressed(Key::Keyboard::W)) {
-			printf("Pressed\n");
-		}
-		if (engine.get_input()->is_key_up(Key::Keyboard::W)) {
-			printf("Up\n");
-		}
-
-		
 		engine.update();
 		cam.fly(engine.get_delta_time());
 		cam.update();
 
+
 	
-
-		Vec3 rotation = trans.get_rotation();
-		trans.rotateY(2.0f * engine.get_delta_time());
-		trans.rotateX(2.0f * engine.get_delta_time());
-		trans.rotateZ(2.0f * engine.get_delta_time());
-
-		Vec3 rotation2 = trans2.get_rotation();
-		//trans.rotateY(rotation.y + 5.0f * (1.0f / 5000.0f));
-		//trans2.rotateY(rotation2.y + 50.0f * engine.get_delta_time());
-
-		trans.update();
-		trans2.update();
+		TransformComponent* t = scene.m_ecs.get_component<TransformComponent>(cube);
+		float dt = engine.get_delta_time() * 2.0f;
+		t->rotateXYZ(dt,dt,dt);
 
 		
-		render.render_forward(&trans, engine.get_default_albedo_texture());
+		scene.update();
+		render.render_forward(scene.m_ecs, engine.get_default_albedo_texture());
 		//render.render_forward(&trans2);
 		
 		win.end_frame();
-		trans.force_update();
-		trans2.force_update();
 
 		/*
 		auto start = std::chrono::high_resolution_clock::now();

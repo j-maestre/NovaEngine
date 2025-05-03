@@ -33,6 +33,7 @@ public:
 
 	const Input* get_input() { return &m_input; }
 
+
 	ResourceManager m_resource;
 
 private:
@@ -57,4 +58,5 @@ private:
 	float m_delta_time;
 
 	unsigned int m_default_texture_albedo;
+
 };
