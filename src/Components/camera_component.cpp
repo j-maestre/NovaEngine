@@ -59,6 +59,8 @@ void CameraComponent::fly(float dt){
 	//glm::vec3 position = glm::make_vec3(GetPosition());
 
 	//printf("Pitch %f Yaw %f\n", m_pitch, m_yaw);
+	//printf("Direction X%f Y%f Z%f\n", DirectX::XMVectorGetX(m_direction), DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction));
+	if (m_input->is_key_pressed(Key::Keyboard::CONTROL)){
 	Vec3 forward = { DirectX::XMVectorGetX(m_direction), DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction) };
 	Vec3 up(0.0f, -1.0f, 0.0f);
 
@@ -69,45 +71,39 @@ void CameraComponent::fly(float dt){
 
 	const float speed = m_speed * dt;
 
-
-	if (m_input->is_key_pressed(Key::Keyboard::W)) {
+		if (m_input->is_key_pressed(Key::Keyboard::W)) {
 		
-		m_position.x += forward.x * m_movement_speed * dt;
-		m_position.y += forward.y * m_movement_speed * dt;
-		m_position.z += forward.z * m_movement_speed * dt;
-	}
-	if (m_input->is_key_pressed(Key::Keyboard::S)) {
-		m_position.x -= forward.x * m_movement_speed * dt;
-		m_position.y -= forward.y * m_movement_speed * dt;
-		m_position.z -= forward.z * m_movement_speed * dt;
-	}
+			m_position.x += forward.x * m_movement_speed * dt;
+			m_position.y += forward.y * m_movement_speed * dt;
+			m_position.z += forward.z * m_movement_speed * dt;
+		}
+		if (m_input->is_key_pressed(Key::Keyboard::S)) {
+			m_position.x -= forward.x * m_movement_speed * dt;
+			m_position.y -= forward.y * m_movement_speed * dt;
+			m_position.z -= forward.z * m_movement_speed * dt;
+		}
 	
-	if (m_input->is_key_pressed(Key::Keyboard::D)) {
-		m_position.x -= right_float.x * m_movement_speed * dt;
-		m_position.y -= right_float.y * m_movement_speed * dt;
-		m_position.z -= right_float.z * m_movement_speed * dt;
-	}
+		if (m_input->is_key_pressed(Key::Keyboard::D)) {
+			m_position.x -= right_float.x * m_movement_speed * dt;
+			m_position.y -= right_float.y * m_movement_speed * dt;
+			m_position.z -= right_float.z * m_movement_speed * dt;
+		}
 	
-	if (m_input->is_key_pressed(Key::Keyboard::A)) {
-		m_position.x += right_float.x * m_movement_speed * dt;
-		m_position.y += right_float.y * m_movement_speed * dt;
-		m_position.z += right_float.z * m_movement_speed * dt;
-	}
+		if (m_input->is_key_pressed(Key::Keyboard::A)) {
+			m_position.x += right_float.x * m_movement_speed * dt;
+			m_position.y += right_float.y * m_movement_speed * dt;
+			m_position.z += right_float.z * m_movement_speed * dt;
+		}
 
-	float MouseX = static_cast<float>(m_input->get_mouse_x());
-	float MouseY = static_cast<float>(m_input->get_mouse_y());
+		float MouseX = static_cast<float>(m_input->get_mouse_x());
+		float MouseY = static_cast<float>(m_input->get_mouse_y());
 
-	POINT center_tmp = { m_center_x, m_center_y };
-	POINT mouse_pos = {MouseX, MouseY};
-	ScreenToClient(m_window_handle, &mouse_pos);
-
-	
+		POINT center_tmp = { m_center_x, m_center_y };
+		POINT mouse_pos = {MouseX, MouseY};
+		ScreenToClient(m_window_handle, &mouse_pos);
 
 
-	//if (m_input->is_key_pressed(Key::Keyboard::CONTROL)){
-
-		if (m_first_move)
-		{
+		if (m_first_move){
 			if(MouseX != 0.0f && MouseY != 0.0f)m_first_move = false;
 			MouseX = center_tmp.x;
 			MouseY = center_tmp.y;
@@ -143,17 +139,17 @@ void CameraComponent::fly(float dt){
 
 		forward.x = cosf(degToRad(m_yaw)) * cosf(degToRad(m_pitch));
 		forward.y = sinf(degToRad(m_pitch));
-		forward.z = sinf(degToRad(m_yaw)) * cosf(degToRad(m_pitch));
+		forward.z = sinf(degToRad(m_yaw) * -1.0f) * cosf(degToRad(m_pitch)); // * -1.0f to fix inverted mouse direction
 
 		m_direction = DirectX::XMVector3Normalize(FVector({ forward.x, forward.y, forward.z, 0.0f}));
 		//printf("Forward: X:%f Y:%f Z:%f\n", m_direction.x, m_direction.y, m_direction.z);
-	//}
 
-	m_last_mouse_x = MouseX;
-	m_last_mouse_y = MouseY;
+		m_last_mouse_x = MouseX;
+		m_last_mouse_y = MouseY;
 
-	ClientToScreen(m_window_handle, &center_tmp);
-	SetCursorPos(center_tmp.x, center_tmp.y);
+		ClientToScreen(m_window_handle, &center_tmp);
+		SetCursorPos(center_tmp.x, center_tmp.y);
+	}
 
 }
 
@@ -174,7 +170,7 @@ void CameraComponent::update_view_matrix(){
 		
 	 
 	FVector position({ m_position.x, m_position.y, m_position.z, 1.0f });
-	FVector direction({ DirectX::XMVectorGetX(m_direction) * -1.0f, DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction), 0.0f });
+	FVector direction({ DirectX::XMVectorGetX(m_direction) * 1.0f, DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction), 0.0f });
 	FVector up({ 0.0f, 1.0f, 0.0f, 0.0f });
 
 
@@ -193,6 +189,7 @@ void CameraComponent::update_view_matrix(){
 		m_direction = DirectX::XMVector3Normalize(direction);
 		FVector eye = DirectX::XMVectorAdd(position, m_direction);
 		m_view = DirectX::XMMatrixLookAtLH(position, eye, up);
+		
 
 
 		//m_Data->ProjectionViewMatrix = m_Data->ProjectionMatrix * m_Data->ViewMatrix;
