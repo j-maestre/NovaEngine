@@ -106,7 +106,6 @@ void Engine::init(Window* window){
 	window->m_deviceInterface = m_props->deviceInterface;
 	window->m_inmediateDeviceContext = m_props->inmediateDeviceContext;
 	
-	init_geometries();
 	load_default_textures();
 }
 
@@ -161,27 +160,10 @@ Texture* Engine::get_default_albedo_texture(){
 	return m_resource.get_texture(m_default_texture_albedo);
 }
 
-const std::vector<Vertex>& Engine::get_cube(){
-	return m_geometry_cube;
-}
-
-const std::vector<Vertex>& Engine::get_sphere()
-{
-	return m_geometry_sphere;
-}
-
 void Engine::init_geometries(){
 
-	Vertex v1(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
-	Vertex v2(0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-	Vertex v3(0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
-	Vertex v4(-0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
 
-	m_geometry_cube.push_back(v1);
-	m_geometry_cube.push_back(v2);
-	m_geometry_cube.push_back(v3);
-	m_geometry_cube.push_back(v4);
-
+	m_cube_model =  m_resource.load_mesh("data/models/basics/cube.fbx");
 	// TODO: make sphere
 	
 }

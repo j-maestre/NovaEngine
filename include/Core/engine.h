@@ -35,11 +35,14 @@ public:
 	void load_default_textures();
 	Texture* get_default_albedo_texture();
 
-	const std::vector<Vertex>& get_cube();
-	const std::vector<Vertex>& get_sphere();
+	Model* get_cube() { return m_cube_model; }
+	//const std::vector<Vertex>& get_cube();
+	//const std::vector<Vertex>& get_sphere();
 
 	const Input* get_input() { return &m_input; }
 
+	// Geometry basics
+	void init_geometries();
 
 	ResourceManager m_resource;
 
@@ -56,10 +59,11 @@ private:
 	D3D11_RASTERIZER_DESC m_raster;
 	ID3D11RasterizerState* m_raster_state;
 
-	// Geometry basics
-	void init_geometries();
 	std::vector<Vertex> m_geometry_cube;
 	std::vector<Vertex> m_geometry_sphere;
+
+
+	Model* m_cube_model;
 
 	std::chrono::high_resolution_clock::time_point m_last_time;
 	float m_delta_time;

@@ -186,30 +186,35 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 	cam_buffer.projection = DirectX::XMMatrixTranspose(*proj);
 	cam_buffer.camera_position = m_cam->get_position();
 	
-	auto transforms = ecs.viewComponents<TransformComponent, MaterialComponent>();
+	auto transforms = ecs.viewComponents<TransformComponent, MaterialComponent, MeshComponent>();
 
-	for (auto [entity, trans, material] : transforms.each()) {
+	for (auto [entity, trans, material, mesh] : transforms.each()) {
 
-		cam_buffer.model = DirectX::XMMatrixTranspose(trans.get_transform());
-		active_shader(ShaderType::DirectionalLight);
+		for (Mesh m : mesh.get_model()->meshes) {
+			
+			cam_buffer.model = DirectX::XMMatrixTranspose(trans.get_transform());
+			active_shader(ShaderType::DirectionalLight);
 	
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, &cam_buffer, 0,0);
+			m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, &cam_buffer, 0,0);
 
-		// Buffer de la camara y la model del objeto subido, ahora draw cube
-		const std::vector<Vertex> cube = m_engine_ptr->get_cube();
+			// Buffer de la camara y la model del objeto subido, ahora draw cube
+			//const std::vector<Vertex> cube = m_engine_ptr->get_cube();
 
-		UINT stride = sizeof(Vertex);
-		UINT offset = 0;
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBufferCube, &stride, &offset);
+			UINT stride = sizeof(Vertex);
+			UINT offset = 0;
+			m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m.buffer, &stride, &offset);
 
 	
 
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetSamplers(0,1,&m_sampler_state);
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0,1,&(material.get_albedo()->m_data.texture_view));
-		//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m_cube_index_buffer, DXGI_FORMAT_R32_UINT, 0);
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->DrawIndexed(36, 0, 0);
+			m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetSamplers(0,1,&m_sampler_state);
+			m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0,1,&(material.get_albedo()->m_data.texture_view));
+			//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
+			m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m.index_buffer, DXGI_FORMAT_R32_UINT, 0);
+			m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			m_engine_ptr->get_engine_props()->inmediateDeviceContext->DrawIndexed(m.num_indices, 0, 0);
+		}
+
+		printf("Modeld drawed\n");
 	}
 
 }
@@ -441,6 +446,7 @@ void Renderer::upload_triangle(){
 
 	m_cube_index_buffer = nullptr;
 	HRESULT hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&m_cube_index_buffer_desc, &init_data, &m_cube_index_buffer);
+
 	CheckShaderError(hr);
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->Map(m_pVBufferCube, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms_cube);

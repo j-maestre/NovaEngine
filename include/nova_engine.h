@@ -5,6 +5,7 @@
 #include <render/renderer.h>
 #include <components/transform_component.h>
 #include <components/camera_component.h>
+#include <components/mesh_component.h>
 #include <render/material.h>
 #include <Core/input.h>
 #include <Core/keys.h>

@@ -25,6 +25,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Renderer render;
 	bool ret = render.init_pipeline(&win);
 
+	engine->init_geometries();
 
 	CameraComponent cam(engine->get_input(), &win);
 
@@ -36,17 +37,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Scene scene;
 	Entity cube = scene.m_ecs.create_entity();
 	Entity cube2 = scene.m_ecs.create_entity();
+	Entity sponza = scene.m_ecs.create_entity();
 	TransformComponent& t = scene.m_ecs.add_component<TransformComponent>(cube);
 	MaterialComponent& mat = scene.m_ecs.add_component<MaterialComponent>(cube);
+	scene.m_ecs.add_component<MeshComponent>(cube);
 
-	t.set_position({ -2.0f, -4.0f, 10.0f });
+	t.set_position({ -2.0f, 4.0f, 10.0f });
 	t.set_scale({scale,scale,scale});
 	
 	TransformComponent& t2 = scene.m_ecs.add_component<TransformComponent>(cube2);
 	MaterialComponent& mat2 = scene.m_ecs.add_component<MaterialComponent>(cube2);
-	t2.set_position({ 2.0f, -4.0f, 10.0f });
+	scene.m_ecs.add_component<MeshComponent>(cube2);
+	t2.set_position({ 2.0f, 4.0f, 10.0f });
 	t2.set_scale({scale,scale,scale});
+	
+	TransformComponent& t3 = scene.m_ecs.add_component<TransformComponent>(sponza);
+	MaterialComponent& mat3 = scene.m_ecs.add_component<MaterialComponent>(sponza);
+	MeshComponent& meshCompSponza = scene.m_ecs.add_component<MeshComponent>(sponza);
+	t3.set_position({ 0.0f, 0.0f, 0.0f });
+	t3.set_scale({0.05f,0.05f,0.05f });
 
+	Model* model = engine->m_resource.load_mesh("data/models/Sponza/Sponza.fbx", &mat3);
+	meshCompSponza.set_model(model);
 
 
 	while (true) {

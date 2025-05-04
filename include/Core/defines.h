@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #define DIRECTX11
 
 
@@ -20,6 +22,13 @@ static inline float degToRad(const float degrees) {
 static inline float radToDeg(const float radians) {
 	return radians * kfRadToDeg;
 }
+
+
+struct Vertex {
+	float pos_x, pos_y, pos_z;
+	float nrm_x, nrm_y, nrm_z;
+	float uv_x, uv_y;
+};
 
 
 #ifdef DIRECTX11
@@ -118,6 +127,21 @@ struct EngineProps {
 	D3D_FEATURE_LEVEL feature_level;
 };
 
+// TODO: Hacer una clase Mesh que tenga un Material, y el model tiene un vector de Mesh, y al cargar un fbx, cada mesh que creo le meto las texturas propias de esa mesh
+struct Mesh {
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;
+	unsigned int num_indices;
+	unsigned int num_vertices;
+	ID3D11Buffer* buffer = nullptr;
+	ID3D11Buffer* index_buffer = nullptr;
+
+	//MaterialComponent material;
+};
+
+struct Model {
+	std::vector<Mesh> meshes;
+};
 
 
 // the WindowProc function prototype
@@ -128,8 +152,3 @@ BOOL AdjustWindowRect(LPRECT lpRect, DWORD dwStyle, bool bMenu);
 
 #endif
 
-struct Vertex {
-	float pos_x, pos_y, pos_z;
-	float nrm_x, nrm_y, nrm_z;
-	float uv_x, uv_y;
-};

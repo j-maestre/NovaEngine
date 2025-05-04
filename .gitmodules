@@ -4,3 +4,9 @@
 [submodule "deps/external/entt"]
 	path = deps/external/entt
 	url = https://github.com/skypjack/entt.git
+[submodule "assimp"]
+	path = assimp
+	url = https://github.com/assimp/assimp.git
+[submodule "deps/external/assimp"]
+	path = deps/external/assimp
+	url = https://github.com/assimp/assimp.git
