@@ -41,7 +41,7 @@ void Engine::init(Window* window){
 	m_props->scd.BufferDesc.Height = SCREEN_HEIGHT;					// Backbuffer height
 	m_props->scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;		// How swap chain is going to be used
 	m_props->scd.OutputWindow = window_info->window_handle;			// The window to be used
-	m_props->scd.SampleDesc.Count = 4;								// How many multisamples (anti aliasing, TODO: maybe change to 1 or parametrize in the future) (minium 1 max 4)
+	m_props->scd.SampleDesc.Count = 1;								// How many multisamples (anti aliasing, TODO: maybe change to 1 or parametrize in the future) (minium 1 max 4)
 	m_props->scd.Windowed = TRUE;
 	m_props->scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;	// Allows full screen switching
 	//m_props->driverType = D3D_DRIVER_TYPE_HARDWARE;		// Uses advance gpu hardware for rendering	TODO: enable to check performance
@@ -70,23 +70,18 @@ void Engine::init(Window* window){
 		NULL,
 		&(m_props->inmediateDeviceContext));
 
-	// Setting the back buffer
-	ID3D11Texture2D* pBackbuffer;
-	m_props->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackbuffer);					// __uuidof gets the unique id of the COM object
-	m_props->deviceInterface->CreateRenderTargetView(pBackbuffer, NULL, &(window_info->backbuffer));
-	m_props->inmediateDeviceContext->OMSetRenderTargets(1, &(window_info->backbuffer), NULL);			// last argument is depth stencill view
 
 	// Setting rasterizer
 	ZeroMemory(&m_raster, sizeof(D3D11_RASTERIZER_DESC));
 	m_raster.CullMode = D3D11_CULL_BACK;    // Desactiva el culling
-	m_raster.FillMode = D3D11_FILL_SOLID;   // Rellenar las caras con un color s�lido
-	m_raster.FrontCounterClockwise = FALSE; // La orientaci�n de las caras frontales no cambia
+	m_raster.FillMode = D3D11_FILL_SOLID;   // Rellenar las caras con un color solido
+	m_raster.FrontCounterClockwise = FALSE; // La orientacion de las caras frontales no cambia
 	m_raster.DepthBias = 0;
 	m_raster.SlopeScaledDepthBias = 0.0f;
 	m_raster.DepthBiasClamp = 0.0f;
 	m_raster.ScissorEnable = FALSE;         // No se usa el scissor test
 	m_raster.MultisampleEnable = FALSE;     // No multisampling
-	m_raster.AntialiasedLineEnable = FALSE; // No se usan l�neas antialiasing
+	m_raster.AntialiasedLineEnable = FALSE; // No se usan lineas antialiasing
 
 	HRESULT hr = m_props->deviceInterface->CreateRasterizerState(&m_raster, &m_raster_state);
 	assert(!FAILED(hr));

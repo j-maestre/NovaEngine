@@ -22,7 +22,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	engine->init(&win);
 
 	Renderer render;
-	bool ret = render.init_pipeline(engine);
+	bool ret = render.init_pipeline(&win);
 
 	CameraComponent cam(engine->get_input(), &win);
 
@@ -60,7 +60,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		std::string fps_s = std::string("FPS: ") + std::to_string(engine->get_fps());
 		//OutputDebugStringA(dt_s.c_str());
 		//OutputDebugStringA(fps_s.c_str());
-		printf("%s\n", fps_s.c_str());
+		//6printf("%s\n", fps_s.c_str());
 
 		
 		engine->update();

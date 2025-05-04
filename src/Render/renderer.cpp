@@ -28,9 +28,10 @@ Renderer::~Renderer(){
 
 }
 
-bool Renderer::init_pipeline(Engine* engine){
+bool Renderer::init_pipeline(Window* win){
 
-	m_engine_ptr = engine;
+	m_engine_ptr = Engine::get_instance();
+	m_window = win;
 
 	bool ret;
 
@@ -54,8 +55,8 @@ bool Renderer::init_pipeline(Engine* engine){
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 
-	engine->get_engine_props()->deviceInterface->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(),NULL, &m_shader_files.VS_directional);
-	engine->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(),NULL, &m_shader_files.PS_directional);
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(),NULL, &m_shader_files.VS_directional);
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(),NULL, &m_shader_files.PS_directional);
 
 	active_shader(ShaderType::DirectionalLight);
 
@@ -76,8 +77,35 @@ bool Renderer::init_pipeline(Engine* engine){
 	m_cam_constant_buffer.ByteWidth = sizeof(CameraConstantBuffer);
 	m_cam_constant_buffer.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	m_cam_constant_buffer.CPUAccessFlags = 0;
-	engine->get_engine_props()->deviceInterface->CreateBuffer(&m_cam_constant_buffer,NULL, &m_pVBufferConstantCamera);
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&m_cam_constant_buffer,NULL, &m_pVBufferConstantCamera);
 
+
+
+	
+	D3D11_TEXTURE2D_DESC depth_desc{
+		.Width = win->get_window_properties()->width,
+		.Height = win->get_window_properties()->height,
+		.MipLevels = 1,
+		.ArraySize = 1,
+		.Format = DXGI_FORMAT_D24_UNORM_S8_UINT,
+		.SampleDesc{
+			.Count = 1
+		},
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_DEPTH_STENCIL
+	};
+	m_depth_buffer = nullptr;
+	m_depth_stencil_view = nullptr;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateTexture2D(&depth_desc, nullptr, &m_depth_buffer);
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilView(m_depth_buffer, nullptr, &m_depth_stencil_view);
+	//m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilView(m_depth_buffer, nullptr, nullptr);
+
+
+	// Setting the back buffer
+	ID3D11Texture2D* pBackbuffer;
+	m_engine_ptr->get_engine_props()->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackbuffer);									// __uuidof gets the unique id of the COM object
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateRenderTargetView(pBackbuffer, NULL, &(win->get_window_info()->backbuffer));
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &(win->get_window_info()->backbuffer), m_depth_stencil_view);	// last argument is depth stencill view
 	
 
 	// Flags table
@@ -91,6 +119,16 @@ bool Renderer::init_pipeline(Engine* engine){
 
 	/********/
 
+	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc{
+		.DepthEnable = true,
+		.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL,
+		//.DepthFunc = D3D11_COMPARISON_ALWAYS,				// TODO: Igual con multiples lights hay que cambiarlo
+		.DepthFunc = D3D11_COMPARISON_LESS,				
+	};
+	m_depth_stencil_state = nullptr;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilState(&depth_stencil_desc, &m_depth_stencil_state);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetDepthStencilState(m_depth_stencil_state,1);
+
 
 
 	// create the input layout object
@@ -100,8 +138,8 @@ bool Renderer::init_pipeline(Engine* engine){
 		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(float) * (3 * 1), D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(float) * (3 * 2) , D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
-	engine->get_engine_props()->deviceInterface->CreateInputLayout(ied,3,VS->GetBufferPointer(), VS->GetBufferSize(), &m_pLayout);
-	engine->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateInputLayout(ied,3,VS->GetBufferPointer(), VS->GetBufferSize(), &m_pLayout);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
 
 	m_sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	m_sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -112,7 +150,7 @@ bool Renderer::init_pipeline(Engine* engine){
 	m_sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 
 	m_sampler_state = nullptr;
-	engine->get_engine_props()->deviceInterface->CreateSamplerState(&m_sampler_desc, &m_sampler_state);
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateSamplerState(&m_sampler_desc, &m_sampler_state);
 	
 
 	upload_triangle();
@@ -135,6 +173,8 @@ void Renderer::active_shader(ShaderType type){
 }
 
 void Renderer::render_forward(EntityComponentSystem& ecs){
+
+	clear_depth();
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetConstantBuffers(0,1,&m_pVBufferConstantCamera);
 
@@ -440,6 +480,11 @@ void Renderer::set_camera(CameraComponent* cam){
 void Renderer::release(){
 	m_shader_files.VS_directional->Release();
 	m_shader_files.PS_directional->Release();
+}
+
+void Renderer::clear_depth(){
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearDepthStencilView(m_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->backbuffer, m_depth_stencil_view);
 }
 
 void Renderer::compile_shader(std::string path){

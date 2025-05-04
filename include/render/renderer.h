@@ -25,7 +25,7 @@ public:
 	Renderer(Renderer&&);
 	~Renderer();
 
-	bool init_pipeline(Engine* engine);
+	bool init_pipeline(Window* win);
 	void active_shader(ShaderType type);
 
 	void render_forward(EntityComponentSystem& ecs);
@@ -41,9 +41,11 @@ public:
 	void release();
 private:
 
+	void clear_depth();
 	void compile_shader(std::string path);
 	ShaderFiles m_shader_files;
 	Engine* m_engine_ptr;
+	Window* m_window;
 
 	D3D11_BUFFER_DESC m_cube_index_buffer_desc; // tmp
 	ID3D11Buffer* m_cube_index_buffer; // tmp
@@ -61,6 +63,10 @@ private:
 	
 	ID3D11SamplerState* m_sampler_state;
 	D3D11_SAMPLER_DESC m_sampler_desc;
+
+	ID3D11Texture2D* m_depth_buffer;
+	ID3D11DepthStencilView* m_depth_stencil_view;
+	ID3D11DepthStencilState* m_depth_stencil_state;
 
 
 
