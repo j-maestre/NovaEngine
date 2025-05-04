@@ -13,7 +13,7 @@ SamplerState mySampler : register(s0);
 
 float3 CalculeDirectionalLight(float3 normal, float3 view_dir, float3 color_base){
     
-    const float3 light_dir = float3(0.5,-1.0, 0.0);
+    const float3 light_dir = float3(0.0,-1.0, 1.0);
     const float specular_shininess = 32.0;
     const float specular_strenght = 0.003;
     const float3 specular_color = float3(1.0, 1.0, 1.0);
