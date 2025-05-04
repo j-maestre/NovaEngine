@@ -27,6 +27,8 @@ public:
 	void update();
 	void release();
 
+	void open_console();
+
 	float get_delta_time();
 	float get_fps();
 

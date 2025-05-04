@@ -60,6 +60,8 @@ void CameraComponent::fly(float dt){
 
 	//printf("Pitch %f Yaw %f\n", m_pitch, m_yaw);
 	//printf("Direction X%f Y%f Z%f\n", DirectX::XMVectorGetX(m_direction), DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction));
+	ShowCursor(TRUE);
+
 	if (m_input->is_key_pressed(Key::Keyboard::CONTROL) || m_first_move){
 
 		Vec3 forward = { DirectX::XMVectorGetX(m_direction), DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction) };
@@ -115,6 +117,8 @@ void CameraComponent::fly(float dt){
 			//m_Pitch = asin(forward.y / forward.length());
 			//m_Yaw = asin(forward.x / (cos(m_Pitch) * forward.length()));
 			
+		}else {
+			ShowCursor(FALSE);
 		}
 
 		//float OffsetX = MouseX - m_last_mouse_x;
@@ -152,6 +156,7 @@ void CameraComponent::fly(float dt){
 		ClientToScreen(m_window_handle, &center_tmp);
 		SetCursorPos(center_tmp.x, center_tmp.y);
 	}
+	
 
 }
 

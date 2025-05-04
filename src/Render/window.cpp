@@ -125,8 +125,6 @@ void Window::init(const WindowProperties* props){
 	m_initialized = true;
 
 	m_window_props = std::make_shared<WindowProperties>(*props);
-	
-	ShowCursor(FALSE);
 
 	// Display window on screen
 	ShowWindow(window_handle, props->nCmdShow);

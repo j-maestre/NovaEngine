@@ -18,11 +18,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	props.pos_x = 0;
 	props.pos_y = 0;
 
+	engine->open_console();
 	win.init(&props);
 	engine->init(&win);
 
 	Renderer render;
 	bool ret = render.init_pipeline(&win);
+
 
 	CameraComponent cam(engine->get_input(), &win);
 

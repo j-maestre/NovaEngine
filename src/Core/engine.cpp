@@ -105,14 +105,6 @@ void Engine::init(Window* window){
 	window->m_swapChain = m_props->swapChain;
 	window->m_deviceInterface = m_props->deviceInterface;
 	window->m_inmediateDeviceContext = m_props->inmediateDeviceContext;
-
-	// Open console
-	AllocConsole(); // Crea una nueva consola
-	FILE* file;
-	freopen_s(&file, "CONOUT$", "w", stdout); // Redirige stdout a la consola
-	freopen_s(&file, "CONOUT$", "w", stderr); // Redirige stderr a la consola
-	freopen_s(&file, "CONIN$", "r", stdin);   // Redirige stdin a la consola
-	printf("\n*** Console opened succesfully ***\n");
 	
 	init_geometries();
 	load_default_textures();
@@ -135,6 +127,16 @@ void Engine::release(){
 	m_props->deviceInterface->Release();
 	m_props->inmediateDeviceContext->Release();
 
+}
+
+void Engine::open_console(){
+	// Open console
+	AllocConsole(); // Crea una nueva consola
+	FILE* file;
+	freopen_s(&file, "CONOUT$", "w", stdout); // Redirige stdout a la consola
+	freopen_s(&file, "CONOUT$", "w", stderr); // Redirige stderr a la consola
+	freopen_s(&file, "CONIN$", "r", stdin);   // Redirige stdin a la consola
+	printf("\n*** Console opened succesfully ***\n");
 }
 
 float Engine::get_delta_time(){
