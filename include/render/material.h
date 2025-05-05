@@ -1,10 +1,9 @@
 #pragma once
 #include "Core/defines.h"
 #include "render/texture.h"
-#include "Core/engine.h"
+
 
 class MaterialComponent {
-
 
 public:
 	MaterialComponent();

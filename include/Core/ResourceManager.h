@@ -11,10 +11,7 @@
 
 class Engine;
 
-
-
 class ResourceManager {
-
 
 private:
 	ResourceManager();
@@ -29,7 +26,8 @@ public:
 	Texture* load_texture(std::string path);
 	Texture* get_texture(unsigned int id);
 
-	Model* load_mesh(std::string path, MaterialComponent* material = nullptr);
+	Model* load_mesh(std::string path);
+	//Model* load_mesh(std::string path, MaterialComponent* material = nullptr);
 
 private:
 

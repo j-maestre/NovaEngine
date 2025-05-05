@@ -96,7 +96,7 @@ Texture* ResourceManager::get_texture(unsigned int id){
 	return &(m_textures.find(id)->second);
 }
 
-Model* ResourceManager::load_mesh(std::string path, MaterialComponent* material){
+Model* ResourceManager::load_mesh(std::string path){
 
 	unsigned int hash = std::hash<std::string>{}(path);
 	

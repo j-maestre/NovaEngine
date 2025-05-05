@@ -1,4 +1,5 @@
 #include "render/material.h"
+#include "Core/engine.h"
 
 MaterialComponent::MaterialComponent(){
 

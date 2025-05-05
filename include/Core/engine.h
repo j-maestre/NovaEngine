@@ -36,6 +36,9 @@ public:
 	Texture* get_default_albedo_texture();
 
 	Model* get_cube() { return m_cube_model; }
+	Model* get_sphere() { return m_sphere_model; }
+	Model* get_sphere_medium() { return m_sphere_medium_model; }
+	Model* get_sphere_high() { return m_sphere_high_model; }
 	//const std::vector<Vertex>& get_cube();
 	//const std::vector<Vertex>& get_sphere();
 
@@ -50,8 +53,8 @@ private:
 
 	Input m_input;
 
-	friend class Renderer;
 	friend class ResourceManager;
+	friend class Renderer;
 	inline std::shared_ptr<EngineProps> get_engine_props() { return m_props; }
 
 	std::shared_ptr<EngineProps> m_props;
@@ -64,6 +67,9 @@ private:
 
 
 	Model* m_cube_model;
+	Model* m_sphere_model;
+	Model* m_sphere_medium_model;
+	Model* m_sphere_high_model;
 
 	std::chrono::high_resolution_clock::time_point m_last_time;
 	float m_delta_time;

@@ -213,8 +213,6 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 			m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			m_engine_ptr->get_engine_props()->inmediateDeviceContext->DrawIndexed(m.num_indices, 0, 0);
 		}
-
-		printf("Modeld drawed\n");
 	}
 
 }
