@@ -37,6 +37,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Scene scene;
 	Entity cube = scene.m_ecs.create_entity();
 	Entity cube2 = scene.m_ecs.create_entity();
+	Entity cone = scene.m_ecs.create_entity();
 	Entity sponza = scene.m_ecs.create_entity();
 	TransformComponent& t = scene.m_ecs.add_component<TransformComponent>(cube);
 	MaterialComponent& mat = scene.m_ecs.add_component<MaterialComponent>(cube);
@@ -51,6 +52,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	sphere.set_model(engine->get_sphere());
 	t2.set_position({ 2.0f, 4.0f, 5.0f });
 	t2.set_scale({scale,scale,scale});
+	
+	TransformComponent& tcone = scene.m_ecs.add_component<TransformComponent>(cone);
+	MaterialComponent& mat_cone = scene.m_ecs.add_component<MaterialComponent>(cone);
+	MeshComponent& mesh_cone = scene.m_ecs.add_component<MeshComponent>(cone);
+	mesh_cone.set_model(engine->get_cone_high());
+	tcone.set_position({ 2.0f, 4.0f, 0.0f });
+	tcone.set_scale({scale,scale,scale});
+
+
 	
 	TransformComponent& t3 = scene.m_ecs.add_component<TransformComponent>(sponza);
 	MaterialComponent& mat3 = scene.m_ecs.add_component<MaterialComponent>(sponza);

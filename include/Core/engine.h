@@ -36,6 +36,8 @@ public:
 	Texture* get_default_albedo_texture();
 
 	Model* get_cube() { return m_cube_model; }
+	Model* get_cone() { return m_cone_model; }
+	Model* get_cone_high() { return m_cone_high_model; }
 	Model* get_sphere() { return m_sphere_model; }
 	Model* get_sphere_medium() { return m_sphere_medium_model; }
 	Model* get_sphere_high() { return m_sphere_high_model; }
@@ -67,6 +69,8 @@ private:
 
 
 	Model* m_cube_model;
+	Model* m_cone_model;
+	Model* m_cone_high_model;
 	Model* m_sphere_model;
 	Model* m_sphere_medium_model;
 	Model* m_sphere_high_model;

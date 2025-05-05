@@ -164,6 +164,8 @@ void Engine::init_geometries(){
 
 
 	m_cube_model =  m_resource.load_mesh("data/models/basics/cube.fbx");
+	m_cone_model =  m_resource.load_mesh("data/models/basics/cone.fbx");
+	m_cone_high_model =  m_resource.load_mesh("data/models/basics/cone_high.fbx");
 	m_sphere_model = m_resource.load_mesh("data/models/basics/sphere.fbx");
 	m_sphere_medium_model = m_resource.load_mesh("data/models/basics/sphere_medium_resolution.fbx");
 	m_sphere_high_model = m_resource.load_mesh("data/models/basics/sphere_high_resolution.fbx");
