@@ -56,7 +56,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	TransformComponent& tcone = scene.m_ecs.add_component<TransformComponent>(cone);
 	MaterialComponent& mat_cone = scene.m_ecs.add_component<MaterialComponent>(cone);
 	MeshComponent& mesh_cone = scene.m_ecs.add_component<MeshComponent>(cone);
-	mesh_cone.set_model(engine->get_cone_high());
+	mesh_cone.set_model(engine->get_cylinder_high());
 	tcone.set_position({ 2.0f, 4.0f, 0.0f });
 	tcone.set_scale({scale,scale,scale});
 
