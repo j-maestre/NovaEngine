@@ -5,7 +5,6 @@
 #include "memory"
 
 
-
 class MeshComponent {
 
 public:
@@ -17,6 +16,9 @@ public:
 
 	void set_model(Model* model);
 	inline Model* get_model() { return m_model; }
+
+	// Set the same material to all sub meshes of a fbx
+	void add_material(MaterialComponent* mat);
 
 private:
 	

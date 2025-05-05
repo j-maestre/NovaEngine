@@ -153,6 +153,9 @@ void Engine::load_default_textures(){
 	Texture* t2 = m_resource.load_texture("data/textures/kirby.png");
 
 	m_default_texture_albedo = t->get_id();
+	m_texture_tmp = t2->get_id();
+
+	m_default_material.set_texture_albedo(t);
 }
 
 Texture* Engine::get_default_albedo_texture(){
@@ -171,6 +174,22 @@ void Engine::init_geometries(){
 	m_sphere_model = m_resource.load_mesh("data/models/basics/sphere.fbx");
 	m_sphere_medium_model = m_resource.load_mesh("data/models/basics/sphere_medium_resolution.fbx");
 	m_sphere_high_model = m_resource.load_mesh("data/models/basics/sphere_high_resolution.fbx");
+
+	std::vector<Model*> tmp = { m_cube_model , m_cylinder_model, m_cylinder_high_model,m_cone_model,m_cone_high_model,m_sphere_model,m_sphere_medium_model,m_sphere_high_model };
+	
+	for (auto& model : tmp) {
+
+		for (auto& mesh : model->meshes) {
+			mesh.material = m_default_material;
+		}
+	}
+	
+	for (Mesh& mesh : m_cylinder_high_model->meshes) {
+		mesh.material.set_texture_albedo(m_resource.get_texture(m_texture_tmp));
+	}
+	
+
+
 	// TODO: make sphere
 	
 }

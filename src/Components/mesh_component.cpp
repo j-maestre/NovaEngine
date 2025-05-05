@@ -3,6 +3,7 @@
 
 MeshComponent::MeshComponent(){
 	m_model = Engine::get_instance()->get_cube();
+	add_material(Engine::get_instance()->get_default_material());
 }
 
 MeshComponent::MeshComponent(Model* model){
@@ -23,4 +24,10 @@ MeshComponent::~MeshComponent()
 
 void MeshComponent::set_model(Model* model){
 	m_model = model;
+}
+
+void MeshComponent::add_material(MaterialComponent* mat){
+	for (auto meshes : m_model->meshes) {
+		meshes.material = *mat;
+	}
 }

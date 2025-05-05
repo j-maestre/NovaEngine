@@ -8,6 +8,7 @@
 #include "assimp/scene.h"
 #include "assimp/postprocess.h"
 #include "render/material.h"
+#include "Core/mesh.h"
 
 class Engine;
 
@@ -31,8 +32,8 @@ public:
 
 private:
 
-	void ProcessNode(Model* mesh, aiNode* node, const aiScene* scene);
-	void ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene* scene);
+	void ProcessNode(Model* mesh, aiNode* node, const aiScene* scene, std::string absolute_path);
+	void ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene* scene, std::string absolute_path);
 
 	std::unordered_map<unsigned int, Texture> m_textures;
 	std::unordered_map<unsigned int, Model> m_models;

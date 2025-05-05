@@ -24,6 +24,7 @@ ResourceManager::ResourceManager(ResourceManager&&)
 ResourceManager::~ResourceManager(){
 	for (auto t : m_textures) {
 		t.second.get_data()->texture_view->Release();
+		t.second.get_data()->texture->Release();
 	}
 
 	for (auto model : m_models) {
@@ -42,8 +43,8 @@ Texture* ResourceManager::load_texture(std::string path){
 		return &(m_textures.find(hash)->second);
 	}
 
-	Texture t(hash);
-	ImageData* data = t.get_data();
+	Texture texture_class(hash);
+	ImageData* data = texture_class.get_data();
 
 	//stbi_set_flip_vertically_on_load_thread(1);
 	//stbi_set_flip_vertically_on_load(true);
@@ -69,16 +70,17 @@ Texture* ResourceManager::load_texture(std::string path){
 	init_data.pSysMem = pixels;
 	init_data.SysMemPitch = data->width * 4;
 	
-	ID3D11Texture2D* texture = nullptr;
-	HRESULT hr = m_engine->get_engine_props()->deviceInterface->CreateTexture2D(&texture_desc, &init_data, &texture);
+	
+	
+	HRESULT hr = m_engine->get_engine_props()->deviceInterface->CreateTexture2D(&texture_desc, &init_data, &data->texture);
 	if (FAILED(hr)) {
 		stbi_image_free(pixels);
 		return nullptr;
 	}
 	
 	data->texture_view = nullptr;
-	hr = m_engine->get_engine_props()->deviceInterface->CreateShaderResourceView(texture, nullptr, &data->texture_view);
-	texture->Release();
+	hr = m_engine->get_engine_props()->deviceInterface->CreateShaderResourceView(data->texture, nullptr, &data->texture_view);
+	//texture->Release();
 	if (FAILED(hr)) {
 		stbi_image_free(pixels);
 		return nullptr;
@@ -86,8 +88,8 @@ Texture* ResourceManager::load_texture(std::string path){
 
 	stbi_image_free(pixels);
 	
-	m_textures.insert(std::pair(hash, t));
-	return &(m_textures.find(t.get_id())->second);
+	m_textures.insert(std::pair(hash, texture_class));
+	return &(m_textures.find(texture_class.get_id())->second);
 	
 }
 
@@ -119,11 +121,22 @@ Model* ResourceManager::load_mesh(std::string path){
 		return nullptr;
 	}
 
+	std::string full_path = path;
+	char c;
+	bool interrupt = false;
+	do {
+		c = full_path.back();
+		if (c != '/') {
+			full_path.pop_back();
+		}
+		else { interrupt = true; }
+	} while (interrupt == false);
+
 
 	aiNode* rootNode = scene->mRootNode;
 
 	Model model;
-	ProcessNode(&model, rootNode, scene);
+	ProcessNode(&model, rootNode, scene, full_path);
 
 	// Create buffer
 
@@ -169,26 +182,26 @@ Model* ResourceManager::load_mesh(std::string path){
 
 }
 
-void ResourceManager::ProcessNode(Model* model, aiNode* node, const aiScene* scene){
+void ResourceManager::ProcessNode(Model* model, aiNode* node, const aiScene* scene, std::string absolute_path){
 
 	// Process all node's meshes
 	for (unsigned int i = 0; i < node->mNumMeshes; ++i) {
 
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		Mesh mesh_tmp;
-		ProcessMesh(&mesh_tmp, mesh, scene);
+		ProcessMesh(&mesh_tmp, mesh, scene, absolute_path);
 		model->meshes.push_back(std::move(mesh_tmp));
 		// TODO: Peta aqui, y es porque se esta llamano al destructor de Mesh y al destructor de la sce_texture, hay que moverlo y que no se llame al destructor de texture
 	}
 
 	for (unsigned int i = 0; i < node->mNumChildren; i++) {
-		ProcessNode(std::move(model), node->mChildren[i], scene);
+		ProcessNode(std::move(model), node->mChildren[i], scene, absolute_path);
 	}
 
 
 }
 
-void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene* scene){
+void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene* scene, std::string absolute_path){
 
 
 
@@ -219,10 +232,14 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 
 	mesh->num_indices = mesh->indices.size();
 
-	/*
+	mesh->material = *(m_engine->get_default_material());
+
+	//mesh->material = nullptr;
 	
 	// MaterialIndex is the index of the own material in the global material array
 	if (assimp_mesh->mMaterialIndex >= 0) {
+		
+		//mesh->material = new MaterialComponent;
 
 		//Tyro::Texture tex;
 
@@ -233,37 +250,35 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 		aiColor4D color;
 		if (aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &color) == AI_SUCCESS) {
 			//mesh_processed->m_material.set_color(color.r, color.g, color.b, color.a);
-			mesh_processed->m_material.set_color(1.0f, 0.0f, 0.0f, 1.0f);
+			//model->m_material.set_color(1.0f, 0.0f, 0.0f, 1.0f);
 		}
 
 		// Get diffuse color
 		aiString texturePath;
 		if (material->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == AI_SUCCESS) {
 
-			Tyro::Texture diffuse_tex;
-			diffuse_tex.m_textureName = "diffuse";
+			Texture diffuse_tex;
+			//diffuse_tex.m_textureName = "diffuse";
 
-			std::string tmp(texturePath.C_Str());
-			NormalizePath(tmp);
-			RemoveAbsolute(tmp);
-			std::string real_path = tmp + std::string(".gnf");
-
-			// load gnf image
-			std::string complete_path(m_fbx_full_path + real_path);
-			unsigned int id = LoadTexture(complete_path.c_str());
-			mesh_processed->m_material.add_texture("diffuse", id);
-			//TyroError ret = loadGNFTexture(complete_path.c_str(), &diffuse_tex);
-			//mesh_processed->m_material.add_texture(std::move(diffuse_tex));
+			std::string tmp(absolute_path + texturePath.C_Str());
+			
+			Texture* t = load_texture(tmp);
+			mesh->material.set_texture_albedo(t);
+			
 
 		}
 
+
+
 		texturePath.Clear();
 
+		/*
 		if (material->GetTexture(aiTextureType_UNKNOWN, 0, &texturePath) == AI_SUCCESS) {
 			Tyro::Texture diffuse_tex;
 			diffuse_tex.m_textureName = "unknow";
 
 		}
+		
 
 		// Get normal texture
 		if (material->GetTexture(aiTextureType_NORMALS, 0, &texturePath) == AI_SUCCESS) {
@@ -333,57 +348,8 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 			mesh_processed->m_material.add_texture("ambient_oclusion", id);
 		}
 
+		*/
+
 	}
-
-
-	sce::Agc::SizeAlign vertexSizeAlign((sizeof(Vertex) * mesh->mNumVertices), sce::Agc::Alignment::kBuffer);
-	sce::Agc::SizeAlign indexSizeAlign((sizeof(uint32_t) * mesh_processed->m_num_indices), sce::Agc::Alignment::kBuffer);
-
-	mesh_processed->m_model.m_verticies = (Vertex*)allocateDirectMemory(vertexSizeAlign);
-	mesh_processed->m_model.m_indicies = (uint32_t*)allocateDirectMemory(indexSizeAlign);
-	mesh_processed->m_model.m_indexCount = mesh_processed->m_num_indices;
-	mesh_processed->m_model.m_vertexCount = mesh_processed->m_num_vertices;
-
-	// Copying vertices and indices into vtable
-	for (unsigned int i = 0; i < mesh_processed->m_vertices.size(); i++) {
-		mesh_processed->m_model.m_verticies[i] = mesh_processed->m_vertices[i];
-	}
-
-	for (unsigned int i = 0; i < mesh_processed->m_indices.size(); i++) {
-		mesh_processed->m_model.m_indicies[i] = mesh_processed->m_indices[i];
-	}
-
-
-	//mesh_processed.m_vertices.clear();
-	//mesh_processed.m_indices.clear();
-
-	// Uploading vertices into vTable
-
-	// Format of the vertex positions
-	sce::Agc::Core::DataFormat dataFormat = {
-		sce::Agc::Core::TypedFormat::k32_32_32Float,	// 3x 32-bits float
-		sce::Agc::Core::Swizzle::kXYZ1_R3S34			// Order of the data (X, Y, Z)
-	};
-
-	// Stride between vertex positions
-	uint32_t stride = sizeof(Vertex);
-
-	sce::Agc::Core::BufferSpec vertBufSpec;
-	vertBufSpec.initAsVertexBuffer(mesh_processed->m_model.m_verticies, dataFormat, stride, mesh_processed->m_model.m_vertexCount);
-
-	// Init buffer for vertex positions
-	sce::Agc::Core::initialize(&(mesh_processed->m_model.vbTable[0]), &vertBufSpec);
-	// Init buffer for normals
-	sce::Agc::Core::initialize(&(mesh_processed->m_model.vbTable[1]), &vertBufSpec);
-
-	// Change format and swizzle for uv's
-	dataFormat.m_format = sce::Agc::Core::TypedFormat::k32_32Float;
-	dataFormat.m_swizzle = sce::Agc::Core::Swizzle::kXY00_S24;
-
-	// Create new buffer spec for uv
-	vertBufSpec.initAsVertexBuffer(mesh_processed->m_model.m_verticies, dataFormat, stride, mesh_processed->m_model.m_vertexCount);
-
-	sce::Agc::Core::initialize(&(mesh_processed->m_model.vbTable[2]), &vertBufSpec);
-	*/
 
 }

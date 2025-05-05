@@ -11,6 +11,9 @@ public:
 	MaterialComponent(MaterialComponent&&);
 	~MaterialComponent();
 
+	MaterialComponent& operator=(const MaterialComponent&);
+	MaterialComponent& operator=(MaterialComponent&&);
+
 	void set_texture_albedo(Texture* t) { m_texture_albedo = t; }
 
 	inline Texture* get_albedo() { return m_texture_albedo; }

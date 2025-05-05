@@ -12,13 +12,14 @@ struct ImageData {
 	int height;
 	int channels;
 	ID3D11ShaderResourceView* texture_view;
+	ID3D11Texture2D* texture;
 
 	ImageData() {
 		width = 0;
 		height = 0;
 		channels = 0;
-		texture_view = 0;
-
+		texture_view = nullptr;
+		texture = nullptr;
 	}
 
 	~ImageData() {
@@ -30,6 +31,7 @@ struct ImageData {
 		height = other.height;
 		channels = other.channels;
 		texture_view = other.texture_view;
+		texture = other.texture;
 	}
 
 	ImageData(ImageData&& other) noexcept {
@@ -37,8 +39,9 @@ struct ImageData {
 		height = other.height;
 		channels = other.channels;
 		texture_view = other.texture_view;
+		texture = other.texture;
 
-
+		other.texture = nullptr;
 		other.texture_view = nullptr;
 	}
 
@@ -49,7 +52,9 @@ struct ImageData {
 			height = other.height;
 			channels = other.channels;
 			texture_view = other.texture_view;
+			texture = other.texture;
 
+			other.texture = nullptr;
 			other.texture_view = nullptr;
 		}
 
@@ -63,6 +68,7 @@ struct ImageData {
 			height = other.height;
 			channels = other.channels;
 			texture_view = other.texture_view;
+			texture = other.texture;
 		}
 
 		return *this;

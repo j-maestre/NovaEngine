@@ -186,9 +186,9 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 	cam_buffer.projection = DirectX::XMMatrixTranspose(*proj);
 	cam_buffer.camera_position = m_cam->get_position();
 	
-	auto transforms = ecs.viewComponents<TransformComponent, MaterialComponent, MeshComponent>();
+	auto transforms = ecs.viewComponents<TransformComponent, MeshComponent>();
 
-	for (auto [entity, trans, material, mesh] : transforms.each()) {
+	for (auto [entity, trans, mesh] : transforms.each()) {
 
 		for (Mesh m : mesh.get_model()->meshes) {
 			
@@ -207,7 +207,7 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 	
 
 			m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetSamplers(0,1,&m_sampler_state);
-			m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0,1,&(material.get_albedo()->m_data.texture_view));
+			m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0,1,&(m.material.get_albedo()->m_data.texture_view));
 			//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
 			m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m.index_buffer, DXGI_FORMAT_R32_UINT, 0);
 			m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

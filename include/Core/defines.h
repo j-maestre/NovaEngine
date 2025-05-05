@@ -127,7 +127,9 @@ struct EngineProps {
 	D3D_FEATURE_LEVEL feature_level;
 };
 
-// TODO: Hacer una clase Mesh que tenga un Material, y el model tiene un vector de Mesh, y al cargar un fbx, cada mesh que creo le meto las texturas propias de esa mesh
+
+/*
+class MaterialComponent;
 struct Mesh {
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
@@ -136,12 +138,12 @@ struct Mesh {
 	ID3D11Buffer* buffer = nullptr;
 	ID3D11Buffer* index_buffer = nullptr;
 
-	//MaterialComponent material;
+	MaterialComponent material;
+	
 };
+*/
 
-struct Model {
-	std::vector<Mesh> meshes;
-};
+
 
 
 // the WindowProc function prototype

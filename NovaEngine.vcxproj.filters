@@ -90,6 +90,9 @@
     <ClCompile Include="src\Components\mesh_component.cpp">
       <Filter>Archivos de recursos\src\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\mesh.cpp">
+      <Filter>Archivos de recursos\src\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\render\window.h">
@@ -142,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="include\components\mesh_component.h">
       <Filter>Archivos de encabezado\include\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\mesh.h">
+      <Filter>Archivos de encabezado\include\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

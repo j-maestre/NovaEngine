@@ -162,6 +162,7 @@
     <ClCompile Include="src\Core\entity.cpp" />
     <ClCompile Include="src\Core\game_object.cpp" />
     <ClCompile Include="src\Core\input.cpp" />
+    <ClCompile Include="src\Core\mesh.cpp" />
     <ClCompile Include="src\Core\ResourceManager.cpp" />
     <ClCompile Include="src\Core\Scene.cpp" />
     <ClCompile Include="src\Render\material.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="include\Core\game_object.h" />
     <ClInclude Include="include\Core\input.h" />
     <ClInclude Include="include\Core\keys.h" />
+    <ClInclude Include="include\Core\mesh.h" />
     <ClInclude Include="include\Core\ResourceManager.h" />
     <ClInclude Include="include\Core\Scene.h" />
     <ClInclude Include="include\nova_engine.h" />
