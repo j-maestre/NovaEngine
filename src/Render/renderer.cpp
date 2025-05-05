@@ -190,7 +190,7 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 
 	for (auto [entity, trans, mesh] : transforms.each()) {
 
-		for (Mesh m : mesh.get_model()->meshes) {
+		for (Mesh& m : mesh.get_model()->meshes) {
 			
 			cam_buffer.model = DirectX::XMMatrixTranspose(trans.get_transform());
 			active_shader(ShaderType::DirectionalLight);

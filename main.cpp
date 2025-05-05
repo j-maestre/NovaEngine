@@ -40,7 +40,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Entity cone = scene.m_ecs.create_entity();
 	Entity sponza = scene.m_ecs.create_entity();
 	TransformComponent& t = scene.m_ecs.add_component<TransformComponent>(cube);
-	//MaterialComponent& mat = scene.m_ecs.add_component<MaterialComponent>(cube);
 	auto& mesh = scene.m_ecs.add_component<MeshComponent>(cube);
 	//mesh.add_material();
 
@@ -48,29 +47,25 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	t.set_scale({scale,scale,scale});
 	
 	TransformComponent& t2 = scene.m_ecs.add_component<TransformComponent>(cube2);
-	//MaterialComponent& mat2 = scene.m_ecs.add_component<MaterialComponent>(cube2);
 	//MeshComponent& sphere = scene.m_ecs.add_component<MeshComponent>(cube2);
 	//sphere.set_model(engine->get_sphere());
 	t2.set_position({ 2.0f, 4.0f, 5.0f });
 	t2.set_scale({scale,scale,scale});
 	
 	TransformComponent& tcone = scene.m_ecs.add_component<TransformComponent>(cone);
-	//MaterialComponent& mat_cone = scene.m_ecs.add_component<MaterialComponent>(cone);
 	MeshComponent& mesh_cone = scene.m_ecs.add_component<MeshComponent>(cone);
 	mesh_cone.set_model(engine->get_cylinder_high());
 	tcone.set_position({ 2.0f, 4.0f, 0.0f });
 	tcone.set_scale({scale,scale,scale});
-
-
 	
 	TransformComponent& t3 = scene.m_ecs.add_component<TransformComponent>(sponza);
-	//MaterialComponent& mat3 = scene.m_ecs.add_component<MaterialComponent>(sponza);
 	MeshComponent& meshCompSponza = scene.m_ecs.add_component<MeshComponent>(sponza);
 	t3.set_position({ 0.0f, 0.0f, 0.0f });
 	t3.set_scale({scale, scale, scale });
 
 	Model* model = engine->m_resource.load_mesh("data/models/Sponza/Sponza_new.fbx");
 	meshCompSponza.set_model(model);
+
 
 
 	while (true) {
