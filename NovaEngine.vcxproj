@@ -145,11 +145,11 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3dcompiler.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3dcompiler.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x64;C:\Users\Xema\source\repos\NovaEngine\deps\external\assimp\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(SolutionDir)deps\external\assimp\bin\Release\assimp-vc143-mtd.dll" "$(OutDir)"</Command>
+      <Command>copy /Y "$(SolutionDir)deps\external\assimp\bin\Release\assimp-vc143-mt.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -165,6 +165,7 @@
     <ClCompile Include="src\Core\mesh.cpp" />
     <ClCompile Include="src\Core\ResourceManager.cpp" />
     <ClCompile Include="src\Core\Scene.cpp" />
+    <ClCompile Include="src\Render\Lights\Light.cpp" />
     <ClCompile Include="src\Render\material.cpp" />
     <ClCompile Include="src\Render\renderer.cpp" />
     <ClCompile Include="src\Render\texture.cpp" />
@@ -185,6 +186,7 @@
     <ClInclude Include="include\Core\ResourceManager.h" />
     <ClInclude Include="include\Core\Scene.h" />
     <ClInclude Include="include\nova_engine.h" />
+    <ClInclude Include="include\render\Lights\Light.h" />
     <ClInclude Include="include\render\material.h" />
     <ClInclude Include="include\render\renderer.h" />
     <ClInclude Include="include\render\texture.h" />
