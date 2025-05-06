@@ -57,6 +57,8 @@ private:
 	D3D11_BUFFER_DESC m_cam_constant_buffer;
 	ID3D11Buffer* m_pVBufferConstantCamera;
 
+	ID3D11Buffer* m_pVBufferLight;
+
 	ID3D11Buffer* m_pVBuffer;
 	ID3D11Buffer* m_pVBufferCube;
 

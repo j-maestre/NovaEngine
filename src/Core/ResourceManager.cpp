@@ -239,9 +239,6 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 	// MaterialIndex is the index of the own material in the global material array
 	if (assimp_mesh->mMaterialIndex >= 0) {
 		
-		//mesh->material = new MaterialComponent;
-
-		//Tyro::Texture tex;
 
 		const aiMaterial* material = scene->mMaterials[assimp_mesh->mMaterialIndex];
 		//tex.m_textureName = material->GetName().C_Str();
@@ -279,76 +276,56 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 
 		}
 		
+		*/
 
 		// Get normal texture
 		if (material->GetTexture(aiTextureType_NORMALS, 0, &texturePath) == AI_SUCCESS) {
 
-			Tyro::Texture diffuse_tex;
-			diffuse_tex.m_textureName = "normals";
+			Texture diffuse_tex;
+			//diffuse_tex.m_textureName = "diffuse";
 
-			std::string tmp(texturePath.C_Str());
-			NormalizePath(tmp);
-			RemoveAbsolute(tmp);
-			std::string real_path = tmp + std::string(".gnf");
+			std::string tmp(absolute_path + texturePath.C_Str());
 
-			// load gnf image
-			std::string complete_path(m_fbx_full_path + real_path);
-			unsigned int id = LoadTexture(complete_path.c_str());
-			mesh_processed->m_material.add_texture("normals", id);
+			Texture* t = load_texture(tmp);
+			mesh->material.set_texture_albedo(t);
 		}
 
+		
 		// Get metallic texture
 		if (material->GetTexture(aiTextureType_METALNESS, 0, &texturePath) == AI_SUCCESS) {
 
-			Tyro::Texture diffuse_tex;
-			diffuse_tex.m_textureName = "metal";
+			Texture diffuse_tex;
+			//diffuse_tex.m_textureName = "diffuse";
 
-			std::string tmp(texturePath.C_Str());
-			NormalizePath(tmp);
-			RemoveAbsolute(tmp);
-			std::string real_path = tmp + std::string(".gnf");
+			std::string tmp(absolute_path + texturePath.C_Str());
 
-			// load gnf image
-			std::string complete_path(m_fbx_full_path + real_path);
-			unsigned int id = LoadTexture(complete_path.c_str());
-			mesh_processed->m_material.add_texture("metal", id);
+			Texture* t = load_texture(tmp);
+			mesh->material.set_texture_albedo(t);
 		}
 
 		// Get roughness texture
 		if (material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &texturePath) == AI_SUCCESS) {
 
-			Tyro::Texture diffuse_tex;
-			diffuse_tex.m_textureName = "roughness";
+			Texture diffuse_tex;
+			//diffuse_tex.m_textureName = "diffuse";
 
-			std::string tmp(texturePath.C_Str());
-			NormalizePath(tmp);
-			RemoveAbsolute(tmp);
-			std::string real_path = tmp + std::string(".gnf");
+			std::string tmp(absolute_path + texturePath.C_Str());
 
-			// load gnf image
-			std::string complete_path(m_fbx_full_path + real_path);
-			unsigned int id = LoadTexture(complete_path.c_str());
-			mesh_processed->m_material.add_texture("roughness", id);
+			Texture* t = load_texture(tmp);
+			mesh->material.set_texture_albedo(t);
 		}
 
 		// Get ambient oclusion texture
 		if (material->GetTexture(aiTextureType_AMBIENT_OCCLUSION, 0, &texturePath) == AI_SUCCESS) {
 
-			Tyro::Texture diffuse_tex;
-			diffuse_tex.m_textureName = "ambient_oclusion";
+			Texture diffuse_tex;
+			//diffuse_tex.m_textureName = "diffuse";
 
-			std::string tmp(texturePath.C_Str());
-			NormalizePath(tmp);
-			RemoveAbsolute(tmp);
-			std::string real_path = tmp + std::string(".gnf");
+			std::string tmp(absolute_path + texturePath.C_Str());
 
-			// load gnf image
-			std::string complete_path(m_fbx_full_path + real_path);
-			unsigned int id = LoadTexture(complete_path.c_str());
-			mesh_processed->m_material.add_texture("ambient_oclusion", id);
+			Texture* t = load_texture(tmp);
+			mesh->material.set_texture_albedo(t);
 		}
-
-		*/
 
 	}
 

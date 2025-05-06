@@ -26,7 +26,7 @@ void MeshComponent::set_model(Model* model){
 	m_model = model;
 }
 
-void MeshComponent::set_material(MaterialComponent mat){
+void MeshComponent::set_material(Material mat){
 	for (auto& meshes : m_model->meshes) {
 		meshes.material = mat;
 	}

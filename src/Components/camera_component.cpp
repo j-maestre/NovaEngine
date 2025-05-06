@@ -175,6 +175,14 @@ void CameraComponent::update_view_matrix(){
 
 		//m_Data->MustRecalculeView = false;
 		
+	/*
+		m_inverseViewMatrix = glm::translate(glm::mat4(1), m_position) * glm::mat4_cast(glm::quat(m_rotation));
+		m_viewMatrix = glm::inverse(m_inverseViewMatrix);
+		m_right = glm::vec3(m_inverseViewMatrix[0]);
+		m_up = glm::vec3(m_inverseViewMatrix[1]);
+		m_forward = glm::vec3(-m_inverseViewMatrix[2]);
+	*/
+		
 	 
 		FVector position({ m_position.x, m_position.y, m_position.z, 1.0f });
 		FVector direction({ DirectX::XMVectorGetX(m_direction) * 1.0f, DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction), 0.0f });

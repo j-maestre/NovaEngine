@@ -3,16 +3,16 @@
 #include "render/texture.h"
 
 
-class MaterialComponent {
+class Material {
 
 public:
-	MaterialComponent();
-	MaterialComponent(const MaterialComponent&);
-	MaterialComponent(MaterialComponent&&);
-	~MaterialComponent();
+	Material();
+	Material(const Material&);
+	Material(Material&&);
+	~Material();
 
-	MaterialComponent& operator=(const MaterialComponent&);
-	MaterialComponent& operator=(MaterialComponent&&);
+	Material& operator=(const Material&);
+	Material& operator=(Material&&);
 
 	void set_texture_albedo(Texture* t) { m_texture_albedo = t; }
 

@@ -127,25 +127,6 @@ struct EngineProps {
 	D3D_FEATURE_LEVEL feature_level;
 };
 
-
-/*
-class MaterialComponent;
-struct Mesh {
-	std::vector<Vertex> vertices;
-	std::vector<unsigned int> indices;
-	unsigned int num_indices;
-	unsigned int num_vertices;
-	ID3D11Buffer* buffer = nullptr;
-	ID3D11Buffer* index_buffer = nullptr;
-
-	MaterialComponent material;
-	
-};
-*/
-
-
-
-
 // the WindowProc function prototype
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 

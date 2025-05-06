@@ -17,7 +17,7 @@ public:
 	ID3D11Buffer* buffer = nullptr;
 	ID3D11Buffer* index_buffer = nullptr;
 
-	MaterialComponent material;
+	Material material;
 
 private:
 

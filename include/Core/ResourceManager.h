@@ -28,7 +28,6 @@ public:
 	Texture* get_texture(unsigned int id);
 
 	Model* load_mesh(std::string path);
-	//Model* load_mesh(std::string path, MaterialComponent* material = nullptr);
 
 private:
 

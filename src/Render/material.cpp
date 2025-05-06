@@ -1,14 +1,14 @@
 #include "render/material.h"
 #include "Core/engine.h"
 
-MaterialComponent::MaterialComponent(){
+Material::Material(){
 
 	//Engine* e = Engine::get_instance();
 
 	//set_texture_albedo(e->get_default_albedo_texture());
 }
 
-MaterialComponent::MaterialComponent(const MaterialComponent& other){
+Material::Material(const Material& other){
 
 	m_texture_albedo = other.m_texture_albedo;
 	m_texture_ao = other.m_texture_ao;
@@ -17,7 +17,7 @@ MaterialComponent::MaterialComponent(const MaterialComponent& other){
 	m_texture_specular = other.m_texture_specular;
 }
 
-MaterialComponent::MaterialComponent(MaterialComponent&& other){
+Material::Material(Material&& other){
 	m_texture_albedo = other.m_texture_albedo;
 	m_texture_ao = other.m_texture_ao;
 	m_texture_metallic = other.m_texture_metallic;
@@ -31,11 +31,11 @@ MaterialComponent::MaterialComponent(MaterialComponent&& other){
 	other.m_texture_specular = nullptr;
 }
 
-MaterialComponent::~MaterialComponent()
+Material::~Material()
 {
 }
 
-MaterialComponent& MaterialComponent::operator=(const MaterialComponent& other){
+Material& Material::operator=(const Material& other){
 
 	if (this != &other) {
 		m_texture_albedo = other.m_texture_albedo;
@@ -48,7 +48,7 @@ MaterialComponent& MaterialComponent::operator=(const MaterialComponent& other){
 	return *this;
 }
 
-MaterialComponent& MaterialComponent::operator=(MaterialComponent&& other){
+Material& Material::operator=(Material&& other){
 
 	if (this != &other) {
 		m_texture_albedo = other.m_texture_albedo;

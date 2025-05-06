@@ -84,14 +84,14 @@
     <ClCompile Include="src\Core\Scene.cpp">
       <Filter>Archivos de recursos\src\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Render\material.cpp">
-      <Filter>Archivos de recursos\src\Core</Filter>
-    </ClCompile>
     <ClCompile Include="src\Components\mesh_component.cpp">
       <Filter>Archivos de recursos\src\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\mesh.cpp">
       <Filter>Archivos de recursos\src\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\material.cpp">
+      <Filter>Archivos de recursos\src\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

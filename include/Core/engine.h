@@ -32,7 +32,7 @@ public:
 	float get_delta_time();
 	float get_fps();
 
-	MaterialComponent* get_default_material() {return &m_default_material;}
+	Material* get_default_material() {return &m_default_material;}
 
 	void load_default_textures();
 	Texture* get_default_albedo_texture();
@@ -81,7 +81,7 @@ private:
 	Model* m_sphere_medium_model;
 	Model* m_sphere_high_model;
 
-	MaterialComponent m_default_material;
+	Material m_default_material;
 
 	std::chrono::high_resolution_clock::time_point m_last_time;
 	float m_delta_time;
