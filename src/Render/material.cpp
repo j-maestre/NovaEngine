@@ -11,6 +11,7 @@ Material::Material(){
 Material::Material(const Material& other){
 
 	m_texture_albedo = other.m_texture_albedo;
+	m_texture_normal = other.m_texture_normal;
 	m_texture_ao = other.m_texture_ao;
 	m_texture_metallic = other.m_texture_metallic;
 	m_texture_roughness = other.m_texture_roughness;
@@ -19,12 +20,14 @@ Material::Material(const Material& other){
 
 Material::Material(Material&& other){
 	m_texture_albedo = other.m_texture_albedo;
+	m_texture_normal = other.m_texture_normal;
 	m_texture_ao = other.m_texture_ao;
 	m_texture_metallic = other.m_texture_metallic;
 	m_texture_roughness = other.m_texture_roughness;
 	m_texture_specular = other.m_texture_specular;
 
 	other.m_texture_albedo = nullptr;
+	other.m_texture_normal = nullptr;
 	other.m_texture_ao = nullptr;
 	other.m_texture_metallic = nullptr;
 	other.m_texture_roughness = nullptr;
@@ -39,6 +42,7 @@ Material& Material::operator=(const Material& other){
 
 	if (this != &other) {
 		m_texture_albedo = other.m_texture_albedo;
+		m_texture_normal = other.m_texture_normal;
 		m_texture_ao = other.m_texture_ao;
 		m_texture_metallic = other.m_texture_metallic;
 		m_texture_roughness = other.m_texture_roughness;
@@ -52,12 +56,14 @@ Material& Material::operator=(Material&& other){
 
 	if (this != &other) {
 		m_texture_albedo = other.m_texture_albedo;
+		m_texture_normal = other.m_texture_normal;
 		m_texture_ao = other.m_texture_ao;
 		m_texture_metallic = other.m_texture_metallic;
 		m_texture_roughness = other.m_texture_roughness;
 		m_texture_specular = other.m_texture_specular;
 
 		other.m_texture_albedo = nullptr;
+		other.m_texture_normal = nullptr;
 		other.m_texture_ao = nullptr;
 		other.m_texture_metallic = nullptr;
 		other.m_texture_roughness = nullptr;
