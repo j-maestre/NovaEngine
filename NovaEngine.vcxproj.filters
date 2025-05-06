@@ -43,10 +43,10 @@
     <Filter Include="Archivos de recursos\src\Components">
       <UniqueIdentifier>{025b138c-fd13-4878-8d5e-053ac5c6c8cc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Archivos de recursos\src\Render\Lights">
+    <Filter Include="Archivos de recursos\src\Components\Lights">
       <UniqueIdentifier>{e61d327f-6f12-4c7a-8bd1-02ae5d75c4cd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Archivos de encabezado\include\Render\Light">
+    <Filter Include="Archivos de encabezado\include\Components\Light">
       <UniqueIdentifier>{f36cdb9e-f149-4ef7-9b31-fd49c1bd299c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -99,8 +99,17 @@
     <ClCompile Include="src\Render\material.cpp">
       <Filter>Archivos de recursos\src\Render</Filter>
     </ClCompile>
-    <ClCompile Include="src\Render\Lights\Light.cpp">
-      <Filter>Archivos de recursos\src\Render\Lights</Filter>
+    <ClCompile Include="src\Components\Lights\DirectionalLight.cpp">
+      <Filter>Archivos de recursos\src\Components\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Components\Lights\Light.cpp">
+      <Filter>Archivos de recursos\src\Components\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Components\Lights\PointLight.cpp">
+      <Filter>Archivos de recursos\src\Components\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Components\Lights\SpotLight.cpp">
+      <Filter>Archivos de recursos\src\Components\Lights</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,8 +167,17 @@
     <ClInclude Include="include\Core\mesh.h">
       <Filter>Archivos de encabezado\include\Core</Filter>
     </ClInclude>
-    <ClInclude Include="include\render\Lights\Light.h">
-      <Filter>Archivos de encabezado\include\Render\Light</Filter>
+    <ClInclude Include="include\components\Lights\DirectionalLight.h">
+      <Filter>Archivos de encabezado\include\Components\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="include\components\Lights\Light.h">
+      <Filter>Archivos de encabezado\include\Components\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="include\components\Lights\PointLight.h">
+      <Filter>Archivos de encabezado\include\Components\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="include\components\Lights\SpotLight.h">
+      <Filter>Archivos de encabezado\include\Components\Light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

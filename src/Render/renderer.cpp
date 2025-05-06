@@ -187,31 +187,38 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 	cam_buffer.camera_position = m_cam->get_position();
 	
 	auto transforms = ecs.viewComponents<TransformComponent, MeshComponent>();
+	auto directional_light = ecs.viewComponents<DirectionalLight>();
 
-	for (auto [entity, trans, mesh] : transforms.each()) {
+	for (auto [entity, directional] : directional_light.each()) {
 
-		for (Mesh& m : mesh.get_model()->meshes) {
+		directional.update();
+		directional.upload_data();
+
+
+		for (auto [entity, trans, mesh] : transforms.each()) {
+			for (Mesh& m : mesh.get_model()->meshes) {
 			
-			cam_buffer.model = DirectX::XMMatrixTranspose(trans.get_transform());
-			active_shader(ShaderType::DirectionalLight);
+				cam_buffer.model = DirectX::XMMatrixTranspose(trans.get_transform());
+				active_shader(ShaderType::DirectionalLight);
 	
-			m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, &cam_buffer, 0,0);
+				m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, &cam_buffer, 0,0);
 
-			// Buffer de la camara y la model del objeto subido, ahora draw cube
-			//const std::vector<Vertex> cube = m_engine_ptr->get_cube();
+				// Buffer de la camara y la model del objeto subido, ahora draw cube
+				//const std::vector<Vertex> cube = m_engine_ptr->get_cube();
 
-			UINT stride = sizeof(Vertex);
-			UINT offset = 0;
-			m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m.buffer, &stride, &offset);
+				UINT stride = sizeof(Vertex);
+				UINT offset = 0;
+				m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m.buffer, &stride, &offset);
 
 	
 
-			m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetSamplers(0,1,&m_sampler_state);
-			m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0,1,&(m.material.get_albedo()->m_data.texture_view));
-			//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
-			m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m.index_buffer, DXGI_FORMAT_R32_UINT, 0);
-			m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			m_engine_ptr->get_engine_props()->inmediateDeviceContext->DrawIndexed(m.num_indices, 0, 0);
+				m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetSamplers(0,1,&m_sampler_state);
+				m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0,1,&(m.material.get_albedo()->m_data.texture_view));
+				//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
+				m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m.index_buffer, DXGI_FORMAT_R32_UINT, 0);
+				m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				m_engine_ptr->get_engine_props()->inmediateDeviceContext->DrawIndexed(m.num_indices, 0, 0);
+			}
 		}
 	}
 

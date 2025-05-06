@@ -155,6 +155,10 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Components\camera_component.cpp" />
+    <ClCompile Include="src\Components\Lights\DirectionalLight.cpp" />
+    <ClCompile Include="src\Components\Lights\Light.cpp" />
+    <ClCompile Include="src\Components\Lights\PointLight.cpp" />
+    <ClCompile Include="src\Components\Lights\SpotLight.cpp" />
     <ClCompile Include="src\Components\mesh_component.cpp" />
     <ClCompile Include="src\Components\transform_component.cpp" />
     <ClCompile Include="src\Core\ECS.cpp" />
@@ -165,7 +169,6 @@
     <ClCompile Include="src\Core\mesh.cpp" />
     <ClCompile Include="src\Core\ResourceManager.cpp" />
     <ClCompile Include="src\Core\Scene.cpp" />
-    <ClCompile Include="src\Render\Lights\Light.cpp" />
     <ClCompile Include="src\Render\material.cpp" />
     <ClCompile Include="src\Render\renderer.cpp" />
     <ClCompile Include="src\Render\texture.cpp" />
@@ -173,6 +176,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\components\camera_component.h" />
+    <ClInclude Include="include\components\Lights\DirectionalLight.h" />
+    <ClInclude Include="include\components\Lights\Light.h" />
+    <ClInclude Include="include\components\Lights\PointLight.h" />
+    <ClInclude Include="include\components\Lights\SpotLight.h" />
     <ClInclude Include="include\components\mesh_component.h" />
     <ClInclude Include="include\components\transform_component.h" />
     <ClInclude Include="include\Core\defines.h" />
@@ -186,7 +193,6 @@
     <ClInclude Include="include\Core\ResourceManager.h" />
     <ClInclude Include="include\Core\Scene.h" />
     <ClInclude Include="include\nova_engine.h" />
-    <ClInclude Include="include\render\Lights\Light.h" />
     <ClInclude Include="include\render\material.h" />
     <ClInclude Include="include\render\renderer.h" />
     <ClInclude Include="include\render\texture.h" />

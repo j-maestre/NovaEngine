@@ -5,6 +5,10 @@
 #include <vector>
 #include <chrono>
 #include "Core/ResourceManager.h"
+#include "components/Lights/Light.h"
+#include "components/Lights/DirectionalLight.h"
+#include "components/Lights/SpotLight.h"
+#include "components/Lights/PointLight.h"
 
 struct EngineProps;
 
@@ -29,8 +33,10 @@ public:
 
 	void open_console();
 
+
 	float get_delta_time();
 	float get_fps();
+	float get_time();
 
 	Material* get_default_material() {return &m_default_material;}
 
@@ -61,6 +67,10 @@ private:
 
 	friend class ResourceManager;
 	friend class Renderer;
+	friend class Light;
+	friend class DirectionalLight;
+	friend class SpotLight;
+	friend class PointLight;
 	inline std::shared_ptr<EngineProps> get_engine_props() { return m_props; }
 
 	std::shared_ptr<EngineProps> m_props;
@@ -85,6 +95,7 @@ private:
 
 	std::chrono::high_resolution_clock::time_point m_last_time;
 	float m_delta_time;
+	float m_time;
 
 	unsigned int m_default_texture_albedo;
 	unsigned int m_texture_tmp;

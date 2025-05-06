@@ -1,4 +1,4 @@
-#include "render/Lights/Light.h"
+#include "components/Lights/Light.h"
 
 Light::Light() : m_view(), m_projection(), m_view_projection(){
 
@@ -32,6 +32,7 @@ Light::~Light(){
 void Light::update(){
 
 	if (m_is_calculated) return;
+	/*
 
 	FVector position({ m_position.x, m_position.y, m_position.z, 1.0f });
 	FVector direction({ m_direction.x, m_direction.y, m_direction.z, 0.0f });
@@ -57,6 +58,7 @@ void Light::update(){
 	
 	m_view_projection = m_view * m_projection;
 
+	*/
 	m_is_calculated = true;
 
 }

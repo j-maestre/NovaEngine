@@ -9,7 +9,7 @@ Engine::Engine() : m_props(std::make_shared<EngineProps>()), m_input(), m_resour
 
 	m_resource.set_engine(this);
 	m_last_time = std::chrono::high_resolution_clock::now();
-	
+	m_time = 0.0f;
 }
 
 /*
@@ -86,10 +86,6 @@ void Engine::init(Window* window){
 	HRESULT hr = m_props->deviceInterface->CreateRasterizerState(&m_raster, &m_raster_state);
 	assert(!FAILED(hr));
 	m_props->inmediateDeviceContext->RSSetState(m_raster_state);
-	
-	
-
-
 
 	// Setting the viewport
 	WindowProperties* win_props = window->get_window_properties();
@@ -118,6 +114,7 @@ void Engine::update(){
 	std::chrono::duration<float> delta = currentTime - m_last_time;
 	m_last_time = currentTime;
 	m_delta_time = delta.count();
+	m_time += m_delta_time;
 }
 
 void Engine::release(){
@@ -146,6 +143,11 @@ float Engine::get_delta_time(){
 float Engine::get_fps(){
 
 	return 1.0f / m_delta_time;
+}
+
+float Engine::get_time(){
+
+	return m_time;
 }
 
 void Engine::load_default_textures(){

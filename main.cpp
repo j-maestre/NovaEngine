@@ -66,7 +66,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Model* model = engine->m_resource.load_mesh("data/models/Sponza/Sponza_new.fbx");
 	meshCompSponza.set_model(model);
 
-
+	Entity directional_light = scene.m_ecs.create_entity();
+	auto& light = scene.m_ecs.add_component<DirectionalLight>(directional_light);
+	light.set_color({1.0f, 1.0f, 1.0f});
 
 	while (true) {
 
@@ -89,7 +91,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		cam.update();
 
 
-	
+		DirectionalLight* dir_light_component = scene.m_ecs.get_component<DirectionalLight>(directional_light);
+		dir_light_component->set_direction({ 0.5f,-1.0f, 1.0f });
+
 		TransformComponent* t = scene.m_ecs.get_component<TransformComponent>(cube);
 		float dt = engine->get_delta_time() * 2.0f;
 		t->rotateXYZ(dt,dt,dt);

@@ -92,6 +92,7 @@ struct CameraConstantBuffer {
 	Vec3 camera_position;
 };
 
+
 struct Color {
 	float rgba[4];
 };

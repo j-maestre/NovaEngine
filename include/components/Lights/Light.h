@@ -19,6 +19,8 @@ public:
 
 	void set_aspect_ratio(float value);
 
+	virtual void upload_data() = 0;
+
 protected:
 
 	float m_aspect_ratio;
