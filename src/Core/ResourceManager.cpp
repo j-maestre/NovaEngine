@@ -287,7 +287,7 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 			std::string tmp(absolute_path + texturePath.C_Str());
 
 			Texture* t = load_texture(tmp);
-			mesh->material.set_texture_albedo(t);
+			mesh->material.set_texture_normal(t);
 		}
 
 		

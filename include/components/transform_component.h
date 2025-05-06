@@ -37,12 +37,12 @@ public:
 	const Vec3 get_up_vector();
 
 
-	const Mat4 get_transform() const;
-	const Mat4 get_inverse_transform() const;
+	const Mat4 get_transform();
+	const Mat4 get_inverse_transform();
 
 private:
 
-
+	// Model matrix
 	Mat4 m_transform;
 	Mat4 m_inverse_transform;
 

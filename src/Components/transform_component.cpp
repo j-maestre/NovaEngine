@@ -130,10 +130,12 @@ const Vec3 TransformComponent::get_up_vector()
 	return Vec3();
 }
 
-const Mat4 TransformComponent::get_transform() const {
+const Mat4 TransformComponent::get_transform() {
+	update();
 	return m_transform;
 }
 
-const Mat4 TransformComponent::get_inverse_transform() const {
+const Mat4 TransformComponent::get_inverse_transform() {
+	update();
 	return m_inverse_transform;
 }
