@@ -49,6 +49,18 @@
     <Filter Include="Archivos de encabezado\include\Components\Light">
       <UniqueIdentifier>{f36cdb9e-f149-4ef7-9b31-fd49c1bd299c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\include\Render\imgui">
+      <UniqueIdentifier>{1c6c8e2a-3af9-421c-a0bc-9164146cf185}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de recursos\src\Render\imgui">
+      <UniqueIdentifier>{526095e6-87d1-4a70-889f-38224d318e4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="deps">
+      <UniqueIdentifier>{15e38f08-4403-4491-a359-3a02dbaac4df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="deps\imgui">
+      <UniqueIdentifier>{44965bbc-5c17-4e40-a3e0-66f7c50ed842}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -110,6 +122,30 @@
     </ClCompile>
     <ClCompile Include="src\Components\Lights\SpotLight.cpp">
       <Filter>Archivos de recursos\src\Components\Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Render\imgui\imgui_manager.cpp">
+      <Filter>Archivos de recursos\src\Render\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="deps\external\imgui\imgui.cpp">
+      <Filter>deps\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="deps\external\imgui\imgui_demo.cpp">
+      <Filter>deps\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="deps\external\imgui\imgui_draw.cpp">
+      <Filter>deps\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="deps\external\imgui\imgui_tables.cpp">
+      <Filter>deps\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="deps\external\imgui\imgui_widgets.cpp">
+      <Filter>deps\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="deps\external\imgui\backends\imgui_impl_dx11.cpp">
+      <Filter>deps\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="deps\external\imgui\backends\imgui_impl_win32.cpp">
+      <Filter>deps\imgui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="include\components\Lights\SpotLight.h">
       <Filter>Archivos de encabezado\include\Components\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="include\render\imgui\imgui_manager.h">
+      <Filter>Archivos de encabezado\include\Render\imgui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

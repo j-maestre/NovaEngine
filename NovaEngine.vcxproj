@@ -116,7 +116,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>Yes</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)deps\external\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)deps\external\assimp\include;$(SolutionDir)deps\external\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -138,7 +138,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>Yes</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)deps\external\assimp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)deps\external\assimp\include;$(SolutionDir)deps\external\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -153,6 +153,13 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="deps\external\imgui\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="deps\external\imgui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="deps\external\imgui\imgui.cpp" />
+    <ClCompile Include="deps\external\imgui\imgui_demo.cpp" />
+    <ClCompile Include="deps\external\imgui\imgui_draw.cpp" />
+    <ClCompile Include="deps\external\imgui\imgui_tables.cpp" />
+    <ClCompile Include="deps\external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Components\camera_component.cpp" />
     <ClCompile Include="src\Components\Lights\DirectionalLight.cpp" />
@@ -169,6 +176,7 @@
     <ClCompile Include="src\Core\mesh.cpp" />
     <ClCompile Include="src\Core\ResourceManager.cpp" />
     <ClCompile Include="src\Core\Scene.cpp" />
+    <ClCompile Include="src\Render\imgui\imgui_manager.cpp" />
     <ClCompile Include="src\Render\material.cpp" />
     <ClCompile Include="src\Render\renderer.cpp" />
     <ClCompile Include="src\Render\texture.cpp" />
@@ -193,6 +201,7 @@
     <ClInclude Include="include\Core\ResourceManager.h" />
     <ClInclude Include="include\Core\Scene.h" />
     <ClInclude Include="include\nova_engine.h" />
+    <ClInclude Include="include\render\imgui\imgui_manager.h" />
     <ClInclude Include="include\render\material.h" />
     <ClInclude Include="include\render\renderer.h" />
     <ClInclude Include="include\render\texture.h" />

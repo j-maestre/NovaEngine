@@ -10,3 +10,6 @@
 [submodule "deps/external/assimp"]
 	path = deps/external/assimp
 	url = https://github.com/assimp/assimp.git
+[submodule "deps/external/imgui"]
+	path = deps/external/imgui
+	url = https://github.com/ocornut/imgui.git

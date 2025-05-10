@@ -9,8 +9,10 @@
 #include "components/Lights/DirectionalLight.h"
 #include "components/Lights/SpotLight.h"
 #include "components/Lights/PointLight.h"
+#include "render/imgui/imgui_manager.h"
 
 struct EngineProps;
+
 
 class Engine final {
 
@@ -71,7 +73,11 @@ private:
 	friend class DirectionalLight;
 	friend class SpotLight;
 	friend class PointLight;
+	friend class ImguiManager;
 	inline std::shared_ptr<EngineProps> get_engine_props() { return m_props; }
+
+
+
 
 	std::shared_ptr<EngineProps> m_props;
 	D3D11_VIEWPORT m_viewport;

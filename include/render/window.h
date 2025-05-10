@@ -8,6 +8,7 @@ struct WindowProperties;
 struct IDXGISwapChain;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
+class ImguiManager;
 
 class Window {
 
@@ -18,6 +19,7 @@ public:
 	~Window();
 
 	void init(const WindowProperties* props);
+	void init_imgui();
 	void begin_frame();
 	void end_frame();
 	bool update();
@@ -36,6 +38,7 @@ public:
 private:
 
 	Input* m_input;
+	ImguiManager* m_imgui;
 
 	// Render stuff
 	IDXGISwapChain* m_swapChain;

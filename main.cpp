@@ -24,6 +24,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Renderer render;
 	bool ret = render.init_pipeline(&win);
+	win.init_imgui();
 
 	engine->init_geometries();
 
@@ -83,7 +84,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		std::string fps_s = std::string("FPS: ") + std::to_string(engine->get_fps());
 		//OutputDebugStringA(dt_s.c_str());
 		//OutputDebugStringA(fps_s.c_str());
-		printf("%s\n", fps_s.c_str());
+		//printf("%s\n", fps_s.c_str());
 
 		
 		engine->update();

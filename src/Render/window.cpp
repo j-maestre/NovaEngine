@@ -3,11 +3,20 @@
 #include "Core/defines.h"
 #include "Core/input.h"
 #include "Windows.h"
-
+#include "render/imgui/imgui_manager.h" 
+#include "imgui.h"
+#include "imgui/backends/imgui_impl_win32.h"
 
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(handle, GWLP_USERDATA));
+
+	/*
+
+	if (ImGui_ImplWin32_WndProcHandler(handle, msg, wParam, lParam)) {
+		return true;
+	}
+	*/
 
 	switch (msg) {
 	case WM_DESTROY:
@@ -62,6 +71,7 @@ Window::Window() : m_window_info(){
 	m_swapChain = nullptr;
 	m_deviceInterface = nullptr;
 	m_inmediateDeviceContext = nullptr;
+	m_imgui = ImguiManager::get_instance();
 }
 
 Window::Window(Window&& other) : m_window_info(other.m_window_info){
@@ -126,9 +136,15 @@ void Window::init(const WindowProperties* props){
 
 	m_window_props = std::make_shared<WindowProperties>(*props);
 
+
 	// Display window on screen
 	ShowWindow(window_handle, props->nCmdShow);
 
+}
+
+void Window::init_imgui(){
+
+	m_imgui->init(m_window_info->window_handle);
 }
 
 void Window::begin_frame(){
@@ -145,9 +161,10 @@ void Window::begin_frame(){
 			case Key::KeyState::Release: key.second = Key::KeyState::None; break;
 			default:break;
 		}
-
 		
 	}
+
+	m_imgui->begin_frame();
 }
 
 void Window::end_frame(){
@@ -155,6 +172,7 @@ void Window::end_frame(){
 	
 
 	// Switch the backbuffer and the front buffer
+	m_imgui->end_frame();
 	m_swapChain->Present(0,0);
 }
 
@@ -166,6 +184,7 @@ bool Window::update(){
 	MSG msg;
 
 
+
 	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) && ret) {
 		// Translate keystroke messages into the right format
 		TranslateMessage(&msg);
@@ -175,6 +194,7 @@ bool Window::update(){
 		ret = msg.message != WM_QUIT;
 	}
 	
+	m_imgui->show_demo_window();
 	return ret;
 }
 
