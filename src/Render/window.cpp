@@ -7,16 +7,18 @@
 #include "imgui.h"
 #include "imgui/backends/imgui_impl_win32.h"
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam) {
 
 	Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(handle, GWLP_USERDATA));
 
 	/*
+	*/
 
 	if (ImGui_ImplWin32_WndProcHandler(handle, msg, wParam, lParam)) {
 		return true;
 	}
-	*/
 
 	switch (msg) {
 	case WM_DESTROY:
