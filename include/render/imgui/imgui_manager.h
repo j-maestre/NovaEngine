@@ -1,5 +1,8 @@
 #pragma once
 #define IMGUI_IMPL_WIN32
+#define IMGUI_ENABLE_VIEWPORTS
+#define IMGUI_HAS_DOCK
+#define IMGUI_ENABLE_DOCKING
 
 #include "Core/defines.h"
 #include "imgui.h"
@@ -28,9 +31,15 @@ public:
 	void end_frame();
 	void render();
 
+	void resize(HWND hwnd, unsigned int width, unsigned int height);
+
 	void show_demo_window();
 
 private:
 	friend class Window;
 	void init(HWND handle);
+
+	void main_menu();
+
+	ImGuiViewport* m_viewport;
 };
