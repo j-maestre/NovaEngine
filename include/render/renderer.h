@@ -44,12 +44,17 @@ private:
 
 	void clear_depth();
 	void compile_shader(std::string path);
+	void resize(unsigned int width, unsigned int height);
+	friend class Window;
+
 	ShaderFiles m_shader_files;
 	Engine* m_engine_ptr;
 	Window* m_window;
 
 	D3D11_BUFFER_DESC m_cube_index_buffer_desc; // tmp
 	ID3D11Buffer* m_cube_index_buffer; // tmp
+
+	ID3D11Texture2D* m_backbuffer_texture;
 
 	D3D11_BUFFER_DESC m_buffer_description;
 	D3D11_BUFFER_DESC m_buffer_description_cube;

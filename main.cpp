@@ -71,6 +71,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	auto& light = scene.m_ecs.add_component<DirectionalLight>(directional_light);
 	light.set_color({1.0f, 1.0f, 1.0f});
 
+	//win.set_full_screen();
+
 	while (true) {
 
 		win.begin_frame();
@@ -97,7 +99,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		TransformComponent* t = scene.m_ecs.get_component<TransformComponent>(cube);
 		float dt = engine->get_delta_time() * 2.0f;
-		t->rotateXYZ(dt,dt,dt);
+		//t->rotateXYZ(dt,dt,dt);
 
 		
 		scene.update();

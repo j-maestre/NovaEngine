@@ -74,6 +74,8 @@ private:
 	friend class SpotLight;
 	friend class PointLight;
 	friend class ImguiManager;
+	friend class Window;
+	
 	inline std::shared_ptr<EngineProps> get_engine_props() { return m_props; }
 
 

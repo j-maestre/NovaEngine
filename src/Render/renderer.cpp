@@ -25,7 +25,15 @@ Renderer::Renderer(Renderer&&){
 }
 
 Renderer::~Renderer(){
-
+	m_depth_buffer->Release();
+	m_depth_stencil_view->Release();
+	m_cube_index_buffer->Release();
+	m_pVBufferConstantCamera->Release();
+	m_pVBuffer->Release();
+	m_pVBufferCube->Release();
+	m_pLayout->Release();
+	m_sampler_state->Release();
+	m_depth_stencil_state->Release();
 }
 
 bool Renderer::init_pipeline(Window* win){
@@ -102,9 +110,9 @@ bool Renderer::init_pipeline(Window* win){
 
 
 	// Setting the back buffer
-	ID3D11Texture2D* pBackbuffer;
-	m_engine_ptr->get_engine_props()->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackbuffer);									// __uuidof gets the unique id of the COM object
-	m_engine_ptr->get_engine_props()->deviceInterface->CreateRenderTargetView(pBackbuffer, NULL, &(win->get_window_info()->backbuffer));
+	
+	m_engine_ptr->get_engine_props()->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&m_backbuffer_texture);									// __uuidof gets the unique id of the COM object
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateRenderTargetView(m_backbuffer_texture, NULL, &(win->get_window_info()->backbuffer));
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &(win->get_window_info()->backbuffer), m_depth_stencil_view);	// last argument is depth stencill view
 	
 
@@ -154,6 +162,8 @@ bool Renderer::init_pipeline(Window* win){
 	
 
 	upload_triangle();
+
+	win->m_renderer = this;
 
 	return m_isInitialized;
 }
@@ -491,6 +501,31 @@ void Renderer::set_camera(CameraComponent* cam){
 void Renderer::release(){
 	m_shader_files.VS_directional->Release();
 	m_shader_files.PS_directional->Release();
+}
+
+void Renderer::resize(unsigned int width, unsigned int height){
+	m_backbuffer_texture->Release();
+
+	//Update depth stencil
+	m_depth_buffer->Release();
+	m_depth_stencil_view->Release();
+
+	D3D11_TEXTURE2D_DESC depth_desc{
+		.Width = width,
+		.Height = height,
+		.MipLevels = 1,
+		.ArraySize = 1,
+		.Format = DXGI_FORMAT_D24_UNORM_S8_UINT,
+		.SampleDesc{
+			.Count = 1
+		},
+		.Usage = D3D11_USAGE_DEFAULT,
+		.BindFlags = D3D11_BIND_DEPTH_STENCIL
+	};
+	m_depth_buffer = nullptr;
+	m_depth_stencil_view = nullptr;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateTexture2D(&depth_desc, nullptr, &m_depth_buffer);
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilView(m_depth_buffer, nullptr, &m_depth_stencil_view);
 }
 
 void Renderer::clear_depth(){

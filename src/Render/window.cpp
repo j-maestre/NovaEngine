@@ -6,6 +6,8 @@
 #include "render/imgui/imgui_manager.h" 
 #include "imgui.h"
 #include "imgui/backends/imgui_impl_win32.h"
+#include "Core/engine.h"
+#include "render/renderer.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -13,12 +15,11 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(handle, GWLP_USERDATA));
 
-	/*
-	*/
-
+#ifdef ENABLE_IMGUI
 	if (ImGui_ImplWin32_WndProcHandler(handle, msg, wParam, lParam)) {
 		return true;
 	}
+#endif
 
 	switch (msg) {
 	case WM_DESTROY:
@@ -60,6 +61,11 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_RBUTTONUP:
 		window->process_mouse_button(Key::Mouse::RBUTTON, Key::KeyState::Release);
 		return 0;
+
+	case WM_SIZE:
+		UINT width = LOWORD(lParam);
+		UINT height = HIWORD(lParam);
+		window->resize(width, height);
 		
 	return 0;
 	}
@@ -86,7 +92,7 @@ Window::~Window(){
 
 }
 
-void Window::init(const WindowProperties* props){
+void Window::init(WindowProperties* props){
 
 	
 
@@ -109,25 +115,37 @@ void Window::init(const WindowProperties* props){
 
 	RECT wr = { 0.0f, 0.0f, props->width, props->height};    // set the size, but not the position
 	AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE);    // adjust the size
+	int window_width = wr.right - wr.left;
+	int window_height = wr.bottom - wr.top;
+
+	window_width &= ~1;
+	window_height &= ~1;
 
 
 	// Create window and use the result as the handle
 	window_handle = CreateWindowEx(NULL, props->name.c_str(), props->name.c_str(), WS_OVERLAPPEDWINDOW,
 		props->pos_x,		// x position 
 		props->pos_y,		// y position
-		props->width,		// width
-		props->height,		// height
+		window_width,		// width
+		window_height,		// height
 		NULL,				// parent window
 		NULL,				// Menus
 		props->hInstance,	// aplication handle
 		NULL				// Used with multiple windows
 	);
 
-	m_width = static_cast<float>(props->width);
-	m_height = static_cast<float>(props->height);
+	// TEST
+	RECT clientRect;
+	GetClientRect(window_handle, &clientRect);
+	printf("Client area: %d x %d\n", clientRect.right - clientRect.left, clientRect.bottom - clientRect.top);
+	//
 
-	// Store this class in the window class
-	SetWindowLongPtr(window_handle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+	m_width = static_cast<float>(window_width);
+	m_height = static_cast<float>(window_height);
+
+	props->width = window_width;
+	props->height = window_height;
+
 
 	WindowInfo tmp;
 	tmp.window_handle = window_handle;
@@ -138,6 +156,8 @@ void Window::init(const WindowProperties* props){
 
 	m_window_props = std::make_shared<WindowProperties>(*props);
 
+	// Store this class in the window class
+	SetWindowLongPtr(window_handle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
 	// Display window on screen
 	ShowWindow(window_handle, props->nCmdShow);
@@ -146,7 +166,9 @@ void Window::init(const WindowProperties* props){
 
 void Window::init_imgui(){
 
+#ifdef ENABLE_IMGUI
 	m_imgui->init(m_window_info->window_handle);
+#endif
 }
 
 void Window::begin_frame(){
@@ -166,15 +188,18 @@ void Window::begin_frame(){
 		
 	}
 
+#ifdef ENABLE_IMGUI
 	m_imgui->begin_frame();
+#endif
 }
 
 void Window::end_frame(){
 
-	
+#ifdef ENABLE_IMGUI
+	m_imgui->end_frame();
+#endif
 
 	// Switch the backbuffer and the front buffer
-	m_imgui->end_frame();
 	m_swapChain->Present(0,0);
 }
 
@@ -251,6 +276,99 @@ void Window::process_mouse(LPARAM param){
 
 void Window::process_mouse_button(Key::Mouse btn, Key::KeyState state){
 	m_input->m_mouse[btn] = state;
+}
+
+void Window::set_full_screen(){
+
+	IDXGIDevice* device;
+	Engine::get_instance()->get_engine_props()->swapChain->GetDevice(IID_PPV_ARGS(&device));
+
+	IDXGIAdapter* adapter = nullptr;
+	HRESULT hr = device->GetAdapter(&adapter);
+
+	if (SUCCEEDED(hr)) {
+		IDXGIOutput* output = nullptr;
+		hr = adapter->EnumOutputs(0, &output);
+
+		if (SUCCEEDED(hr)) {
+			DXGI_OUTPUT_DESC desc;
+			output->GetDesc(&desc);
+			// Get resolution or other parameters...
+		
+			Engine::get_instance()->get_engine_props()->swapChain->SetFullscreenState(TRUE, output);
+		
+		}
+	}
+}
+
+void Window::set_windowed()
+{
+}
+
+void Window::resize(unsigned int width, unsigned int height){
+	Engine* e = Engine::get_instance();
+
+	if (e->get_engine_props()->inmediateDeviceContext) {
+
+		// Make sure its pair
+		width >>= 1;
+		width <<= 1;
+		height >>= 1;
+		height <<= 1;
+
+		RECT clientRect;
+		GetClientRect(m_window_info->window_handle, &clientRect);
+		UINT width_w = clientRect.right - clientRect.left;
+		UINT height_w = clientRect.bottom - clientRect.top;
+
+		width_w &= ~1;
+		height_w &= ~1;
+
+		e->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(0,0,0);
+		// Llamar al resize del renderer para hacer release del backbuffer texture y poder meterle el nuevo
+		m_renderer->resize(width_w, height_w);
+		
+		// Release render target view
+		m_window_info->backbuffer->Release();
+		m_window_info->backbuffer = nullptr;
+		
+		e->get_engine_props()->swapChain->ResizeBuffers(0, width_w, height_w, DXGI_FORMAT_UNKNOWN, 0);
+		
+
+		//e->get_engine_props()->swapChain->ResizeBuffers(0, width, height, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+		ID3D11Texture2D* backBuffer = nullptr;
+		e->get_engine_props()->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+
+		D3D11_TEXTURE2D_DESC desc;
+		backBuffer->GetDesc(&desc);
+		printf("Backbuffer size: %u x %u\n", desc.Width, desc.Height);
+
+
+		e->get_engine_props()->deviceInterface->CreateRenderTargetView(backBuffer, nullptr, &m_window_info->backbuffer);
+		m_window_props->width = width_w;
+		m_window_props->height = height_w;
+		m_renderer->m_backbuffer_texture = backBuffer;
+		//backBuffer->Release();
+
+		e->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window_info->backbuffer, nullptr);
+		D3D11_VIEWPORT viewport{};
+		ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+		viewport.Width = (FLOAT)width_w;
+		viewport.Height = (FLOAT)height_w;
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+		viewport.TopLeftX = 0;
+		viewport.TopLeftY = 0;
+		e->m_viewport = viewport;
+		e->get_engine_props()->inmediateDeviceContext->RSSetViewports(1, &e->m_viewport);
+
+
+
+#ifdef ENABLE_IMGUI
+		ImguiManager::get_instance()->resize(m_window_info->window_handle, width_w, height_w);
+#endif
+	}
+
 }
 
 

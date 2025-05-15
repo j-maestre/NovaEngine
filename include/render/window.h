@@ -9,6 +9,7 @@ struct IDXGISwapChain;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 class ImguiManager;
+class Renderer;
 
 class Window {
 
@@ -18,7 +19,7 @@ public:
 	Window(Window&&);
 	~Window();
 
-	void init(const WindowProperties* props);
+	void init(WindowProperties* props);
 	void init_imgui();
 	void begin_frame();
 	void end_frame();
@@ -32,13 +33,20 @@ public:
 	void process_key(WPARAM param, bool down = true);
 	void process_mouse(LPARAM param);
 	void process_mouse_button(Key::Mouse btn, Key::KeyState state);
+	
+	void set_full_screen();
+	void set_windowed();
+	void resize(unsigned int width, unsigned int height);
 
 	friend class Engine;
 
 private:
 
+	friend class Renderer;
+
 	Input* m_input;
 	ImguiManager* m_imgui;
+	Renderer* m_renderer;
 
 	// Render stuff
 	IDXGISwapChain* m_swapChain;

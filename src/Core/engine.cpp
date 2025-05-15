@@ -37,8 +37,8 @@ void Engine::init(Window* window){
 		
 	m_props->scd.BufferCount = 1;	// One back buffer
 	m_props->scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;	// 32 bit color
-	m_props->scd.BufferDesc.Width = SCREEN_WIDTH;					// Backbuffer width
-	m_props->scd.BufferDesc.Height = SCREEN_HEIGHT;					// Backbuffer height
+	m_props->scd.BufferDesc.Width = window->get_window_properties()->width;					// Backbuffer width
+	m_props->scd.BufferDesc.Height = window->get_window_properties()->height;				// Backbuffer height
 	m_props->scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;		// How swap chain is going to be used
 	m_props->scd.OutputWindow = window_info->window_handle;			// The window to be used
 	m_props->scd.SampleDesc.Count = 1;								// How many multisamples (anti aliasing, TODO: maybe change to 1 or parametrize in the future) (minium 1 max 4)
@@ -82,7 +82,7 @@ void Engine::init(Window* window){
 	m_raster.ScissorEnable = FALSE;         // No se usa el scissor test
 	m_raster.MultisampleEnable = FALSE;     // No multisampling
 	m_raster.AntialiasedLineEnable = FALSE; // No se usan lineas antialiasing
-
+	
 	HRESULT hr = m_props->deviceInterface->CreateRasterizerState(&m_raster, &m_raster_state);
 	assert(!FAILED(hr));
 	m_props->inmediateDeviceContext->RSSetState(m_raster_state);
@@ -91,7 +91,7 @@ void Engine::init(Window* window){
 	WindowProperties* win_props = window->get_window_properties();
 	ZeroMemory(&m_viewport, sizeof(D3D11_VIEWPORT));
 	m_viewport.TopLeftX = 0;
-	m_viewport.TopLeftX = 0;
+	m_viewport.TopLeftY = 0;
 	m_viewport.Width = win_props->width; // SCREEN_WIDTH
 	m_viewport.Height = win_props->height; // SCREEN_HEIGHT
 	m_viewport.MinDepth = 0.0f;
@@ -189,9 +189,5 @@ void Engine::init_geometries(){
 	for (Mesh& mesh : m_cylinder_high_model->meshes) {
 		mesh.material.set_texture_albedo(m_resource.get_texture(m_texture_tmp));
 	}
-	
 
-
-	// TODO: make sphere
-	
 }

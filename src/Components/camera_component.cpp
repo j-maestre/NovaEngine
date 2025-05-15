@@ -20,10 +20,10 @@ CameraComponent::CameraComponent(const Input* input, Window* win){
 	m_direction = { 0.0f, 0.0f, -1.0f };
 
 	WindowInfo* info = win->get_window_info();
-	WindowProperties* props = win->get_window_properties();
+	m_window_props = win->get_window_properties();
 
-	m_center_x = ((float)props->width) * 0.5f;
-	m_center_y = ((float)props->height) * 0.5f;
+	m_center_x = ((float)m_window_props->width) * 0.5f;
+	m_center_y = ((float)m_window_props->height) * 0.5f;
 
 	POINT center_tmp = {m_center_x, m_center_y};
 	m_window_center = center_tmp;
@@ -62,7 +62,20 @@ void CameraComponent::fly(float dt){
 	//printf("Direction X%f Y%f Z%f\n", DirectX::XMVectorGetX(m_direction), DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction));
 	ShowCursor(TRUE);
 
+	float MouseX = static_cast<float>(m_input->get_mouse_x());
+	float MouseY = static_cast<float>(m_input->get_mouse_y());
+
+	printf("MouseX %f MouseY %f\n", MouseX, MouseY);
+
+
 	if (m_input->is_key_pressed(Key::Keyboard::CONTROL) || m_first_move){
+
+		m_center_x = ((float)m_window_props->width) * 0.5f;
+		m_center_y = ((float)m_window_props->height) * 0.5f;
+
+		
+
+		printf("Width %d Height %d -- PosX %d PosY %d\n",m_window_props->width, m_window_props->height, m_window_props->pos_x, m_window_props->pos_y);
 
 		Vec3 forward = { DirectX::XMVectorGetX(m_direction), DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction) };
 		Vec3 up(0.0f, -1.0f, 0.0f);
@@ -98,8 +111,6 @@ void CameraComponent::fly(float dt){
 			m_position.z += right_float.z * m_movement_speed * dt;
 		}
 
-		float MouseX = static_cast<float>(m_input->get_mouse_x());
-		float MouseY = static_cast<float>(m_input->get_mouse_y());
 
 		POINT center_tmp = { m_center_x, m_center_y };
 		POINT mouse_pos = {MouseX, MouseY};
@@ -160,11 +171,16 @@ void CameraComponent::fly(float dt){
 
 }
 
+void CameraComponent::set_aspect_ratio(float value){
+	m_aspect_ratio = value;
+}
+
 
 
 void CameraComponent::update_projection_matrix(){
 
 	// Left-Handle more common un DirectX
+	m_aspect_ratio = ((float)m_window_props->width) / ((float)m_window_props->height);
 	m_projection = DirectX::XMMatrixPerspectiveFovLH(degToRad(m_fov), m_aspect_ratio, m_near, m_far);
 }
 
