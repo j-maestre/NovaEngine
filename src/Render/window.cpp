@@ -65,7 +65,7 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_SIZE:
 		UINT width = LOWORD(lParam);
 		UINT height = HIWORD(lParam);
-		window->resize(width, height);
+		window->resize();
 		
 	return 0;
 	}
@@ -168,6 +168,7 @@ void Window::init_imgui(){
 
 #ifdef ENABLE_IMGUI
 	m_imgui->init(m_window_info->window_handle);
+	resize();
 #endif
 }
 
@@ -209,8 +210,6 @@ bool Window::update(){
 
 	bool ret = true;
 	MSG msg;
-
-
 
 	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) && ret) {
 		// Translate keystroke messages into the right format
@@ -305,16 +304,12 @@ void Window::set_windowed()
 {
 }
 
-void Window::resize(unsigned int width, unsigned int height){
+void Window::resize(){
 	Engine* e = Engine::get_instance();
 
 	if (e->get_engine_props()->inmediateDeviceContext) {
 
 		// Make sure its pair
-		width >>= 1;
-		width <<= 1;
-		height >>= 1;
-		height <<= 1;
 
 		RECT clientRect;
 		GetClientRect(m_window_info->window_handle, &clientRect);

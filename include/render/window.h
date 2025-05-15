@@ -36,7 +36,7 @@ public:
 	
 	void set_full_screen();
 	void set_windowed();
-	void resize(unsigned int width, unsigned int height);
+	void resize();
 
 	friend class Engine;
 

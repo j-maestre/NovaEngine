@@ -3,7 +3,7 @@
 #include <vector>
 
 #define DIRECTX11
-//#define ENABLE_IMGUI
+#define ENABLE_IMGUI
 
 
 constexpr unsigned int SCREEN_WIDTH = 1920;
