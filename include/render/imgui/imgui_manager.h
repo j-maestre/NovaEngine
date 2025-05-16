@@ -9,6 +9,13 @@
 #include "backends/imgui_impl_dx11.h"
 #include "backends/imgui_impl_win32.h"
 #include "Core/engine.h"
+#include "Core/ECS.h"
+
+#include "components/transform_component.h"
+#include "components/camera_component.h"
+#include "components/mesh_component.h"
+#include "components/Lights/DirectionalLight.h"
+
 
 
 class Window;
@@ -32,6 +39,7 @@ public:
 	void render();
 
 	void resize(HWND hwnd, unsigned int width, unsigned int height);
+	void scene_info(EntityComponentSystem& ecs);
 
 	void apply_nova_style();
 	void show_demo_window();
@@ -41,6 +49,18 @@ private:
 	void init(HWND handle);
 
 	void main_menu();
+	void system_info();
+
+	void show_transform(TransformComponent* trans, int entity_id);
+	void show_directional(DirectionalLight* light, int entity_id);
+
+	float m_time;
+	float m_last_fps;
+	float m_update_fps_time;
+
+	std::vector<float> m_dt_history;
+	int m_dt_history_size;
+	int m_dt_history_index;
 
 	ImGuiViewport* m_viewport;
 };

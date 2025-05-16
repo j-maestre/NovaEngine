@@ -36,10 +36,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	render.set_camera(&cam);
 
 	Scene scene;
-	Entity cube = scene.m_ecs.create_entity();
-	Entity cube2 = scene.m_ecs.create_entity();
-	Entity cone = scene.m_ecs.create_entity();
-	Entity sponza = scene.m_ecs.create_entity();
+	Entity cube = scene.m_ecs.create_entity("cube jou");
+	Entity cube2 = scene.m_ecs.create_entity("cube raro");
+	Entity cone = scene.m_ecs.create_entity("cono");
+	Entity sponza = scene.m_ecs.create_entity("Sponza");
 	TransformComponent& t = scene.m_ecs.add_component<TransformComponent>(cube);
 	auto& mesh = scene.m_ecs.add_component<MeshComponent>(cube);
 	//mesh.add_material();
@@ -48,8 +48,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	t.set_scale({scale,scale,scale});
 	
 	TransformComponent& t2 = scene.m_ecs.add_component<TransformComponent>(cube2);
-	//MeshComponent& sphere = scene.m_ecs.add_component<MeshComponent>(cube2);
-	//sphere.set_model(engine->get_sphere());
+	MeshComponent& sphere = scene.m_ecs.add_component<MeshComponent>(cube2);
+	sphere.set_model(engine->get_sphere());
 	t2.set_position({ 2.0f, 4.0f, 5.0f });
 	t2.set_scale({scale,scale,scale});
 	
@@ -67,9 +67,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Model* model = engine->m_resource.load_mesh("data/models/Sponza/Sponza_new.fbx");
 	meshCompSponza.set_model(model);
 
-	Entity directional_light = scene.m_ecs.create_entity();
+	Entity directional_light = scene.m_ecs.create_entity("Directional Light");
 	auto& light = scene.m_ecs.add_component<DirectionalLight>(directional_light);
 	light.set_color({1.0f, 1.0f, 1.0f});
+	light.set_direction({ 0.5f,-1.0f, 1.0f });
 
 	//win.set_full_screen();
 
@@ -93,10 +94,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		cam.fly(engine->get_delta_time());
 		cam.update();
 
-
-		DirectionalLight* dir_light_component = scene.m_ecs.get_component<DirectionalLight>(directional_light);
-		dir_light_component->set_direction({ 0.5f,-1.0f, 1.0f });
-
 		TransformComponent* t = scene.m_ecs.get_component<TransformComponent>(cube);
 		float dt = engine->get_delta_time() * 2.0f;
 		//t->rotateXYZ(dt,dt,dt);
@@ -104,7 +101,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		
 		scene.update();
 		render.render_forward(scene.m_ecs);
-		//render.render_forward(&trans2);
 		
 		win.end_frame();
 

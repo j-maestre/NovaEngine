@@ -1,7 +1,8 @@
 #include <render/renderer.h>
 #include <d3dcompiler.h>
-
 #include <filesystem>
+
+#include "render/imgui/imgui_manager.h"
 
 static inline bool  CheckShaderError(HRESULT hr, ID3DBlob* error_msg = nullptr) {
 	if (FAILED(hr)) {
@@ -231,6 +232,9 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 			}
 		}
 	}
+
+	ImguiManager::get_instance()->render();
+	ImguiManager::get_instance()->scene_info(ecs);
 
 }
 
