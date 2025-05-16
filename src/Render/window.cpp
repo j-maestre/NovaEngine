@@ -220,7 +220,7 @@ bool Window::update(){
 		ret = msg.message != WM_QUIT;
 	}
 	
-	m_imgui->show_demo_window();
+	
 	return ret;
 }
 

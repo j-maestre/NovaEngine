@@ -59,7 +59,8 @@ void ImguiManager::render() {
 
 	// DEMO
 	//static bool show = true;
-	//ImGui::ShowDemoWindow(&show);
+	ImGui::ShowStyleEditor();
+	//ImGui::ShowDemoWindow();
 
 	// Render
 	ImGui::Render();
@@ -83,6 +84,38 @@ void ImguiManager::resize(HWND hwnd,unsigned int width, unsigned int height){
 	ImGui_ImplDX11_CreateDeviceObjects();
 }
 
+void ImguiManager::apply_nova_style(){
+	ImGuiStyle& style = ImGui::GetStyle();
+
+	// Tamaños y espaciados
+	style.FrameRounding = 3.0f;
+	style.WindowPadding = ImVec2(12.0f, 12.0f);
+	style.FramePadding = ImVec2(15.0f, 5.0f);
+	style.ItemSpacing = ImVec2(12.0f, 5.0f);
+	style.ItemInnerSpacing = ImVec2(6.0f, 3.0f); // 3 es el valor por defecto
+	style.ScrollbarSize = 17.0f;
+	style.GrabMinSize = 13.0f;
+
+	// Bordes y redondeos
+	style.WindowRounding = 2.0f;
+	style.TabBorderSize = 2.0f;
+	style.TabRounding = 3.0f;
+
+	// Configuración avanzada
+	style.WindowTitleAlign = ImVec2(1.0f, 0.5f); // MenuButtonPosition = Right
+	style.WindowMenuButtonPosition = ImGuiDir_Right;
+
+	style.SeparatorTextBorderSize = 3.0f;
+	style.SeparatorTextAlign = ImVec2(0.03f, 0.5f);
+
+	style.WindowBorderSize = 1.0f; // Necesario para que el hover padding se note
+	style.WindowBorderSize = 1.0f;
+	style.WindowBorderHoverPadding = 4.0f;
+
+	// Docking separator
+	style.DockingSeparatorSize = 5.0f; // Solo disponible con Docking Branch
+}
+
 void ImguiManager::show_demo_window(){
 
 
@@ -101,6 +134,8 @@ void ImguiManager::init(HWND handle){
 
 	ImGui_ImplWin32_Init(handle);
 	ImGui_ImplDX11_Init(Engine::get_instance()->get_engine_props()->deviceInterface, Engine::get_instance()->get_engine_props()->inmediateDeviceContext);
+
+	apply_nova_style();
 }
 
 void ImguiManager::main_menu(){

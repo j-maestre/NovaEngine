@@ -33,6 +33,7 @@ public:
 
 	void resize(HWND hwnd, unsigned int width, unsigned int height);
 
+	void apply_nova_style();
 	void show_demo_window();
 
 private:
