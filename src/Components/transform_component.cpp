@@ -100,17 +100,22 @@ void TransformComponent::set_scale(const Vec3& scale){
 	m_is_calculated = false;
 }
 
-const Vec3 TransformComponent::get_position(){
+void TransformComponent::set_rotation(const Vec3& rotation){
+	m_rotation = rotation;
+	m_is_calculated = false;
+}
+
+Vec3& TransformComponent::get_position(){
 
 	return m_position;
 }
 
-const Vec3 TransformComponent::get_rotation(){
+Vec3& TransformComponent::get_rotation(){
 
 	return m_rotation;
 }
 
-const Vec3 TransformComponent::get_scale()
+Vec3& TransformComponent::get_scale()
 {
 	return m_scale;
 }

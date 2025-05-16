@@ -16,7 +16,7 @@ public:
 
 
 
-	Entity create_entity();
+	Entity create_entity(std::string name = "");
 
 	template <class T, class... Args>
 	T& add_component(Entity e,Args&&... args){
@@ -39,8 +39,13 @@ public:
 		return m_registry->view<T...>();
 	}
 
+	std::vector<Entity>& get_entities() {
+		return m_entities;
+	}
+
 
 private:
 
 	std::unique_ptr<entt::registry> m_registry;
+	std::vector<Entity> m_entities;
 };

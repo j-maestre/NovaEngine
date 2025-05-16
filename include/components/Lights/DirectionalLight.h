@@ -30,6 +30,13 @@ public:
 	void set_specular_strenght(float value);
 	void set_specular_color(Vec3 color);
 	void set_specular_shininess(float value);
+	
+	Vec3& get_direction();
+	bool get_enabled();
+	Vec3& get_color();
+	float get_specular_strenght();
+	Vec3& get_specular_color();
+	float get_specular_shininess();
 private:
 	
 	void init_buffers();

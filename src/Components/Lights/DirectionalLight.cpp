@@ -55,6 +55,35 @@ void DirectionalLight::set_specular_shininess(float value){
 	m_buffer.specular_shininess = value;
 }
 
+Vec3& DirectionalLight::get_direction(){
+	return m_buffer.direction;
+}
+
+bool DirectionalLight::get_enabled()
+{
+	return m_buffer.enabled;
+}
+
+Vec3& DirectionalLight::get_color()
+{
+	return m_buffer.diffuse_color;
+}
+
+float DirectionalLight::get_specular_strenght()
+{
+	return m_buffer.specular_strength;
+}
+
+Vec3& DirectionalLight::get_specular_color()
+{
+	return m_buffer.specular_color;
+}
+
+float DirectionalLight::get_specular_shininess()
+{
+	return m_buffer.specular_shininess;
+}
+
 void DirectionalLight::init_buffers(){
 
 	m_constant_buffer_light = nullptr;

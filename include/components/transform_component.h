@@ -26,11 +26,12 @@ public:
 
 	void set_position(const Vec3& position);
 	void set_scale(const Vec3& scale);
+	void set_rotation(const Vec3& rotation);
 
 
-	const Vec3 get_position();
-	const Vec3 get_rotation();
-	const Vec3 get_scale();
+	Vec3& get_position();
+	Vec3& get_rotation();
+	Vec3& get_scale();
 
 	const Vec3 get_forward_vector();
 	const Vec3 get_right_vector();

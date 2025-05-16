@@ -24,10 +24,11 @@ EntityComponentSystem::~EntityComponentSystem()
 {
 }
 
-Entity EntityComponentSystem::create_entity()
-{
-	auto entity = m_registry->create();
-	Entity e{static_cast<unsigned int>(entity)};
+Entity EntityComponentSystem::create_entity(std::string name){
 
+	auto entity = m_registry->create();
+	Entity e{static_cast<unsigned int>(entity), name};
+
+	m_entities.push_back(e);
 	return e;
 }
