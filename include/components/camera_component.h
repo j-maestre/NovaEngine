@@ -18,12 +18,29 @@ public:
 	void set_position(Vec3 pos) { m_position = pos; }
 	Vec3 get_position() { return m_position; }
 
+	float get_near() { return m_near; }
+	float get_far() { return m_far; }
+	float get_pitch() { return m_pitch; }
+	float get_yaw() { return m_yaw; }
+	float get_speed() { return m_speed; }
+	float get_movement_speed() { return m_movement_speed; }
+	float get_mouse_sensitivity() { return m_mouse_sensitivity; }
+
+	void set_near(float value) { m_near = value; }
+	void set_far(float value) { m_far = value; }
+	void set_pitch(float value) { m_pitch = value; }
+	void set_yaw(float value) { m_yaw = value; }
+	void set_speed(float value) { m_speed = value; }
+	void set_movement_speed(float value) { m_movement_speed = value; }
+	void set_mouse_sensitivity(float value) { m_mouse_sensitivity = value; }
+
 	void set_aspect_ratio(float value);
 
 	const Mat4* get_view() noexcept { return &m_view; }
 	const Mat4* get_projection() noexcept { return &m_projection; }
 	const Mat4* get_view_projection() noexcept { return &m_view_projection; }
 	
+
 
 
 private:
