@@ -29,7 +29,7 @@ float3 CalculeDirectionalLight(float3 normal, float3 view_dir, float3 color_base
     //const float3 specular_color = float3(1.0, 1.0, 1.0);
     
     float3 diff = max(dot(normal, -light_dir), 0.0);
-    const float3 albedo = diff * color_base;
+    const float3 albedo = diff * color_base * diffuse_color;
     
     const float3 reflect_dir = normalize(reflect(-light_dir, normalize(normal)));
     float spec = pow(max(dot(normalize(view_dir), normalize(reflect_dir)), 0.0), specular_shininess);
