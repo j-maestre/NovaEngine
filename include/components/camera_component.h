@@ -48,6 +48,7 @@ private:
 	void update_projection_matrix();
 
 	WindowProperties* m_window_props;
+	Window* m_win;
 
 	HWND m_window_handle;
 	POINT m_window_center;
@@ -83,4 +84,6 @@ private:
 	float m_last_mouse_y = 0.0f;
 
 	bool m_first_move = true;
+
+	bool m_last_start_movement = false;
 };

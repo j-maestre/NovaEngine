@@ -49,6 +49,8 @@ public:
 
 private:
 	friend class Window;
+	friend class CameraComponent;
+
 	void init(HWND handle);
 
 	void main_menu();
@@ -64,6 +66,9 @@ private:
 	std::vector<float> m_dt_history;
 	int m_dt_history_size;
 	int m_dt_history_index;
+
+	float m_mouse_delta_x = 0.0f;
+	float m_mouse_delta_y = 0.0f;
 
 	ImGuiViewport* m_viewport;
 };

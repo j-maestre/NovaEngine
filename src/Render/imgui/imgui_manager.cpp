@@ -218,6 +218,7 @@ void ImguiManager::system_info(){
 	ImGui::PlotLines("Delta time", m_dt_history.data(), m_dt_history_size, m_dt_history_index, nullptr, FLT_MAX, FLT_MAX, ImVec2(0, 70));
 
 	ImGui::Text("Mouse (%.0f, %.0f)", mouse_x, mouse_y);
+	ImGui::Text("Delta (%.0f, %.0f)", m_mouse_delta_x, m_mouse_delta_y);
 
 
 
