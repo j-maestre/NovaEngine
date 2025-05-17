@@ -235,6 +235,7 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 
 	ImguiManager::get_instance()->render();
 	ImguiManager::get_instance()->scene_info(ecs);
+	ImguiManager::get_instance()->show_cam(m_cam, 0xfff);
 
 }
 

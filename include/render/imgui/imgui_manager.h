@@ -3,6 +3,7 @@
 #define IMGUI_ENABLE_VIEWPORTS
 #define IMGUI_HAS_DOCK
 #define IMGUI_ENABLE_DOCKING
+//#define IMGUI_DEFINE_MATH_OPERATORS
 
 #include "Core/defines.h"
 #include "imgui.h"
@@ -43,6 +44,8 @@ public:
 
 	void apply_nova_style();
 	void show_demo_window();
+
+	void show_cam(CameraComponent* cam, int entity_id);
 
 private:
 	friend class Window;

@@ -278,10 +278,10 @@ void ImguiManager::show_directional(DirectionalLight* light, int entity_id){
 	ImGui::Checkbox(label.c_str(), &enabled);
 
 	label = "Color##" + std::to_string(entity_id);
-	ImGui::DragFloat3(label.c_str(), color_tmp, 0.005f, -1.0f, 1.0f);
+	ImGui::DragFloat3(label.c_str(), color_tmp, 0.005f, 0.0f, 1.0f);
 
 	label = "Specular Strenght##" + std::to_string(entity_id);
-	ImGui::DragFloat(label.c_str(), &specular_strenght);
+	ImGui::DragFloat(label.c_str(), &specular_strenght, 0.001f, 0.0f, 1.0f);
 
 	label = "Specular Color##" + std::to_string(entity_id);
 	ImGui::DragFloat3(label.c_str(), spec_color_tmp, 0.005f, -1.0f, 1.0f);
@@ -299,6 +299,58 @@ void ImguiManager::show_directional(DirectionalLight* light, int entity_id){
 	light->set_specular_color({ spec_color_tmp[0], spec_color_tmp[1], spec_color_tmp[2] });
 	light->set_specular_shininess(specular_shininess);
 
+
+}
+
+void ImguiManager::show_cam(CameraComponent* cam, int entity_id){
+	ImGui::Begin("Prueba");
+
+	ImGui::SeparatorText("Camera");
+	Vec3 position = cam->get_position();
+	float position_tmp[3] = {position.x, position.y, position.z};
+
+	float near_t = cam->get_near();
+	float far_t = cam->get_far();
+	float pitch = cam->get_pitch();
+	float yaw = cam->get_yaw();
+	float speed = cam->get_speed();
+	float mov_speed = cam->get_movement_speed();
+	float sensitivity = cam->get_mouse_sensitivity();
+
+	std::string label = "Position##" + std::to_string(entity_id);
+	ImGui::DragFloat3(label.c_str(), position_tmp, 0.1f);
+
+	label = "Near##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &near_t, 0.001f, 0.001f, 1.0f);
+
+	label = "Far##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &far_t, 1.0f, 10000.0f, 1.0f);
+	
+	label = "Pitch##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &pitch, 1.0f);
+
+	label = "Yaw##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &yaw, 1.0f);
+	
+	label = "Speed##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &speed, 1.0f, 0.0f, 1000.0f);
+
+	label = "Movement speed##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &mov_speed, 1.0f, 0.0f, 1000.0f);
+	
+	label = "Mouse sensitivity##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &sensitivity, 0.1f, 0.0f, 1000.0f);
+
+	cam->set_position({position_tmp[0], position_tmp[1], position_tmp[2]});
+	cam->set_near(near_t);
+	cam->set_far(far_t);
+	cam->set_pitch(pitch);
+	cam->set_yaw(yaw);
+	cam->set_speed(speed);
+	cam->set_movement_speed(mov_speed);
+	cam->set_mouse_sensitivity(sensitivity);
+
+	ImGui::End();
 
 }
 
