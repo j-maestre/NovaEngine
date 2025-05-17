@@ -62,28 +62,27 @@ void CameraComponent::fly(float dt){
 	//printf("Direction X%f Y%f Z%f\n", DirectX::XMVectorGetX(m_direction), DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction));
 	ShowCursor(TRUE);
 
-	float MouseX = static_cast<float>(m_input->get_mouse_x());
-	float MouseY = static_cast<float>(m_input->get_mouse_y());
+	
+	Vec3 forward = { DirectX::XMVectorGetX(m_direction), DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction) };
+	Vec3 up(0.0f, -1.0f, 0.0f);
 
-	printf("MouseX %f MouseY %f\n", MouseX, MouseY);
+	FVector up_vec({ 0.0f, 1.0f, 0.0f });
+	FVector right = DirectX::XMVector3Cross(m_direction, up_vec);
 
+	Vec3 right_float = { DirectX::XMVectorGetX(right),DirectX::XMVectorGetY(right), DirectX::XMVectorGetZ(right) };
+	
+	POINT center_tmp = { m_center_x, m_center_y };
 
-	if (m_input->is_key_pressed(Key::Keyboard::CONTROL) || m_first_move){
+	if (m_input->is_key_pressed(Key::Mouse::RBUTTON) || m_first_move){
 
 		m_center_x = ((float)m_window_props->width) * 0.5f;
 		m_center_y = ((float)m_window_props->height) * 0.5f;
 
-		
+		float MouseX = static_cast<float>(m_input->get_mouse_x());
+		float MouseY = static_cast<float>(m_input->get_mouse_y());
 
-		printf("Width %d Height %d -- PosX %d PosY %d\n",m_window_props->width, m_window_props->height, m_window_props->pos_x, m_window_props->pos_y);
+		//printf("Width %d Height %d -- PosX %d PosY %d\n",m_window_props->width, m_window_props->height, m_window_props->pos_x, m_window_props->pos_y);
 
-		Vec3 forward = { DirectX::XMVectorGetX(m_direction), DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction) };
-		Vec3 up(0.0f, -1.0f, 0.0f);
-
-		FVector up_vec({ 0.0f, 1.0f, 0.0f });
-		FVector right = DirectX::XMVector3Cross(m_direction, up_vec);
-
-		Vec3 right_float = { DirectX::XMVectorGetX(right),DirectX::XMVectorGetY(right), DirectX::XMVectorGetZ(right) };
 
 		const float speed = m_speed * dt;
 
@@ -112,7 +111,6 @@ void CameraComponent::fly(float dt){
 		}
 
 
-		POINT center_tmp = { m_center_x, m_center_y };
 		POINT mouse_pos = {MouseX, MouseY};
 		ScreenToClient(m_window_handle, &mouse_pos);
 
@@ -143,31 +141,44 @@ void CameraComponent::fly(float dt){
 		m_yaw += OffsetX;
 		m_pitch -= OffsetY;
 
-		if (m_pitch > 89.0f)
-			m_pitch = 89.0f;
-		if (m_pitch < -89.0f)
-			m_pitch = -89.0f;
-
-		if (m_yaw > 360.0f)
-			m_yaw -= 360.0f;
-		if (m_yaw < 0.0f)
-			m_yaw += 360.0f;
-
-		forward.x = cosf(degToRad(m_yaw)) * cosf(degToRad(m_pitch));
-		forward.y = sinf(degToRad(m_pitch));
-		forward.z = sinf(degToRad(m_yaw) * -1.0f) * cosf(degToRad(m_pitch)); // * -1.0f to fix inverted mouse direction
-
-		m_direction = DirectX::XMVector3Normalize(FVector({ forward.x, forward.y, forward.z, 0.0f}));
-
 		m_last_mouse_x = MouseX;
 		m_last_mouse_y = MouseY;
 
-		//printf("Pitch %f Yaw %f\n", m_pitch, m_yaw);
-
 		ClientToScreen(m_window_handle, &center_tmp);
 		SetCursorPos(center_tmp.x, center_tmp.y);
+
 	}
+
+	if (m_pitch > 89.0f)
+		m_pitch = 89.0f;
+	if (m_pitch < -89.0f)
+		m_pitch = -89.0f;
+
+	if (m_yaw > 360.0f)
+		m_yaw -= 360.0f;
+	if (m_yaw < 0.0f)
+		m_yaw += 360.0f;
+
+	forward.x = cosf(degToRad(m_yaw)) * cosf(degToRad(m_pitch));
+	forward.y = sinf(degToRad(m_pitch));
+	forward.z = sinf(degToRad(m_yaw) * -1.0f) * cosf(degToRad(m_pitch)); // * -1.0f to fix inverted mouse direction
+
+	m_direction = DirectX::XMVector3Normalize(FVector({ forward.x, forward.y, forward.z, 0.0f}));
+
 	
+	// Check wheel
+
+	if (m_input->is_key_pressed(Key::Keyboard::CONTROL) && m_input->is_mouse_wheel_down()) {
+		m_movement_speed *= 0.9f;
+		if (m_movement_speed < 0.1f) m_movement_speed = 0.1f;
+		
+	}
+	if (m_input->is_key_pressed(Key::Keyboard::CONTROL) && m_input->is_mouse_wheel_up()) {
+		m_movement_speed *= 1.1f;
+	}
+
+	
+		
 
 }
 
