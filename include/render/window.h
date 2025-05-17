@@ -2,6 +2,7 @@
 #include "memory"
 #include "Core/input.h"
 
+
 struct WindowInfo;
 struct WindowProperties;
 
@@ -33,6 +34,7 @@ public:
 	void process_key(WPARAM param, bool down = true);
 	void process_mouse(LPARAM param);
 	void process_mouse_button(Key::Mouse btn, Key::KeyState state);
+	void process_mouse_wheel(bool up);
 	
 	void set_full_screen();
 	void set_windowed();

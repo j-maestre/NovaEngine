@@ -7,6 +7,8 @@ Input::Input(){
 	m_mouse_x = 0.0f;
 	m_mouse_y = 0.0f;
 
+	m_mouse_wheel_up = false;
+	m_mouse_wheel_down = false;
 	m_mouse.emplace(std::pair(Key::Mouse::LBUTTON, Key::KeyState::Release));
 	m_mouse.emplace(std::pair(Key::Mouse::RBUTTON, Key::KeyState::Release));
 
@@ -192,6 +194,32 @@ bool Input::is_key_pressed(Key::Keyboard key) const{
 
 bool Input::is_key_up(Key::Keyboard key) const{
 	return m_keyboard.at(key) == Key::KeyState::Release;
+}
+
+bool Input::is_key_down(Key::Mouse key) const
+{
+	return m_mouse.at(key) == Key::KeyState::Down;
+}
+
+bool Input::is_key_pressed(Key::Mouse key) const
+{
+	return m_mouse.at(key) == Key::KeyState::Pressed;
+	
+}
+
+bool Input::is_key_up(Key::Mouse key) const
+{
+	return m_mouse.at(key) == Key::KeyState::Release;
+}
+
+bool Input::is_mouse_wheel_up() const
+{
+	return m_mouse_wheel_up;
+}
+
+bool Input::is_mouse_wheel_down() const
+{
+	return m_mouse_wheel_down;
 }
 
 float Input::get_mouse_x() const

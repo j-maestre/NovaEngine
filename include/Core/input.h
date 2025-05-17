@@ -21,6 +21,13 @@ public:
 	bool is_key_pressed(Key::Keyboard key) const;
 	bool is_key_up(Key::Keyboard key) const;
 
+	bool is_key_down(Key::Mouse key) const;
+	bool is_key_pressed(Key::Mouse key) const;
+	bool is_key_up(Key::Mouse key) const;
+
+	bool is_mouse_wheel_up() const;
+	bool is_mouse_wheel_down() const;
+
 	float get_mouse_x() const;
 	float get_mouse_y() const;
 
@@ -34,5 +41,8 @@ private:
 	std::unordered_map<Key::Mouse, Key::KeyState> m_mouse;
 	float m_mouse_x;
 	float m_mouse_y;
+
+	bool m_mouse_wheel_up;
+	bool m_mouse_wheel_down;
 
 };

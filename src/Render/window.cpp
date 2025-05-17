@@ -4,8 +4,9 @@
 #include "Core/input.h"
 #include "Windows.h"
 #include "render/imgui/imgui_manager.h" 
-#include "imgui.h"
-#include "imgui/backends/imgui_impl_win32.h"
+
+//#include "imgui.h"
+//#include "imgui/backends/imgui_impl_win32.h"
 #include "Core/engine.h"
 #include "render/renderer.h"
 
@@ -61,6 +62,15 @@ LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_RBUTTONUP:
 		window->process_mouse_button(Key::Mouse::RBUTTON, Key::KeyState::Release);
 		return 0;
+
+
+	case WM_MOUSEWHEEL:
+	{
+		short delta_tmp = GET_WHEEL_DELTA_WPARAM(wParam); // positivo = arriba, negativo = abajo
+		window->process_mouse_wheel(delta_tmp > 0);
+		return 0;
+	}
+		
 
 	case WM_SIZE:
 		UINT width = LOWORD(lParam);
@@ -188,6 +198,19 @@ void Window::begin_frame(){
 		}
 		
 	}
+	
+	for (auto& key : m_input->m_mouse) {
+
+		switch (key.second) {
+			case Key::KeyState::Down: key.second = Key::KeyState::Pressed; break;
+			case Key::KeyState::Release: key.second = Key::KeyState::None; break;
+			default:break;
+		}
+		
+	}
+
+	m_input->m_mouse_wheel_up = false;
+	m_input->m_mouse_wheel_down = false;
 
 #ifdef ENABLE_IMGUI
 	m_imgui->begin_frame();
@@ -275,6 +298,13 @@ void Window::process_mouse(LPARAM param){
 
 void Window::process_mouse_button(Key::Mouse btn, Key::KeyState state){
 	m_input->m_mouse[btn] = state;
+}
+
+void Window::process_mouse_wheel(bool up){
+
+	if (up) m_input->m_mouse_wheel_up = true;
+	else m_input->m_mouse_wheel_down = true;
+
 }
 
 void Window::set_full_screen(){
