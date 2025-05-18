@@ -156,6 +156,54 @@ bool Renderer::init_pipeline(Window* win){
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetDepthStencilState(m_depth_stencil_state,1);
 
 
+	// Blend state
+
+	D3D11_BLEND_DESC blend_overwrite_desc{
+		.AlphaToCoverageEnable = false,
+		.IndependentBlendEnable = false,
+		.RenderTarget = {
+			{ // 0
+			.BlendEnable = false,
+			.SrcBlend = D3D11_BLEND_ONE,
+			.DestBlend = D3D11_BLEND_ZERO,
+			.BlendOp = D3D11_BLEND_OP_ADD,
+			.SrcBlendAlpha = D3D11_BLEND_ONE,
+			.DestBlendAlpha = D3D11_BLEND_ZERO,
+			.BlendOpAlpha = D3D11_BLEND_OP_ADD,
+			.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL
+		}
+	  },
+	};
+
+	m_blend_state_overwrite = nullptr;
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateBlendState(&blend_overwrite_desc, &m_blend_state_overwrite);
+	CheckShaderError(hr, error_msg);
+
+	D3D11_BLEND_DESC blend_additive_desc{
+		.AlphaToCoverageEnable = false,
+		.IndependentBlendEnable = false,
+		.RenderTarget = {
+			{ // 0
+			.BlendEnable = true,
+			.SrcBlend = D3D11_BLEND_ONE,
+			.DestBlend = D3D11_BLEND_ONE,
+			.BlendOp = D3D11_BLEND_OP_ADD,
+			.SrcBlendAlpha = D3D11_BLEND_ONE,
+			.DestBlendAlpha = D3D11_BLEND_ONE,
+			.BlendOpAlpha = D3D11_BLEND_OP_ADD,
+			.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL
+		}
+	  },
+	};
+	
+	m_blend_state_additive = nullptr;
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateBlendState(&blend_additive_desc, &m_blend_state_additive);
+	CheckShaderError(hr, error_msg);
+	
+
+
+	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, m_blend_factor, m_blend_mask);
+
 
 	// create the input layout object
 	D3D11_INPUT_ELEMENT_DESC ied[] =
@@ -224,31 +272,39 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 	auto directional_light = ecs.viewComponents<DirectionalLight>();
 	auto point_light = ecs.viewComponents<PointLight>();
 
+	//float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+	
+	active_shader(ShaderType::DirectionalLight);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
+	
 	for (auto [entity, directional] : directional_light.each()) {
 
-		if (directional.get_enabled()) {
-			directional.update();
-			directional.upload_data();
 
+		if (!directional.get_enabled()) continue;
 
-			active_shader(ShaderType::DirectionalLight);
-			for (auto [entity, trans, mesh] : transforms.each()) {
-				for (Mesh& m : mesh.get_model()->meshes) {
-					//__debugbreak();
-					render_mesh_internal(cam_buffer, trans, m);
-				}
+		directional.update();
+		directional.upload_data();
+
+		for (auto [entity, trans, mesh] : transforms.each()) {
+			for (Mesh& m : mesh.get_model()->meshes) {
+				//__debugbreak();
+				render_mesh_internal(cam_buffer, trans, m);
 			}
 		}
+		
 	}
 
 	// Change blending
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 
+
+	active_shader(ShaderType::PointLight);
 	for (auto [entity, point] : point_light.each()) {
 
 		point.update();
 		point.upload_data();
 
-		active_shader(ShaderType::PointLight);
 		for (auto [entity, trans, mesh] : transforms.each()) {
 			for (Mesh& m : mesh.get_model()->meshes) {
 				render_mesh_internal(cam_buffer, trans, m);

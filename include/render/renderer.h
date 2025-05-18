@@ -53,6 +53,13 @@ private:
 	Engine* m_engine_ptr;
 	Window* m_window;
 
+
+	ID3D11BlendState* m_blend_state_overwrite;
+	ID3D11BlendState* m_blend_state_additive;
+	unsigned int m_blend_mask = 0xffffffff;
+	float m_blend_factor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	//ID3D11BlendState* m_blend_state_opaque;
+
 	D3D11_BUFFER_DESC m_cube_index_buffer_desc; // tmp
 	ID3D11Buffer* m_cube_index_buffer; // tmp
 
