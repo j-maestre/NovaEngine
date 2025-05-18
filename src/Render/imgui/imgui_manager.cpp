@@ -215,10 +215,16 @@ void ImguiManager::system_info(){
 
 	ImGui::Text("FPS: %f", m_last_fps);
 	ImGui::Text("Delta Time: %f", dt);
+	ImGui::Text("Draw Time: %f", m_draw_time);
 	ImGui::PlotLines("Delta time", m_dt_history.data(), m_dt_history_size, m_dt_history_index, nullptr, FLT_MAX, FLT_MAX, ImVec2(0, 70));
 
 	ImGui::Text("Mouse (%.0f, %.0f)", mouse_x, mouse_y);
 	ImGui::Text("Delta (%.0f, %.0f)", m_mouse_delta_x, m_mouse_delta_y);
+	
+	bool left_click = Engine::get_instance()->m_input.is_key_pressed(Key::Mouse::LBUTTON);
+	bool right_click = Engine::get_instance()->m_input.is_key_pressed(Key::Mouse::RBUTTON);
+	ImGui::Text("Click (%d,%d)", left_click?1:0, right_click?1:0);
+
 
 
 

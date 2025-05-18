@@ -20,6 +20,7 @@
 
 
 class Window;
+class Renderer;
 class ImguiManager {
 
 private:
@@ -50,6 +51,7 @@ public:
 private:
 	friend class Window;
 	friend class CameraComponent;
+	friend class Renderer;
 
 	void init(HWND handle);
 
@@ -69,6 +71,8 @@ private:
 
 	float m_mouse_delta_x = 0.0f;
 	float m_mouse_delta_y = 0.0f;
+
+	float m_draw_time = 0.0f;
 
 	ImGuiViewport* m_viewport;
 };
