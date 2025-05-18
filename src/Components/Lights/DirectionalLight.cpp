@@ -17,8 +17,8 @@ DirectionalLight::DirectionalLight(DirectionalLight&&)
 {
 }
 
-DirectionalLight::~DirectionalLight()
-{
+DirectionalLight::~DirectionalLight(){
+	m_constant_buffer_light->Release();
 }
 
 void DirectionalLight::upload_data(){

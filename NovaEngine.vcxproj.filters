@@ -220,11 +220,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\shaders\forward\common_forward.hlsl" />
     <None Include="data\shaders\forward\ps_directional.hlsl">
       <Filter>Shaders\Forward</Filter>
     </None>
-    <None Include="data\shaders\forward\vs_directional.hlsl">
+    <None Include="data\shaders\forward\vs_common.hlsl">
+      <Filter>Shaders\Forward</Filter>
+    </None>
+    <None Include="data\shaders\forward\ps_point.hlsl">
+      <Filter>Shaders\Forward</Filter>
+    </None>
+    <None Include="data\shaders\forward\ps_spot.hlsl">
       <Filter>Shaders\Forward</Filter>
     </None>
   </ItemGroup>

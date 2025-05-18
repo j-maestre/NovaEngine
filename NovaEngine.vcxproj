@@ -210,7 +210,9 @@
   <ItemGroup>
     <None Include="data\shaders\forward\common_forward.hlsl" />
     <None Include="data\shaders\forward\ps_directional.hlsl" />
-    <None Include="data\shaders\forward\vs_directional.hlsl" />
+    <None Include="data\shaders\forward\vs_common.hlsl" />
+    <None Include="data\shaders\forward\ps_point.hlsl" />
+    <None Include="data\shaders\forward\ps_spot.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

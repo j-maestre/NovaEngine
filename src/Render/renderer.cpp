@@ -48,30 +48,48 @@ bool Renderer::init_pipeline(Window* win){
 	ID3DBlob* PS = nullptr;
 	ID3DBlob* error_msg = nullptr;
 	
-	if (!std::filesystem::exists("data/shaders/forward/vs_directional.hlsl")) {
-		printf("ERROR: Shader file not found: data/shaders/forward/vs_directional.hlsl");
+	if (!std::filesystem::exists("data/shaders/forward/vs_common.hlsl")) {
+		printf("ERROR: Shader file not found: data/shaders/forward/vs_common.hlsl");
 	}
 	
 	if (!std::filesystem::exists("data/shaders/forward/ps_directional.hlsl")) {
 		printf("ERROR: Shader file not found: data/shaders/forward/ps_directional.hlsl");
 	}
+	
+	if (!std::filesystem::exists("data/shaders/forward/ps_point.hlsl")) {
+		printf("ERROR: Shader file not found: data/shaders/forward/ps_point.hlsl");
+	}
+	
+	if (!std::filesystem::exists("data/shaders/forward/ps_spot.hlsl")) {
+		printf("ERROR: Shader file not found: data/shaders/forward/ps_spot.hlsl");
+	}
 
-	HRESULT hr = D3DCompileFromFile(L"data/shaders/forward/vs_directional.hlsl", nullptr, nullptr, "VShader", "vs_4_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &VS, &error_msg);
+	HRESULT hr = D3DCompileFromFile(L"data/shaders/forward/vs_common.hlsl", nullptr, nullptr, "VShader", "vs_4_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &VS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(),NULL, &m_shader_files.VS_common);
+
 
 	hr = D3DCompileFromFile(L"data/shaders/forward/ps_directional.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &PS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
-
-	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(),NULL, &m_shader_files.VS_directional);
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(),NULL, &m_shader_files.PS_directional);
+	
+	hr = D3DCompileFromFile(L"data/shaders/forward/ps_point.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &PS, &error_msg);
+	m_isInitialized = CheckShaderError(hr, error_msg);
+	if (!m_isInitialized)return m_isInitialized;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(),NULL, &m_shader_files.PS_point);
+	
+	hr = D3DCompileFromFile(L"data/shaders/forward/ps_spot.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION, 0, &PS, &error_msg);
+	m_isInitialized = CheckShaderError(hr, error_msg);
+	if (!m_isInitialized)return m_isInitialized;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(),NULL, &m_shader_files.PS_spot);
+
 
 	active_shader(ShaderType::DirectionalLight);
 
 
 	/**** Buffers creation ****/
-
 	ZeroMemory(&m_buffer_description, sizeof(m_buffer_description));
 	m_buffer_description.Usage = D3D11_USAGE_DYNAMIC;					// Write acces by CPU and GPU
 	m_buffer_description.ByteWidth = sizeof(Vertex) * 3;
@@ -111,7 +129,6 @@ bool Renderer::init_pipeline(Window* win){
 
 
 	// Setting the back buffer
-	
 	m_engine_ptr->get_engine_props()->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&m_backbuffer_texture);									// __uuidof gets the unique id of the COM object
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateRenderTargetView(m_backbuffer_texture, NULL, &(win->get_window_info()->backbuffer));
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &(win->get_window_info()->backbuffer), m_depth_stencil_view);	// last argument is depth stencill view
@@ -172,18 +189,24 @@ bool Renderer::init_pipeline(Window* win){
 void Renderer::active_shader(ShaderType type){
 	switch (type){
 	case ShaderType::DirectionalLight:
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_directional, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_directional, nullptr, 0);
 	break;
-	case ShaderType::SpotLight:
-		break;
 	case ShaderType::PointLight:
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_common, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_point, nullptr, 0);
+		break;
+	case ShaderType::SpotLight:
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_common, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_spot, nullptr, 0);
 		break;
 	default:break;
 	}
 }
 
 void Renderer::render_forward(EntityComponentSystem& ecs){
+
+	auto start = std::chrono::high_resolution_clock::now();
 
 	clear_depth();
 
@@ -199,39 +222,46 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 	
 	auto transforms = ecs.viewComponents<TransformComponent, MeshComponent>();
 	auto directional_light = ecs.viewComponents<DirectionalLight>();
+	auto point_light = ecs.viewComponents<PointLight>();
 
 	for (auto [entity, directional] : directional_light.each()) {
 
-		directional.update();
-		directional.upload_data();
+		if (directional.get_enabled()) {
+			directional.update();
+			directional.upload_data();
 
 
-		for (auto [entity, trans, mesh] : transforms.each()) {
-			for (Mesh& m : mesh.get_model()->meshes) {
-			
-				cam_buffer.model = DirectX::XMMatrixTranspose(trans.get_transform());
-				active_shader(ShaderType::DirectionalLight);
-	
-				m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, &cam_buffer, 0,0);
-
-				// Buffer de la camara y la model del objeto subido, ahora draw cube
-				//const std::vector<Vertex> cube = m_engine_ptr->get_cube();
-
-				UINT stride = sizeof(Vertex);
-				UINT offset = 0;
-				m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m.buffer, &stride, &offset);
-
-	
-
-				m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetSamplers(0,1,&m_sampler_state);
-				m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0,1,&(m.material.get_albedo()->m_data.texture_view));
-				//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
-				m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m.index_buffer, DXGI_FORMAT_R32_UINT, 0);
-				m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				m_engine_ptr->get_engine_props()->inmediateDeviceContext->DrawIndexed(m.num_indices, 0, 0);
+			active_shader(ShaderType::DirectionalLight);
+			for (auto [entity, trans, mesh] : transforms.each()) {
+				for (Mesh& m : mesh.get_model()->meshes) {
+					//__debugbreak();
+					render_mesh_internal(cam_buffer, trans, m);
+				}
 			}
 		}
 	}
+
+	// Change blending
+
+	for (auto [entity, point] : point_light.each()) {
+
+		point.update();
+		point.upload_data();
+
+		active_shader(ShaderType::PointLight);
+		for (auto [entity, trans, mesh] : transforms.each()) {
+			for (Mesh& m : mesh.get_model()->meshes) {
+				render_mesh_internal(cam_buffer, trans, m);
+			}
+		}
+	}
+
+
+
+	auto end = std::chrono::high_resolution_clock::now();
+	auto elapsed = end - start;
+	ImguiManager::get_instance()->m_draw_time = std::chrono::duration<float>(elapsed).count();
+
 
 	ImguiManager::get_instance()->render();
 	ImguiManager::get_instance()->scene_info(ecs);
@@ -504,8 +534,10 @@ void Renderer::set_camera(CameraComponent* cam){
 }
 
 void Renderer::release(){
-	m_shader_files.VS_directional->Release();
+	m_shader_files.VS_common->Release();
 	m_shader_files.PS_directional->Release();
+	m_shader_files.PS_point->Release();
+	m_shader_files.PS_spot->Release();
 }
 
 void Renderer::resize(unsigned int width, unsigned int height){
@@ -531,6 +563,28 @@ void Renderer::resize(unsigned int width, unsigned int height){
 	m_depth_stencil_view = nullptr;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateTexture2D(&depth_desc, nullptr, &m_depth_buffer);
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilView(m_depth_buffer, nullptr, &m_depth_stencil_view);
+}
+
+void Renderer::render_mesh_internal(CameraConstantBuffer& camera_buffer, TransformComponent& trans, Mesh& m){
+	camera_buffer.model = DirectX::XMMatrixTranspose(trans.get_transform());
+
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, &camera_buffer, 0, 0);
+
+	// Buffer de la camara y la model del objeto subido, ahora draw cube
+	//const std::vector<Vertex> cube = m_engine_ptr->get_cube();
+
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m.buffer, &stride, &offset);
+
+
+
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0, 1, &(m.material.get_albedo()->m_data.texture_view));
+	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m.index_buffer, DXGI_FORMAT_R32_UINT, 0);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->DrawIndexed(m.num_indices, 0, 0);
 }
 
 void Renderer::clear_depth(){

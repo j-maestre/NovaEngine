@@ -68,7 +68,8 @@ void Engine::init(Window* window){
 		&(m_props->swapChain),
 		&(m_props->deviceInterface),
 		NULL,
-		&(m_props->inmediateDeviceContext));
+		&(m_props->inmediateDeviceContext)
+	);
 
 
 	// Setting rasterizer

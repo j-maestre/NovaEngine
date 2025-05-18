@@ -13,6 +13,7 @@ struct DirectionalLightConstantBuffer {
 	float specular_shininess = 32.0f; // 48 bytes
 
 };
+
 class DirectionalLight : public Light {
 
 public:

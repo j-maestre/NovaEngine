@@ -57,8 +57,10 @@ struct Vertex {
 #define SHADER_PATH_DEFERRED "data/shaders/deferred";
 
 struct ShaderFiles {
-	ID3D11VertexShader* VS_directional = nullptr;
+	ID3D11VertexShader* VS_common = nullptr;
 	ID3D11PixelShader* PS_directional = nullptr;
+	ID3D11PixelShader* PS_point = nullptr;
+	ID3D11PixelShader* PS_spot = nullptr;
 };
 
 enum class ShaderType {

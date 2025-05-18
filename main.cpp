@@ -2,10 +2,10 @@
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-	
-	
+
+
 	Engine* engine = Engine::get_instance();
-	
+
 	Window win;
 	WindowProperties props;
 	Color c = { 0.1f, 0.1f, 0.1f, 1.0f };
@@ -45,32 +45,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//mesh.add_material();
 
 	t.set_position({ -2.0f, 4.0f, 0.0f });
-	t.set_scale({scale,scale,scale});
-	
+	t.set_scale({ scale,scale,scale });
+
 	TransformComponent& t2 = scene.m_ecs.add_component<TransformComponent>(cube2);
 	MeshComponent& sphere = scene.m_ecs.add_component<MeshComponent>(cube2);
 	sphere.set_model(engine->get_sphere());
 	t2.set_position({ 2.0f, 4.0f, 5.0f });
-	t2.set_scale({scale,scale,scale});
-	
+	t2.set_scale({ scale,scale,scale });
+
 	TransformComponent& tcone = scene.m_ecs.add_component<TransformComponent>(cone);
 	MeshComponent& mesh_cone = scene.m_ecs.add_component<MeshComponent>(cone);
 	mesh_cone.set_model(engine->get_cylinder_high());
 	tcone.set_position({ 2.0f, 4.0f, 0.0f });
-	tcone.set_scale({scale,scale,scale});
-	
+	tcone.set_scale({ scale,scale,scale });
+
 	TransformComponent& t3 = scene.m_ecs.add_component<TransformComponent>(sponza);
 	MeshComponent& meshCompSponza = scene.m_ecs.add_component<MeshComponent>(sponza);
 	t3.set_position({ 0.0f, 0.0f, 0.0f });
-	t3.set_scale({scale, scale, scale });
+	t3.set_scale({ scale, scale, scale });
 
 	Model* model = engine->m_resource.load_mesh("data/models/Sponza/Sponza_new.fbx");
 	meshCompSponza.set_model(model);
 
 	Entity directional_light = scene.m_ecs.create_entity("Directional Light");
 	auto& light = scene.m_ecs.add_component<DirectionalLight>(directional_light);
-	light.set_color({1.0f, 1.0f, 1.0f});
+	light.set_color({ 1.0f, 1.0f, 1.0f });
 	light.set_direction({ 0.5f,-1.0f, 1.0f });
+
+	Entity point_light = scene.m_ecs.create_entity("Point Light");
+	auto& point = scene.m_ecs.add_component<PointLight>(point_light);
+	point.set_color({1.0f, 1.0f, 1.0f});
+	point.set_position({0.0f, 5.0f, 0.0f});
 
 	//win.set_full_screen();
 
@@ -82,12 +87,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			printf("window update return false\n");
 			break;
 		}
-		//printf("hola");
-		std::string dt_s = std::string("DT: ") + std::to_string(engine->get_delta_time());
-		std::string fps_s = std::string("FPS: ") + std::to_string(engine->get_fps());
-		//OutputDebugStringA(dt_s.c_str());
-		//OutputDebugStringA(fps_s.c_str());
-		//printf("%s\n", fps_s.c_str());
 
 		
 		engine->update();
@@ -103,17 +102,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		render.render_forward(scene.m_ecs);
 		
 		win.end_frame();
-
-		/*
-		auto start = std::chrono::high_resolution_clock::now();
-		bool done = false;
-		do {
-			auto end = std::chrono::high_resolution_clock::now();
-			auto elapsed = end - start;
-			done = elapsed >= std::chrono::milliseconds(16);
-		} while (!done);
-		*/
-
 	}
 
 	engine->release();
