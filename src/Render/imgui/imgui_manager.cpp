@@ -226,7 +226,8 @@ void ImguiManager::system_info(){
 	bool right_click = Engine::get_instance()->m_input.is_key_pressed(Key::Mouse::RBUTTON);
 	ImGui::Text("Click (%d,%d)", left_click?1:0, right_click?1:0);
 
-
+	ImGui::SeparatorText("Debug info");
+	ImGui::Text(m_debug.c_str());
 
 
 

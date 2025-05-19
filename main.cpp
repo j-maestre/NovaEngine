@@ -64,6 +64,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	t3.set_position({ 0.0f, 0.0f, 0.0f });
 	t3.set_scale({ scale, scale, scale });
 
+	//Model* model = engine->get_cone();
 	Model* model = engine->m_resource.load_mesh("data/models/Sponza/Sponza_new.fbx");
 	meshCompSponza.set_model(model);
 

@@ -3,9 +3,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 #include "Core/engine.h"
+#include "render/imgui/imgui_manager.h"
 
 
-ResourceManager::ResourceManager(){
+ResourceManager::ResourceManager() : m_job_system(){
 	
 }
 
@@ -101,7 +102,7 @@ Texture* ResourceManager::get_texture(unsigned int id){
 Model* ResourceManager::load_mesh(std::string path){
 
 	unsigned int hash = std::hash<std::string>{}(path);
-	
+
 	if (m_models.contains(hash)) {
 		return &(m_models.find(hash)->second);
 	}
@@ -178,8 +179,124 @@ Model* ResourceManager::load_mesh(std::string path){
 
 	m_models.insert(std::pair(hash, model));
 	return &(m_models.find(hash)->second);
+}
+
+Model* ResourceManager::load_mesh(std::string path, bool async){
+
+	unsigned int hash = std::hash<std::string>{}(path);
+	
+	// TODO: Race condition here?
+	if (m_models.contains(hash)) {
+		return &(m_models.find(hash)->second);
+	}
 
 
+	Model model_cube = *m_engine->get_cube();
+	Engine* e = Engine::get_instance();
+
+	// Insert copy of cube model
+	{
+		std::lock_guard<std::mutex> locked{ m_mutex_models };
+		m_models.insert(std::pair(hash, model_cube));
+	}
+
+	Model* model = &(m_models.find(hash)->second);
+	//model->meshes.clear();
+	ImguiManager* imgui_manager = ImguiManager::get_instance();
+	auto task = [this, path, model, e, imgui_manager]() {
+
+		Model model_tmp;
+
+		Assimp::Importer importer;
+
+		printf("Loading mesh %s\n", path.c_str());
+		const aiScene* scene = importer.ReadFile(path.c_str(),
+			aiProcess_Triangulate |
+			aiProcess_FlipUVs |
+			aiProcess_JoinIdenticalVertices);
+
+		imgui_manager->m_debug = "Procesing mesh " + path;
+
+		printf("Loaded\nProcesing mesh...\n");
+		const char* ret = importer.GetErrorString();
+		assert(scene && "Error loading mesh");
+
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+			printf("Error loading mesh\n %s\n", importer.GetErrorString());
+			return nullptr;
+		}
+
+		std::string full_path = path;
+		char c;
+		bool interrupt = false;
+		do {
+			c = full_path.back();
+			if (c != '/') {
+				full_path.pop_back();
+			}
+			else { interrupt = true; }
+		} while (interrupt == false);
+
+
+		aiNode* rootNode = scene->mRootNode;
+
+		ProcessNode(&model_tmp, rootNode, scene, full_path);
+
+		//ID3D11DeviceContext* deferred_context = nullptr;
+		//e->m_props->deviceInterface->CreateDeferredContext(0, &deferred_context);
+
+		for (Mesh& m : model_tmp.meshes) {
+
+			// Vertex buffer
+			D3D11_BUFFER_DESC buffer_desc{};
+			ZeroMemory(&buffer_desc, sizeof(buffer_desc));
+			buffer_desc.Usage = D3D11_USAGE_DYNAMIC;					// Write acces by CPU and GPU
+			buffer_desc.ByteWidth = m.num_vertices * sizeof(Vertex);
+			buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;			// Using as Vertex buffer
+			buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;		// allow CPU to write in the buffer
+			e->get_engine_props()->deviceInterface->CreateBuffer(&buffer_desc, NULL, &m.buffer);
+			
+
+			D3D11_MAPPED_SUBRESOURCE ms_mesh;
+
+
+
+			// Index buffer
+			D3D11_BUFFER_DESC index_buffer_desc{};
+			ZeroMemory(&index_buffer_desc, sizeof(index_buffer_desc));
+			index_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+			index_buffer_desc.ByteWidth = m.num_indices * sizeof(unsigned int);
+			index_buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+			index_buffer_desc.CPUAccessFlags = 0;
+			index_buffer_desc.MiscFlags = 0;
+			D3D11_SUBRESOURCE_DATA init_data = {};
+			init_data.pSysMem = m.indices.data();
+
+			m.index_buffer = nullptr;
+			HRESULT hr = e->get_engine_props()->deviceInterface->CreateBuffer(&index_buffer_desc, &init_data, &m.index_buffer);
+			if (FAILED(hr)) {
+				assert("Buffer creation failed");
+			}
+			e->get_engine_props()->inmediateDeviceContext->Map(m.buffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms_mesh);
+			memcpy(ms_mesh.pData, m.vertices.data(), sizeof(Vertex) * m.num_vertices);
+			e->get_engine_props()->inmediateDeviceContext->Unmap(m.buffer, NULL);
+		}
+
+		ID3D11CommandList* command_list = nullptr;
+		//deferred_context->FinishCommandList(FALSE, &command_list);
+		//deferred_context->Release();
+
+		// Swap
+		model->meshes.clear();
+		*model = model_tmp;
+
+	};
+	std::vector<std::function<void()>> tasks;
+	tasks.push_back(task);
+
+	m_job_system.add_task(tasks);
+
+	return model;
 }
 
 void ResourceManager::ProcessNode(Model* model, aiNode* node, const aiScene* scene, std::string absolute_path){
@@ -191,7 +308,6 @@ void ResourceManager::ProcessNode(Model* model, aiNode* node, const aiScene* sce
 		Mesh mesh_tmp;
 		ProcessMesh(&mesh_tmp, mesh, scene, absolute_path);
 		model->meshes.push_back(std::move(mesh_tmp));
-		// TODO: Peta aqui, y es porque se esta llamano al destructor de Mesh y al destructor de la sce_texture, hay que moverlo y que no se llame al destructor de texture
 	}
 
 	for (unsigned int i = 0; i < node->mNumChildren; i++) {

@@ -51,6 +51,7 @@ public:
 
 	void show_cam(CameraComponent* cam, int entity_id);
 
+	std::string m_debug = "";
 private:
 	friend class Window;
 	friend class CameraComponent;
@@ -80,6 +81,7 @@ private:
 
 	float m_draw_time = 0.0f;
 	float m_update_transform_time = 0.0f;
+
 
 	ImGuiViewport* m_viewport;
 };

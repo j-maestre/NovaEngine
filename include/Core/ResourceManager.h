@@ -10,6 +10,9 @@
 #include "render/material.h"
 #include "Core/mesh.h"
 
+#include "Core/JobSystem.h"
+#include <mutex>
+
 class Engine;
 
 class ResourceManager {
@@ -28,11 +31,17 @@ public:
 	Texture* get_texture(unsigned int id);
 
 	Model* load_mesh(std::string path);
+	Model* load_mesh(std::string path, bool async);
 
 private:
 
 	void ProcessNode(Model* mesh, aiNode* node, const aiScene* scene, std::string absolute_path);
 	void ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene* scene, std::string absolute_path);
+
+	JobSystem m_job_system;
+
+	std::mutex m_mutex_textures;
+	std::mutex m_mutex_models;
 
 	std::unordered_map<unsigned int, Texture> m_textures;
 	std::unordered_map<unsigned int, Model> m_models;

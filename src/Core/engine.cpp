@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <chrono>
 #include <Windows.h>
+#include "Core/JobSystem.h"
 
 Engine::Engine() : m_props(std::make_shared<EngineProps>()), m_input(), m_resource(){
 
@@ -166,8 +167,64 @@ Texture* Engine::get_default_albedo_texture(){
 	return m_resource.get_texture(m_default_texture_albedo);
 }
 
+//#define MULTI_THREAD
 void Engine::init_geometries(){
 
+
+	auto start = std::chrono::high_resolution_clock::now();
+
+#ifdef MULTI_THREAD
+
+	std::vector<std::function<void()>> tasks;
+
+	auto task1 = [this]() {
+		this->m_resource.load_mesh("data/models/basics/cube.fbx");
+	};
+	
+	auto task2 = [this]() {
+		this->m_resource.load_mesh("data/models/basics/cylinder.fbx");
+	};	
+	auto task3 = [this]() {
+		this->m_resource.load_mesh("data/models/basics/cylinder_high.fbx");
+	};
+
+	auto task4 = [this]() {
+		this->m_resource.load_mesh("data/models/basics/cone.fbx");
+	};
+	
+	auto task5 = [this]() {
+		this->m_resource.load_mesh("data/models/basics/cone_high.fbx");
+	};
+
+	auto task6 = [this]() {
+		this->m_resource.load_mesh("data/models/basics/sphere.fbx");
+	};
+	
+	auto task7 = [this]() {
+		this->m_resource.load_mesh("data/models/basics/sphere_medium_resolution.fbx");
+	};
+	
+	auto task8 = [this]() {
+		this->m_resource.load_mesh("data/models/basics/sphere_high_resolution.fbx");
+	};
+
+	tasks.push_back(task1);
+	tasks.push_back(task2);
+	tasks.push_back(task3);
+	tasks.push_back(task4);
+	tasks.push_back(task5);
+	tasks.push_back(task6);
+	tasks.push_back(task7);
+	tasks.push_back(task8);
+
+	m_resource.m_job_system.add_task(tasks);
+	m_resource.m_job_system.wait_until_finish();
+
+	auto end = std::chrono::high_resolution_clock::now();
+	auto elapsed = end - start;
+	float load_meshes_time = std::chrono::duration<float>(elapsed).count();
+	printf("Load default meshes time multithread %f\n", load_meshes_time);
+#endif
 
 	m_cube_model =  m_resource.load_mesh("data/models/basics/cube.fbx");
 	m_cylinder_model =  m_resource.load_mesh("data/models/basics/cylinder.fbx");
@@ -177,6 +234,11 @@ void Engine::init_geometries(){
 	m_sphere_model = m_resource.load_mesh("data/models/basics/sphere.fbx");
 	m_sphere_medium_model = m_resource.load_mesh("data/models/basics/sphere_medium_resolution.fbx");
 	m_sphere_high_model = m_resource.load_mesh("data/models/basics/sphere_high_resolution.fbx");
+
+	auto end = std::chrono::high_resolution_clock::now();
+	auto elapsed = end - start;
+	float load_meshes_time = std::chrono::duration<float>(elapsed).count();
+	printf("Load default meshes time single thread %f\n", load_meshes_time);
 
 	std::vector<Model*> tmp = { m_cube_model , m_cylinder_model, m_cylinder_high_model,m_cone_model,m_cone_high_model,m_sphere_model,m_sphere_medium_model,m_sphere_high_model };
 	

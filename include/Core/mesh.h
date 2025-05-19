@@ -8,7 +8,11 @@ class Mesh {
 public:
 
 	Mesh();
+	Mesh(const Mesh&);
 	~Mesh();
+
+	Mesh& operator=(const Mesh&);
+	Mesh& operator=(Mesh&&);
 
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
@@ -26,4 +30,23 @@ private:
 
 struct Model {
 	std::vector<Mesh> meshes;
+
+	/*
+	Model& operator=(const Model&& other) {
+		if (this != &other) {
+			meshes = other.meshes;
+		}
+
+		*this;
+	}
+	
+	Model& operator=(Model& other) {
+		if (this != &other) {
+			meshes = other.meshes;
+			other.meshes.clear();
+		}
+
+		*this;
+	}
+	*/
 };
