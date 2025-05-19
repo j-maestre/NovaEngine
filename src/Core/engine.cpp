@@ -109,7 +109,7 @@ void Engine::init(Window* window){
 
 void Engine::update(){
 
-	m_props->inmediateDeviceContext->RSSetViewports(1, &m_viewport);
+	//m_props->inmediateDeviceContext->RSSetViewports(1, &m_viewport);
 
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<float> delta = currentTime - m_last_time;

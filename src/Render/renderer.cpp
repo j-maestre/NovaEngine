@@ -98,7 +98,7 @@ bool Renderer::init_pipeline(Window* win){
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&m_buffer_description, NULL, &m_pVBuffer);
 
 	
-
+	/**** Camera & model constant buffer creation ****/
 	ZeroMemory(&m_cam_constant_buffer, sizeof(m_cam_constant_buffer));
 	m_cam_constant_buffer.Usage = D3D11_USAGE_DEFAULT;
 	m_cam_constant_buffer.ByteWidth = sizeof(CameraConstantBuffer);
@@ -107,8 +107,7 @@ bool Renderer::init_pipeline(Window* win){
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&m_cam_constant_buffer,NULL, &m_pVBufferConstantCamera);
 
 
-
-	
+	/**** Depth stencil and texture creation ****/
 	D3D11_TEXTURE2D_DESC depth_desc{
 		.Width = win->get_window_properties()->width,
 		.Height = win->get_window_properties()->height,
@@ -148,8 +147,8 @@ bool Renderer::init_pipeline(Window* win){
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc{
 		.DepthEnable = true,
 		.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL,
-		//.DepthFunc = D3D11_COMPARISON_ALWAYS,				// TODO: Igual con multiples lights hay que cambiarlo
-		.DepthFunc = D3D11_COMPARISON_LESS,				
+		.DepthFunc = D3D11_COMPARISON_LESS_EQUAL,				// TODO: Igual con multiples lights hay que cambiarlo
+		//.DepthFunc = D3D11_COMPARISON_LESS,				
 	};
 	m_depth_stencil_state = nullptr;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilState(&depth_stencil_desc, &m_depth_stencil_state);
