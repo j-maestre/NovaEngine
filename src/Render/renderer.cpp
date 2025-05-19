@@ -147,8 +147,8 @@ bool Renderer::init_pipeline(Window* win){
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc{
 		.DepthEnable = true,
 		.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL,
-		.DepthFunc = D3D11_COMPARISON_LESS_EQUAL,				// TODO: Igual con multiples lights hay que cambiarlo
-		//.DepthFunc = D3D11_COMPARISON_LESS,				
+		.DepthFunc = D3D11_COMPARISON_LESS_EQUAL,		// For multiple lights
+		//.DepthFunc = D3D11_COMPARISON_LESS,			// For one light only	
 	};
 	m_depth_stencil_state = nullptr;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilState(&depth_stencil_desc, &m_depth_stencil_state);
@@ -272,6 +272,7 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 	auto transforms = ecs.viewComponents<TransformComponent, MeshComponent>();
 	auto directional_light = ecs.viewComponents<DirectionalLight>();
 	auto point_light = ecs.viewComponents<PointLight>();
+	auto spot_light = ecs.viewComponents<SpotLight>();
 
 	//float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
@@ -306,6 +307,21 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 		if (!point.get_enabled()) continue;
 		point.update();
 		point.upload_data();
+
+		for (auto [entity, trans, mesh] : transforms.each()) {
+			for (Mesh& m : mesh.get_model()->meshes) {
+				render_mesh_internal(cam_buffer, trans, m);
+			}
+		}
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
+	}
+	
+	active_shader(ShaderType::SpotLight);
+	for (auto [entity, spot] : spot_light.each()) {
+
+		if (!spot.get_enabled()) continue;
+		spot.update();
+		spot.upload_data();
 
 		for (auto [entity, trans, mesh] : transforms.each()) {
 			for (Mesh& m : mesh.get_model()->meshes) {

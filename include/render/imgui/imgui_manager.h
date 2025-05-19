@@ -17,6 +17,8 @@
 #include "components/camera_component.h"
 #include "components/mesh_component.h"
 #include "components/Lights/DirectionalLight.h"
+#include "components/Lights/PointLight.h"
+#include "components/Lights/SpotLight.h"
 
 
 
@@ -63,6 +65,7 @@ private:
 	void show_transform(TransformComponent* trans, int entity_id);
 	void show_light(DirectionalLight* light, int entity_id);
 	void show_light(PointLight* light, int entity_id);
+	void show_light(SpotLight* light, int entity_id);
 
 	float m_time;
 	float m_last_fps;
