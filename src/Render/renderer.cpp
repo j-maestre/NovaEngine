@@ -253,7 +253,9 @@ void Renderer::active_shader(ShaderType type){
 
 void Renderer::render_forward(EntityComponentSystem& ecs){
 
+#ifdef ENABLE_IMGUI
 	auto start = std::chrono::high_resolution_clock::now();
+#endif
 
 	clear_depth();
 
@@ -275,8 +277,8 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 
 	
 	active_shader(ShaderType::DirectionalLight);
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
 	
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
 	for (auto [entity, directional] : directional_light.each()) {
 
 
@@ -291,16 +293,17 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 				render_mesh_internal(cam_buffer, trans, m);
 			}
 		}
-		
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 	}
 
 	// Change blending
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
+	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 
 
 	active_shader(ShaderType::PointLight);
 	for (auto [entity, point] : point_light.each()) {
 
+		if (!point.get_enabled()) continue;
 		point.update();
 		point.upload_data();
 
@@ -309,18 +312,20 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 				render_mesh_internal(cam_buffer, trans, m);
 			}
 		}
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 	}
 
 
 
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
+
+#ifdef ENABLE_IMGUI
 	ImguiManager::get_instance()->m_draw_time = std::chrono::duration<float>(elapsed).count();
-
-
 	ImguiManager::get_instance()->render();
 	ImguiManager::get_instance()->scene_info(ecs);
 	ImguiManager::get_instance()->show_cam(m_cam, 0xfff);
+#endif
 
 }
 
