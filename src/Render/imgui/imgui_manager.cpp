@@ -226,8 +226,11 @@ void ImguiManager::system_info(){
 	bool right_click = Engine::get_instance()->m_input.is_key_pressed(Key::Mouse::RBUTTON);
 	ImGui::Text("Click (%d,%d)", left_click?1:0, right_click?1:0);
 
-	ImGui::SeparatorText("Debug info");
-	ImGui::Text(m_debug.c_str());
+	ImGui::SeparatorText("Resources loaded");
+
+	for (auto& s : m_resources_loaded) {
+		ImGui::Text(s.c_str());
+	}
 
 
 
@@ -505,6 +508,12 @@ void ImguiManager::show_cam(CameraComponent* cam, int entity_id){
 
 	ImGui::End();
 
+}
+
+void ImguiManager::add_resource_loaded(std::string text){
+
+	std::lock_guard<std::mutex> locked{ resources_lock };
+	m_resources_loaded.push_back(text);
 }
 
 void ImguiManager::scene_info(EntityComponentSystem& ecs){

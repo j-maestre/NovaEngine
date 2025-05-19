@@ -30,23 +30,5 @@ private:
 
 struct Model {
 	std::vector<Mesh> meshes;
-
-	/*
-	Model& operator=(const Model&& other) {
-		if (this != &other) {
-			meshes = other.meshes;
-		}
-
-		*this;
-	}
-	
-	Model& operator=(Model& other) {
-		if (this != &other) {
-			meshes = other.meshes;
-			other.meshes.clear();
-		}
-
-		*this;
-	}
-	*/
+	std::vector<Mesh> meshes_copy;
 };

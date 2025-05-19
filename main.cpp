@@ -65,7 +65,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	t3.set_scale({ scale, scale, scale });
 
 	//Model* model = engine->get_cone();
-	Model* model = engine->m_resource.load_mesh("data/models/Sponza/Sponza_new.fbx");
+	Model* model = engine->m_resource.load_mesh("data/models/Sponza/Sponza_new.fbx", true);
 	meshCompSponza.set_model(model);
 
 	Entity directional_light = scene.m_ecs.create_entity("Directional Light");

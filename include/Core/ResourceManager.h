@@ -15,6 +15,7 @@
 
 class Engine;
 
+
 class ResourceManager {
 
 private:
@@ -37,6 +38,10 @@ private:
 
 	void ProcessNode(Model* mesh, aiNode* node, const aiScene* scene, std::string absolute_path);
 	void ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene* scene, std::string absolute_path);
+
+	void check_models_to_load();
+
+	std::vector<std::shared_ptr<Model>> m_model_to_load;
 
 	JobSystem m_job_system;
 

@@ -51,7 +51,9 @@ public:
 
 	void show_cam(CameraComponent* cam, int entity_id);
 
-	std::string m_debug = "";
+	void add_resource_loaded(std::string text);
+
+	std::string m_resources = "";
 private:
 	friend class Window;
 	friend class CameraComponent;
@@ -68,6 +70,8 @@ private:
 	void show_light(PointLight* light, int entity_id);
 	void show_light(SpotLight* light, int entity_id);
 
+	std::vector<std::string> m_resources_loaded;
+
 	float m_time;
 	float m_last_fps;
 	float m_update_fps_time;
@@ -82,6 +86,6 @@ private:
 	float m_draw_time = 0.0f;
 	float m_update_transform_time = 0.0f;
 
-
+	std::mutex resources_lock;
 	ImGuiViewport* m_viewport;
 };

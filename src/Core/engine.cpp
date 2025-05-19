@@ -117,6 +117,8 @@ void Engine::update(){
 	m_last_time = currentTime;
 	m_delta_time = delta.count();
 	m_time += m_delta_time;
+	
+	m_resource.check_models_to_load();
 }
 
 void Engine::release(){
