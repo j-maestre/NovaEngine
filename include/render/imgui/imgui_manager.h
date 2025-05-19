@@ -11,6 +11,7 @@
 #include "backends/imgui_impl_win32.h"
 #include "Core/engine.h"
 #include "Core/ECS.h"
+#include "Core/Scene.h"
 
 #include "components/transform_component.h"
 #include "components/camera_component.h"
@@ -52,6 +53,7 @@ private:
 	friend class Window;
 	friend class CameraComponent;
 	friend class Renderer;
+	friend class Scene;
 
 	void init(HWND handle);
 
@@ -59,7 +61,8 @@ private:
 	void system_info();
 
 	void show_transform(TransformComponent* trans, int entity_id);
-	void show_directional(DirectionalLight* light, int entity_id);
+	void show_light(DirectionalLight* light, int entity_id);
+	void show_light(PointLight* light, int entity_id);
 
 	float m_time;
 	float m_last_fps;
@@ -73,6 +76,7 @@ private:
 	float m_mouse_delta_y = 0.0f;
 
 	float m_draw_time = 0.0f;
+	float m_update_transform_time = 0.0f;
 
 	ImGuiViewport* m_viewport;
 };

@@ -61,7 +61,7 @@ Vec3& DirectionalLight::get_direction(){
 
 bool DirectionalLight::get_enabled()
 {
-	return m_buffer.enabled;
+	return m_buffer.enabled > 0.0f;
 }
 
 Vec3& DirectionalLight::get_color()

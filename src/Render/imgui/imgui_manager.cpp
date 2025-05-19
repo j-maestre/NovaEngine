@@ -216,6 +216,7 @@ void ImguiManager::system_info(){
 	ImGui::Text("FPS: %f", m_last_fps);
 	ImGui::Text("Delta Time: %f", dt);
 	ImGui::Text("Draw Time: %f", m_draw_time);
+	ImGui::Text("Update transform time: %f", m_update_transform_time);
 	ImGui::PlotLines("Delta time", m_dt_history.data(), m_dt_history_size, m_dt_history_index, nullptr, FLT_MAX, FLT_MAX, ImVec2(0, 70));
 
 	ImGui::Text("Mouse (%.0f, %.0f)", mouse_x, mouse_y);
@@ -259,7 +260,74 @@ void ImguiManager::show_transform(TransformComponent* trans, int entity_id){
 
 }
 
-void ImguiManager::show_directional(DirectionalLight* light, int entity_id){
+void ImguiManager::show_light(PointLight* light, int entity_id){
+	ImGui::SeparatorText("Point Light");
+
+	Vec3 position = light->get_position();
+	float pos_tmp[3] = { position.x, position.y, position.z };
+
+
+	bool enabled = light->get_enabled();
+
+	Vec3 color = light->get_color();
+	float color_tmp[3] = { color.x, color.y, color.z };
+
+	float specular_strenght = light->get_specular_strenght();
+
+	Vec3 specular_color = light->get_specular_color();
+	float spec_color_tmp[3] = { specular_color.x, specular_color.y, specular_color.z };
+
+	float specular_shininess = light->get_specular_shininess();
+
+	float constant_att = light->get_constant_attenuation();
+	float linear_att = light->get_linear_attenuation();
+	float cuadratic_att = light->get_quadratic_attenuation();
+	float att = light->get_attenuation();
+
+
+	std::string label = "Position##" + std::to_string(entity_id);
+	ImGui::DragFloat3(label.c_str(), pos_tmp, 0.1f);
+
+	label = "Enabled##" + std::to_string(entity_id);
+	ImGui::Checkbox(label.c_str(), &enabled);
+
+	label = "Color##" + std::to_string(entity_id);
+	ImGui::DragFloat3(label.c_str(), color_tmp, 0.005f, 0.0f, 1.0f);
+
+	label = "Specular Strenght##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &specular_strenght, 0.001f, 0.0f, 1.0f);
+
+	label = "Specular Color##" + std::to_string(entity_id);
+	ImGui::DragFloat3(label.c_str(), spec_color_tmp, 0.005f, -1.0f, 1.0f);
+
+	label = "Specular Shininess##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &specular_shininess);
+
+	label = "Atenuattion##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &att, 0.0001f, 0.0f);
+
+	label = "Constant atenuattion##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &constant_att, 0.0001f, 0.0f);
+
+	label = "Linear atenuattion##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &linear_att, 0.0001f, 0.0f);
+
+	label = "Cuadratic atenuattion##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &cuadratic_att, 0.0001f, 0.0f);
+
+	light->set_position({pos_tmp[0], pos_tmp[1], pos_tmp[2] });
+	light->set_enabled(enabled);
+	light->set_color({ color_tmp[0], color_tmp[1], color_tmp[2] });
+	light->set_specular_strenght(specular_strenght);
+	light->set_specular_color({ spec_color_tmp[0], spec_color_tmp[1], spec_color_tmp[2] });
+	light->set_specular_shininess(specular_shininess);
+	light->set_attenuation(att);
+	light->set_constant_attenuation(constant_att);
+	light->set_linear_attenuation(linear_att);
+	light->set_quadratic_attenuation(cuadratic_att);
+}
+
+void ImguiManager::show_light(DirectionalLight* light, int entity_id){
 	
 	ImGui::SeparatorText("Directional Light");
 
@@ -381,7 +449,12 @@ void ImguiManager::scene_info(EntityComponentSystem& ecs){
 
 			DirectionalLight* dir_light = ecs.get_component<DirectionalLight>(e);
 			if (dir_light) {
-				show_directional(dir_light, e.get_id());
+				show_light(dir_light, e.get_id());
+			}
+			
+			PointLight* point_light = ecs.get_component<PointLight>(e);
+			if (point_light) {
+				show_light(point_light, e.get_id());
 			}
 		}
 	}

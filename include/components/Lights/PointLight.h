@@ -31,6 +31,17 @@ public:
 
 	void upload_data() override;
 
+    Vec3 get_position() { return m_buffer.position; }
+    float get_enabled() { return m_buffer.enabled > 0.0f; }
+    Vec3  get_color() { return m_buffer.diffuse_color; }
+    float get_specular_strenght() { return m_buffer.specular_strength; }
+    Vec3  get_specular_color() { return m_buffer.specular_color; }
+    float get_specular_shininess() { return m_buffer.specular_shininess; }
+    float get_constant_attenuation() { return m_buffer.constant_att; }
+    float get_linear_attenuation() { return m_buffer.linear_att; }
+    float get_quadratic_attenuation() { return m_buffer.quadratic_att; }
+    float get_attenuation() { return m_buffer.attenuation; }
+
     void set_position(Vec3 pos);
     void set_enabled(bool enabled);
     void set_color(Vec3 color);
