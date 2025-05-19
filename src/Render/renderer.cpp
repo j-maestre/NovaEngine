@@ -187,7 +187,7 @@ bool Renderer::init_pipeline(Window* win){
 			.SrcBlend = D3D11_BLEND_ONE,
 			.DestBlend = D3D11_BLEND_ONE,
 			.BlendOp = D3D11_BLEND_OP_ADD,
-			.SrcBlendAlpha = D3D11_BLEND_ONE,
+			.SrcBlendAlpha = D3D11_BLEND_ZERO,			// I dont want the alpha being accumulative when multiples lights
 			.DestBlendAlpha = D3D11_BLEND_ONE,
 			.BlendOpAlpha = D3D11_BLEND_OP_ADD,
 			.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL
