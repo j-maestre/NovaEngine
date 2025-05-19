@@ -221,7 +221,6 @@ Model* ResourceManager::load_mesh(std::string path, bool async){
 
 		imgui_manager->add_resource_loaded({ "Procesing mesh multithread " + path + "\n" });
 
-		printf("Loaded\nProcesing mesh...\n");
 		const char* ret = importer.GetErrorString();
 		assert(scene && "Error loading mesh");
 
@@ -253,7 +252,11 @@ Model* ResourceManager::load_mesh(std::string path, bool async){
 
 
 		std::shared_ptr<Model> model_ptr(model, [](Model* m) {});
-		m_model_to_load.push_back(model_ptr);
+
+		{
+			std::lock_guard<std::mutex> locked{ m_mutex_model_to_load };
+			m_model_to_load.push_back(model_ptr);
+		}
 
 	};
 
@@ -416,50 +419,56 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 
 void ResourceManager::check_models_to_load(){
 
-	for (std::shared_ptr<Model>& model : m_model_to_load) {
+	if (m_model_to_load.size() > 0) [[unlikely]]{
+
+		std::lock_guard<std::mutex> locked{ m_mutex_model_to_load };
+		for (std::shared_ptr<Model>& model : m_model_to_load) {
 
 
-		for (Mesh& m : model->meshes_copy) {
+			for (Mesh& m : model->meshes_copy) {
 
-			// Vertex buffer
-			D3D11_BUFFER_DESC buffer_desc{};
-			ZeroMemory(&buffer_desc, sizeof(buffer_desc));
-			buffer_desc.Usage = D3D11_USAGE_DYNAMIC;					// Write acces by CPU and GPU
-			buffer_desc.ByteWidth = m.num_vertices * sizeof(Vertex);
-			buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;			// Using as Vertex buffer
-			buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;		// allow CPU to write in the buffer
-			Engine::get_instance()->get_engine_props()->deviceInterface->CreateBuffer(&buffer_desc, NULL, &m.buffer);
+				// Vertex buffer
+				D3D11_BUFFER_DESC buffer_desc{};
+				ZeroMemory(&buffer_desc, sizeof(buffer_desc));
+				buffer_desc.Usage = D3D11_USAGE_DYNAMIC;					// Write acces by CPU and GPU
+				buffer_desc.ByteWidth = m.num_vertices * sizeof(Vertex);
+				buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;			// Using as Vertex buffer
+				buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;		// allow CPU to write in the buffer
+				Engine::get_instance()->get_engine_props()->deviceInterface->CreateBuffer(&buffer_desc, NULL, &m.buffer);
 
-			D3D11_MAPPED_SUBRESOURCE ms_mesh;
+				D3D11_MAPPED_SUBRESOURCE ms_mesh;
 
 
 
-			// Index buffer
-			D3D11_BUFFER_DESC index_buffer_desc{};
-			ZeroMemory(&index_buffer_desc, sizeof(index_buffer_desc));
-			index_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-			index_buffer_desc.ByteWidth = m.num_indices * sizeof(unsigned int);
-			index_buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-			index_buffer_desc.CPUAccessFlags = 0;
-			index_buffer_desc.MiscFlags = 0;
-			D3D11_SUBRESOURCE_DATA init_data = {};
-			init_data.pSysMem = m.indices.data();
+				// Index buffer
+				D3D11_BUFFER_DESC index_buffer_desc{};
+				ZeroMemory(&index_buffer_desc, sizeof(index_buffer_desc));
+				index_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+				index_buffer_desc.ByteWidth = m.num_indices * sizeof(unsigned int);
+				index_buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+				index_buffer_desc.CPUAccessFlags = 0;
+				index_buffer_desc.MiscFlags = 0;
+				D3D11_SUBRESOURCE_DATA init_data = {};
+				init_data.pSysMem = m.indices.data();
 
-			m.index_buffer = nullptr;
-			HRESULT hr = Engine::get_instance()->get_engine_props()->deviceInterface->CreateBuffer(&index_buffer_desc, &init_data, &m.index_buffer);
-			if (FAILED(hr)) {
-				assert("Buffer creation failed");
+				m.index_buffer = nullptr;
+				HRESULT hr = Engine::get_instance()->get_engine_props()->deviceInterface->CreateBuffer(&index_buffer_desc, &init_data, &m.index_buffer);
+				if (FAILED(hr)) {
+					assert("Buffer creation failed");
+				}
+				Engine::get_instance()->get_engine_props()->inmediateDeviceContext->Map(m.buffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms_mesh);
+				memcpy(ms_mesh.pData, m.vertices.data(), sizeof(Vertex) * m.num_vertices);
+				Engine::get_instance()->get_engine_props()->inmediateDeviceContext->Unmap(m.buffer, NULL);
+
 			}
-			Engine::get_instance()->get_engine_props()->inmediateDeviceContext->Map(m.buffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms_mesh);
-			memcpy(ms_mesh.pData, m.vertices.data(), sizeof(Vertex) * m.num_vertices);
-			Engine::get_instance()->get_engine_props()->inmediateDeviceContext->Unmap(m.buffer, NULL);
-
+		
+			model->meshes = std::move(model->meshes_copy);
+		
 		}
-		
-		model->meshes = std::move(model->meshes_copy);
-		
-	}
 
-	m_model_to_load.clear();
+	
+		m_model_to_load.clear();
+	
+	}
 
 }

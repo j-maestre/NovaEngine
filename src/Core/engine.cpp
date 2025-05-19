@@ -169,48 +169,45 @@ Texture* Engine::get_default_albedo_texture(){
 	return m_resource.get_texture(m_default_texture_albedo);
 }
 
-//#define MULTI_THREAD
+#define MULTI_THREAD
 void Engine::init_geometries(){
 
 
 	auto start = std::chrono::high_resolution_clock::now();
-
+	m_resource.load_mesh("data/models/basics/cube.fbx");
+	m_cube_model = m_resource.load_mesh("data/models/basics/cube.fbx");
 #ifdef MULTI_THREAD
 
 	std::vector<std::function<void()>> tasks;
 
-	auto task1 = [this]() {
-		this->m_resource.load_mesh("data/models/basics/cube.fbx");
-	};
-	
 	auto task2 = [this]() {
-		this->m_resource.load_mesh("data/models/basics/cylinder.fbx");
+		this->m_resource.load_mesh("data/models/basics/cylinder.fbx", true);
 	};	
 	auto task3 = [this]() {
-		this->m_resource.load_mesh("data/models/basics/cylinder_high.fbx");
+		this->m_resource.load_mesh("data/models/basics/cylinder_high.fbx", true);
 	};
 
 	auto task4 = [this]() {
-		this->m_resource.load_mesh("data/models/basics/cone.fbx");
+		this->m_resource.load_mesh("data/models/basics/cone.fbx", true);
 	};
 	
 	auto task5 = [this]() {
-		this->m_resource.load_mesh("data/models/basics/cone_high.fbx");
+		this->m_resource.load_mesh("data/models/basics/cone_high.fbx", true);
 	};
 
 	auto task6 = [this]() {
-		this->m_resource.load_mesh("data/models/basics/sphere.fbx");
+		this->m_resource.load_mesh("data/models/basics/sphere.fbx", true);
 	};
 	
 	auto task7 = [this]() {
-		this->m_resource.load_mesh("data/models/basics/sphere_medium_resolution.fbx");
+		this->m_resource.load_mesh("data/models/basics/sphere_medium_resolution.fbx", true);
 	};
 	
 	auto task8 = [this]() {
-		this->m_resource.load_mesh("data/models/basics/sphere_high_resolution.fbx");
+		this->m_resource.load_mesh("data/models/basics/sphere_high_resolution.fbx", true);
 	};
 
-	tasks.push_back(task1);
+	//tasks.push_back(task1);
 	tasks.push_back(task2);
 	tasks.push_back(task3);
 	tasks.push_back(task4);
@@ -228,7 +225,7 @@ void Engine::init_geometries(){
 	printf("Load default meshes time multithread %f\n", load_meshes_time);
 #endif
 
-	m_cube_model =  m_resource.load_mesh("data/models/basics/cube.fbx");
+	//m_cube_model =  m_resource.load_mesh("data/models/basics/cube.fbx");
 	m_cylinder_model =  m_resource.load_mesh("data/models/basics/cylinder.fbx");
 	m_cylinder_high_model =  m_resource.load_mesh("data/models/basics/cylinder_high.fbx");
 	m_cone_model =  m_resource.load_mesh("data/models/basics/cone.fbx");
@@ -237,10 +234,12 @@ void Engine::init_geometries(){
 	m_sphere_medium_model = m_resource.load_mesh("data/models/basics/sphere_medium_resolution.fbx");
 	m_sphere_high_model = m_resource.load_mesh("data/models/basics/sphere_high_resolution.fbx");
 
+#ifndef MULTI_THREAD
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
 	float load_meshes_time = std::chrono::duration<float>(elapsed).count();
 	printf("Load default meshes time single thread %f\n", load_meshes_time);
+#endif
 
 	std::vector<Model*> tmp = { m_cube_model , m_cylinder_model, m_cylinder_high_model,m_cone_model,m_cone_high_model,m_sphere_model,m_sphere_medium_model,m_sphere_high_model };
 	

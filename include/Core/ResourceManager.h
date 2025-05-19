@@ -47,6 +47,7 @@ private:
 
 	std::mutex m_mutex_textures;
 	std::mutex m_mutex_models;
+	std::mutex m_mutex_model_to_load;
 
 	std::unordered_map<unsigned int, Texture> m_textures;
 	std::unordered_map<unsigned int, Model> m_models;

@@ -227,6 +227,9 @@ void ImguiManager::system_info(){
 	ImGui::Text("Click (%d,%d)", left_click?1:0, right_click?1:0);
 
 	ImGui::SeparatorText("Resources loaded");
+	if (ImGui::Button("Clear")) {
+		m_resources_loaded.clear();
+	}
 
 	for (auto& s : m_resources_loaded) {
 		ImGui::Text(s.c_str());
