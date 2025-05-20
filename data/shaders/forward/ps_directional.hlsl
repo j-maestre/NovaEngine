@@ -17,7 +17,8 @@ cbuffer DirectionalLightConstantBuffer : register(b0)
     float specular_shininess;
 }
 
-Texture2D myTexture : register(t0);
+Texture2D albedo_tex : register(t0);
+Texture2D normal_tex : register(t1);
 SamplerState mySampler : register(s0);
 
 
@@ -39,6 +40,23 @@ float3 CalculeDirectionalLight(float3 normal, float3 view_dir, float3 color_base
 
 }
 
+float3 getNormalFromMap(float3 normal_texture, float3 normal, float3 world_position, float2 uv){
+    
+    float3 tangentNormal = normal_texture * 2.0 - 1.0;
+
+    
+    float3 Q1 = ddx(world_position);
+    float3 Q2 = ddy(world_position);
+    float2 st1 = ddx(uv);
+    float2 st2 = ddy(uv);
+
+    float3 N = normalize(normal);
+    float3 T = normalize(Q1 * st2.x - Q2 * st1.x);
+    float3 B = -normalize(cross(N, T));
+    float3x3 TBN = float3x3(T, B, N);
+    
+    return normalize(mul(tangentNormal, TBN));
+}
 
 float4 PShader(PS_INPUT input) : SV_TARGET
 {
@@ -49,10 +67,14 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     //return out_color;
     
     const float3 view_dir = normalize(input.cam_pos - input.world_position);
-    const float4 texture_color = (myTexture.Sample(mySampler, input.uv));
-    const float3 light_color = CalculeDirectionalLight(input.normal, view_dir, texture_color.rgb);
+    const float4 texture_color = (albedo_tex.Sample(mySampler, input.uv));
+    const float4 texture_normal = (normal_tex.Sample(mySampler, input.uv));
+    const float3 normal_procesed = getNormalFromMap(texture_normal.rgb, input.normal, input.world_position, input.uv);
     
-    return float4(light_color, 1.0);
+    const float3 light_color = CalculeDirectionalLight(normal_procesed, view_dir, texture_color.rgb);
+    
+    //return float4(normal_procesed, 1.0);
+    return float4(light_color, texture_color.a);
 
 }
 

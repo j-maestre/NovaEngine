@@ -23,7 +23,8 @@ cbuffer SpotLightConstantBuffer : register(b0)
     float quadratic_att;
 }
 
-Texture2D myTexture : register(t0);
+Texture2D albedo_tex : register(t0);
+Texture2D normal_tex : register(t1);
 SamplerState mySampler : register(s0);
 
 
@@ -86,10 +87,10 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     //return out_color;
     
     const float3 view_dir = normalize(input.cam_pos - input.world_position);
-    const float4 texture_color = (myTexture.Sample(mySampler, input.uv));
+    const float4 texture_color = (albedo_tex.Sample(mySampler, input.uv));
     const float3 light_color = CalculeSpotLight(input.normal, view_dir, texture_color.rgb, input.world_position);
     
-    return float4(light_color, 1.0);
+    return float4(light_color, texture_color.a);
 
 }
 

@@ -157,11 +157,13 @@ float Engine::get_time(){
 void Engine::load_default_textures(){
 	Texture* t = m_resource.load_texture("data/textures/jou.jpg");
 	Texture* t2 = m_resource.load_texture("data/textures/kirby.png");
+	Texture* normal = m_resource.load_texture("data/textures/default_normal.png");
 
 	m_default_texture_albedo = t->get_id();
 	m_texture_tmp = t2->get_id();
 
 	m_default_material.set_texture_albedo(t);
+	m_default_material.set_texture_normal(normal);
 }
 
 Texture* Engine::get_default_albedo_texture(){

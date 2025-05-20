@@ -184,10 +184,14 @@ bool Renderer::init_pipeline(Window* win){
 			{ // 0
 			.BlendEnable = true,
 			.SrcBlend = D3D11_BLEND_ONE,
+			//.SrcBlend = D3D11_BLEND_SRC_ALPHA,
 			.DestBlend = D3D11_BLEND_ONE,
+			//.DestBlend = D3D11_BLEND_INV_SRC_ALPHA,
 			.BlendOp = D3D11_BLEND_OP_ADD,
-			.SrcBlendAlpha = D3D11_BLEND_ZERO,			// I dont want the alpha being accumulative when multiples lights
+			.SrcBlendAlpha = D3D11_BLEND_ZERO,			
+			//.SrcBlendAlpha = D3D11_BLEND_ONE,			
 			.DestBlendAlpha = D3D11_BLEND_ONE,
+			//.DestBlendAlpha = D3D11_BLEND_ZERO,
 			.BlendOpAlpha = D3D11_BLEND_OP_ADD,
 			.RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL
 		}
@@ -388,19 +392,17 @@ void Renderer::resize(unsigned int width, unsigned int height){
 void Renderer::render_mesh_internal(CameraConstantBuffer& camera_buffer, TransformComponent& trans, Mesh& m){
 	camera_buffer.model = DirectX::XMMatrixTranspose(trans.get_transform());
 
+	// Buffer de la camara con la model del objeto
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, &camera_buffer, 0, 0);
-
-	// Buffer de la camara y la model del objeto subido, ahora draw cube
-	//const std::vector<Vertex> cube = m_engine_ptr->get_cube();
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m.buffer, &stride, &offset);
 
-
-
+	// Draw
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0, 1, &(m.material.get_albedo()->m_data.texture_view));
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(1, 1, &(m.material.get_normal()->m_data.texture_view));
 	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m.index_buffer, DXGI_FORMAT_R32_UINT, 0);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
