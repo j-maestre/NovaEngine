@@ -33,10 +33,6 @@ public:
 
 	void set_cull_mode();
 
-	void upload_triangle();
-	void draw_triangle();
-	void draw_cube();
-
 	void set_camera(CameraComponent* cam);
 
 	void release();
@@ -74,7 +70,6 @@ private:
 	ID3D11Buffer* m_pVBufferLight;
 
 	ID3D11Buffer* m_pVBuffer;
-	ID3D11Buffer* m_pVBufferCube;
 
 	ID3D11InputLayout* m_pLayout;
 	

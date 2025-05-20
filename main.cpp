@@ -8,7 +8,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	Window win;
 	WindowProperties props;
-	Color c = { 0.1f, 0.1f, 0.1f, 1.0f };
+	Color c = { 0.1f, 0.1f, 0.1f, 0.0f };
 	props.clear_color = c;
 	props.width = SCREEN_WIDTH;
 	props.height = SCREEN_HEIGHT;
