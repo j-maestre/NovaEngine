@@ -15,6 +15,11 @@
 
 class Engine;
 
+struct TextureToLoad {
+	Texture* tex;
+	ImageData* data;
+	unsigned char* pixels;
+};
 
 class ResourceManager {
 
@@ -36,16 +41,20 @@ public:
 
 private:
 
-	void ProcessNode(Model* mesh, aiNode* node, const aiScene* scene, std::string absolute_path);
-	void ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene* scene, std::string absolute_path);
+	Texture* load_texture(std::string path, bool async);
+	void ProcessNode(Model* mesh, aiNode* node, const aiScene* scene, std::string absolute_path, bool async = false);
+	void ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene* scene, std::string absolute_path, bool async = false);
 
 	void check_models_to_load();
+	void check_textures_to_load();
 
 	std::vector<std::shared_ptr<Model>> m_model_to_load;
+	std::vector<std::shared_ptr<TextureToLoad>> m_texture_to_load;
 
 	JobSystem m_job_system;
 
 	std::mutex m_mutex_textures;
+	std::mutex m_mutex_textures_to_load;
 	std::mutex m_mutex_models;
 	std::mutex m_mutex_model_to_load;
 

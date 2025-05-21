@@ -217,11 +217,17 @@ bool Renderer::init_pipeline(Window* win){
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateInputLayout(ied,3,VS->GetBufferPointer(), VS->GetBufferSize(), &m_pLayout);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
 
-	m_sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	//m_sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	m_sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
+	m_sampler_desc.MaxAnisotropy = 2;
+
 	m_sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	m_sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	m_sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+
 	m_sampler_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	//m_sampler_desc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;	// For shadow mapping
+	
 	m_sampler_desc.MinLOD = 0;
 	m_sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 
@@ -293,7 +299,7 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 		for (auto [entity, trans, mesh] : transforms.each()) {
 			for (Mesh& m : mesh.get_model()->meshes) {
 				//__debugbreak();
-				render_mesh_internal(cam_buffer, trans, m);
+				render_mesh_internal(&cam_buffer, trans, m);
 			}
 		}
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
@@ -312,7 +318,7 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 
 		for (auto [entity, trans, mesh] : transforms.each()) {
 			for (Mesh& m : mesh.get_model()->meshes) {
-				render_mesh_internal(cam_buffer, trans, m);
+				render_mesh_internal(&cam_buffer, trans, m);
 			}
 		}
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
@@ -327,7 +333,7 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 
 		for (auto [entity, trans, mesh] : transforms.each()) {
 			for (Mesh& m : mesh.get_model()->meshes) {
-				render_mesh_internal(cam_buffer, trans, m);
+				render_mesh_internal(&cam_buffer, trans, m);
 			}
 		}
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
@@ -389,11 +395,11 @@ void Renderer::resize(unsigned int width, unsigned int height){
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilView(m_depth_buffer, nullptr, &m_depth_stencil_view);
 }
 
-void Renderer::render_mesh_internal(CameraConstantBuffer& camera_buffer, TransformComponent& trans, Mesh& m){
-	camera_buffer.model = DirectX::XMMatrixTranspose(trans.get_transform());
+void Renderer::render_mesh_internal(CameraConstantBuffer* camera_buffer, TransformComponent& trans, Mesh& m){
+	camera_buffer->model = DirectX::XMMatrixTranspose(trans.get_transform());
 
 	// Buffer de la camara con la model del objeto
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, &camera_buffer, 0, 0);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, camera_buffer, 0, 0);
 
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;

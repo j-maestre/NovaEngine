@@ -119,6 +119,7 @@ void Engine::update(){
 	m_time += m_delta_time;
 	
 	m_resource.check_models_to_load();
+	m_resource.check_textures_to_load();
 }
 
 void Engine::release(){

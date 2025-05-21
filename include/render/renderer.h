@@ -41,7 +41,7 @@ private:
 	void clear_depth();
 	void compile_shader(std::string path);
 	void resize(unsigned int width, unsigned int height);
-	__forceinline void render_mesh_internal(CameraConstantBuffer& camera_buffer, TransformComponent& trans, Mesh& m);
+	__forceinline void render_mesh_internal(CameraConstantBuffer* camera_buffer, TransformComponent& trans, Mesh& m);
 
 	friend class Window;
 
