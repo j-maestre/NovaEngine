@@ -10,12 +10,13 @@ MeshComponent::MeshComponent(Model* model){
 	m_model = model;
 }
 
-MeshComponent::MeshComponent(const MeshComponent&)
-{
+MeshComponent::MeshComponent(const MeshComponent&){
+	printf("copia");
 }
 
-MeshComponent::MeshComponent(MeshComponent&&)
-{
+MeshComponent::MeshComponent(MeshComponent&&){
+
+	printf("movimiento");
 }
 
 MeshComponent::~MeshComponent()

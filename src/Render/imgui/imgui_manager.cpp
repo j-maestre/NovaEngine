@@ -430,8 +430,13 @@ void ImguiManager::show_light(DirectionalLight* light, int entity_id){
 	
 	float specular_shininess = light->get_specular_shininess();
 
+	float intensity = light->get_intensity();
+
 	std::string label = "Direction##" + std::to_string(entity_id);
 	ImGui::DragFloat3(label.c_str(), dir_tmp, 0.005f, -1.0f, 1.0f);
+
+	label = "Intensity##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &intensity, 0.01f, 0.0f);
 
 	label = "Enabled##" + std::to_string(entity_id);
 	ImGui::Checkbox(label.c_str(), &enabled);
@@ -457,6 +462,7 @@ void ImguiManager::show_light(DirectionalLight* light, int entity_id){
 	light->set_specular_strenght(specular_strenght);
 	light->set_specular_color({ spec_color_tmp[0], spec_color_tmp[1], spec_color_tmp[2] });
 	light->set_specular_shininess(specular_shininess);
+	light->set_intensity(intensity);
 
 
 }

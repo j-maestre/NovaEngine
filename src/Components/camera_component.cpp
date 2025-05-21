@@ -122,8 +122,8 @@ void CameraComponent::fly(float dt){
 		ImguiManager::get_instance()->m_mouse_delta_y = OffsetY;
 #endif
 
-		OffsetX *= m_mouse_sensitivity * dt;
-		OffsetY *= m_mouse_sensitivity * dt;
+		OffsetX *= m_mouse_sensitivity;
+		OffsetY *= m_mouse_sensitivity;
 
 		if (m_last_start_movement == false) {
 			OffsetX = 0.0f;
@@ -134,8 +134,8 @@ void CameraComponent::fly(float dt){
 			LPARAM param = MAKELPARAM(m_center_x, m_center_y);
 			m_win->process_mouse(param);
 		}
-		m_yaw += OffsetX;
-		m_pitch -= OffsetY;
+		m_yaw += OffsetX * dt;
+		m_pitch -= OffsetY * dt;
 
 		m_last_mouse_x = MouseX;
 		m_last_mouse_y = MouseY;
