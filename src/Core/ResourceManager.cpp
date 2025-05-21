@@ -4,6 +4,7 @@
 #include "stb/stb_image.h"
 #include "Core/engine.h"
 #include "render/imgui/imgui_manager.h"
+#include "components/mesh_component.h"
 
 
 ResourceManager::ResourceManager() : m_job_system(){
@@ -247,6 +248,94 @@ Model* ResourceManager::load_mesh(std::string path){
 	m_models.insert(std::pair(hash, model));
 	
 	return &(m_models.find(hash)->second);
+}
+
+Model* ResourceManager::load_mesh_async(std::string path, MeshComponent* mesh_comp){
+
+	unsigned int hash = (unsigned int)std::hash<std::string>{}(path);
+
+	// TODO: Race condition here?
+	if (m_models.contains(hash)) {
+		return &(m_models.find(hash)->second);
+	}
+
+
+	Model model_cube = *m_engine->get_cube();
+	Engine* e = Engine::get_instance();
+
+	// Insert copy of cube model
+	{
+		std::lock_guard<std::mutex> locked{ m_mutex_models };
+		m_models.insert(std::pair(hash, model_cube));
+	}
+
+	Model* model = &(m_models.find(hash)->second);
+	//model->meshes.clear();
+	ImguiManager* imgui_manager = ImguiManager::get_instance();
+	auto task = [this, path, model, e, imgui_manager, hash, mesh_comp]() {
+
+		Model model_tmp;
+
+		Assimp::Importer importer;
+
+		printf("Loading mesh %s\n", path.c_str());
+		const aiScene* scene = importer.ReadFile(path.c_str(),
+			aiProcess_Triangulate |
+			aiProcess_FlipUVs |
+			aiProcess_JoinIdenticalVertices);
+
+		imgui_manager->add_resource_loaded({ "Procesing mesh multithread " + path + "\n" });
+
+		const char* ret = importer.GetErrorString();
+		assert(scene && "Error loading mesh");
+
+		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+			printf("Error loading mesh\n %s\n", importer.GetErrorString());
+			//return nullptr;
+		}
+
+		std::string full_path = path;
+		char c;
+		bool interrupt = false;
+		do {
+			c = full_path.back();
+			if (c != '/') {
+				full_path.pop_back();
+			}
+			else { interrupt = true; }
+		} while (interrupt == false);
+
+
+		aiNode* rootNode = scene->mRootNode;
+
+		ProcessNode(&model_tmp, rootNode, scene, full_path, true);
+
+		// Swap
+		//model->meshes.clear();
+		model->meshes_copy = model_tmp.meshes;
+		//*model = model_tmp;
+
+
+		std::shared_ptr<Model> model_ptr(model, [](Model* m) {});
+		ModelToLoad m_to_load{
+			.model = model_ptr,
+			.mesh_component = mesh_comp
+		};
+
+		{
+			std::lock_guard<std::mutex> locked{ m_mutex_mesh_component_to_load };
+			m_mesh_component_to_load.push_back(m_to_load);
+		}
+
+		};
+
+
+	std::vector<std::function<void()>> tasks;
+	tasks.push_back(task);
+
+	m_job_system.add_task(tasks);
+
+	return model;
 }
 
 Model* ResourceManager::load_mesh(std::string path, bool async){
@@ -553,14 +642,63 @@ void ResourceManager::check_models_to_load(){
 		
 			model->meshes = std::move(model->meshes_copy);
 			model->meshes_copy.clear();
-		
 		}
 
 	
 		m_model_to_load.clear();
 	
 	}
+		
+		
+	if (m_mesh_component_to_load.size() > 0) [[unlikely]]{
+
+		std::lock_guard<std::mutex> locked{ m_mutex_mesh_component_to_load };
+		for (ModelToLoad& pair : m_mesh_component_to_load) {
+
+			for (Mesh& m : pair.model->meshes_copy) {
+
+				// Vertex buffer
+				D3D11_BUFFER_DESC buffer_desc{};
+				ZeroMemory(&buffer_desc, sizeof(buffer_desc));
+				buffer_desc.Usage = D3D11_USAGE_DYNAMIC;					// Write acces by CPU and GPU
+				buffer_desc.ByteWidth = m.num_vertices * sizeof(Vertex);
+				buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;			// Using as Vertex buffer
+				buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;		// allow CPU to write in the buffer
+				Engine::get_instance()->get_engine_props()->deviceInterface->CreateBuffer(&buffer_desc, NULL, &m.buffer);
+
+				D3D11_MAPPED_SUBRESOURCE ms_mesh;
+
+				// Index buffer
+				D3D11_BUFFER_DESC index_buffer_desc{};
+				ZeroMemory(&index_buffer_desc, sizeof(index_buffer_desc));
+				index_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+				index_buffer_desc.ByteWidth = m.num_indices * sizeof(unsigned int);
+				index_buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+				index_buffer_desc.CPUAccessFlags = 0;
+				index_buffer_desc.MiscFlags = 0;
+				D3D11_SUBRESOURCE_DATA init_data = {};
+				init_data.pSysMem = m.indices.data();
+
+				m.index_buffer = nullptr;
+				HRESULT hr = Engine::get_instance()->get_engine_props()->deviceInterface->CreateBuffer(&index_buffer_desc, &init_data, &m.index_buffer);
+				if (FAILED(hr)) {
+					assert("Buffer creation failed");
+				}
+				Engine::get_instance()->get_engine_props()->inmediateDeviceContext->Map(m.buffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms_mesh);
+				memcpy(ms_mesh.pData, m.vertices.data(), sizeof(Vertex) * m.num_vertices);
+				Engine::get_instance()->get_engine_props()->inmediateDeviceContext->Unmap(m.buffer, NULL);
+
+			}
+		
+			pair.model->meshes = std::move(pair.model->meshes_copy);
+			pair.model->meshes_copy.clear();
+			pair.mesh_component->set_model(pair.model.get());
+		}
+
 	
+		m_mesh_component_to_load.clear();
+	
+	}
 
 }
 

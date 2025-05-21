@@ -36,6 +36,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	float scale = 1.0f;
 	Scene scene;
 	Entity cube = scene.m_ecs.create_entity("cube jou");
+	Entity sphere_red = scene.m_ecs.create_entity("Esfera red");
 	Entity sphere_ent = scene.m_ecs.create_entity("Esfera");
 	Entity cone = scene.m_ecs.create_entity("cono");
 	Entity sponza = scene.m_ecs.create_entity("Sponza");
@@ -46,9 +47,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	t.set_scale({ scale,scale,scale });
 
 	TransformComponent& t2 = scene.m_ecs.add_component<TransformComponent>(sphere_ent);
+	TransformComponent& t_sphere_red = scene.m_ecs.add_component<TransformComponent>(sphere_red);
 	t2.set_position({ 0.0f, 3.0f, 0.0f });
+	t_sphere_red.set_position({ 0.0f, 6.0f, 0.0f });
+
 	MeshComponent& sphere = scene.m_ecs.add_component<MeshComponent>(sphere_ent);
+	MeshComponent& sphere_red_mesh = scene.m_ecs.add_component<MeshComponent>(sphere_red);
 	sphere.set_model(engine->get_sphere_high());
+	sphere_red_mesh.set_model(engine->get_sphere_high());
 	
 	Material pbr;
 	pbr.set_texture_albedo(engine->m_resource.load_texture("data/materials/rounded_metal/albedo.png"));
@@ -57,6 +63,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	pbr.set_texture_metallic(engine->m_resource.load_texture("data/materials/rounded_metal/metallic.png"));
 	pbr.set_texture_ao(engine->m_resource.load_texture("data/materials/rounded_metal/ao.png"));
 	sphere.set_material(pbr);
+	
+	Material pbr_red;
+	pbr_red.set_texture_albedo(engine->m_resource.load_texture("data/textures/red.png"));
+	pbr_red.set_texture_normal(engine->m_resource.load_texture("data/materials/rounded_metal/normal.png"));
+	pbr_red.set_texture_roughness(engine->m_resource.load_texture("data/materials/rounded_metal/roughness.png"));
+	pbr_red.set_texture_metallic(engine->m_resource.load_texture("data/materials/rounded_metal/metallic.png"));
+	pbr_red.set_texture_ao(engine->m_resource.load_texture("data/materials/rounded_metal/ao.png"));
+	sphere_red_mesh.set_material(pbr_red);
 
 	
 
@@ -74,11 +88,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	t3.set_position({ 0.0f, 0.0f, 0.0f });
 	t3.set_scale({ scale, scale, scale });
 
-	//Model* model = engine->get_cone();
-	Model* model = engine->m_resource.load_mesh("data/models/Sponza/Sponza_new.fbx", true);
-	meshCompSponza.set_model(model);
-
-
+	engine->m_resource.load_mesh_async("data/models/Sponza/Sponza_new.fbx", &meshCompSponza);
 
 	Entity directional_light = scene.m_ecs.create_entity("Directional Light");
 	auto& light = scene.m_ecs.add_component<DirectionalLight>(directional_light);

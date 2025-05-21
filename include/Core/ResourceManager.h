@@ -14,11 +14,17 @@
 #include <mutex>
 
 class Engine;
+class MeshComponent;
 
 struct TextureToLoad {
 	Texture* tex;
 	ImageData* data;
 	unsigned char* pixels;
+};
+
+struct ModelToLoad {
+	std::shared_ptr<Model> model;
+	MeshComponent* mesh_component;
 };
 
 class ResourceManager {
@@ -37,9 +43,12 @@ public:
 	Texture* get_texture(unsigned int id);
 
 	Model* load_mesh(std::string path);
-	Model* load_mesh(std::string path, bool async);
+	Model* load_mesh_async(std::string path, MeshComponent* mesh_comp);
 
 private:
+	friend class Engine;
+	
+	Model* load_mesh(std::string path, bool async);
 
 	Texture* load_texture(std::string path, bool async);
 	void ProcessNode(Model* mesh, aiNode* node, const aiScene* scene, std::string absolute_path, bool async = false);
@@ -48,6 +57,7 @@ private:
 	void check_models_to_load();
 	void check_textures_to_load();
 
+	std::vector<ModelToLoad> m_mesh_component_to_load;
 	std::vector<std::shared_ptr<Model>> m_model_to_load;
 	std::vector<std::shared_ptr<TextureToLoad>> m_texture_to_load;
 
@@ -57,8 +67,11 @@ private:
 	std::mutex m_mutex_textures_to_load;
 	std::mutex m_mutex_models;
 	std::mutex m_mutex_model_to_load;
+	std::mutex m_mutex_mesh_component;
+	std::mutex m_mutex_mesh_component_to_load;
 
 	std::unordered_map<unsigned int, Texture> m_textures;
 	std::unordered_map<unsigned int, Model> m_models;
+
 	Engine* m_engine;
 };

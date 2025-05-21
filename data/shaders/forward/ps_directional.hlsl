@@ -127,9 +127,10 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     const float3 view_dir = normalize(input.cam_pos - input.world_position);
     const float4 texture_color = (albedo_tex.Sample(mySampler, input.uv));
     const float4 texture_normal = (normal_tex.Sample(mySampler, input.uv));
-    const float4 texture_metallic = (metallic_tex.Sample(mySampler, input.uv));
-    const float4 texture_roughness = (roughness_tex.Sample(mySampler, input.uv));
-    const float4 texture_ao = (ao_tex.Sample(mySampler, input.uv));
+    const float texture_metallic = (metallic_tex.Sample(mySampler, input.uv)).r;
+    const float texture_roughness = (roughness_tex.Sample(mySampler, input.uv)).r;
+    
+    const float texture_ao = (ao_tex.Sample(mySampler, input.uv)).r;
     
     const float3 normal_procesed = getNormalFromMap(texture_normal.rgb, input.normal, input.world_position, input.uv);
     //const float3 normal_procesed = input.normal;
@@ -138,7 +139,7 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     const float3 V = view_dir;
     
     float3 F0 = float3(0.04, 0.04, 0.04);
-    float3 tmp_f = lerp(0.04, float3(texture_color.rgb), float3(texture_metallic.rgb));
+    float3 tmp_f = lerp(F0, texture_color.rgb, texture_metallic);
     F0.r = tmp_f.r;
     F0.g = tmp_f.g;
     F0.b = tmp_f.b;
@@ -158,8 +159,8 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     float3 N = normal_procesed;
     
     // Cook-Torrance BRDF specular
-    float NDF = DistributionGGX(N, H, texture_roughness.r);
-    float G = GeometrySmith(N, V, L, texture_roughness.r);
+    float NDF = DistributionGGX(N, H, texture_roughness);
+    float G = GeometrySmith(N, V, L, texture_roughness);
     float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
     
     float3 numerator = NDF * G * F;
@@ -169,24 +170,24 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     // kS is equal to Fresnel
     float3 kS = F;
     float3 kD = float3(1.0, 1.0, 1.0) - kS;
-    kD *= 1.0 - texture_metallic.r;
+    kD *= 1.0 - texture_metallic;
     
     // scale light by NdotL
     float NdotL = max(dot(N, L), 0.0);
     
     // add to outgoing radiance Lo
     Lo += (kD * texture_color.rgb / PI + specular) * radiance * NdotL;
-    float3 ambient = float3(0.1f, 0.1f, 0.1f) * texture_color.rgb * texture_ao.r;
+    //float3 ambient = float3(0.1f, 0.1f, 0.1f) * texture_color.rgb * texture_ao.r;
     
     //float3 color = Lo + ambient;
-    float3 color = Lo * texture_ao.r;
+    float3 color = Lo;// * texture_ao.r;
     
     // HDR tonemapping
     color = color / (color + float3(1.0, 1.0, 1.0));
     
     // gamma correct
     float tmp = 1.0 / 2.2;
-    //color = pow(color, float3(tmp, tmp, tmp));
+    color = pow(color, float3(tmp, tmp, tmp));
    
     
     return float4(color, 1.0);
