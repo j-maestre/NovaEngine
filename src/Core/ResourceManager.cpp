@@ -552,6 +552,7 @@ void ResourceManager::check_models_to_load(){
 			}
 		
 			model->meshes = std::move(model->meshes_copy);
+			model->meshes_copy.clear();
 		
 		}
 

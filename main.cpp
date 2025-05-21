@@ -30,33 +30,43 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	CameraComponent cam(engine->get_input(), &win);
 
-	float scale = 1.0f;
-
-
 	render.set_camera(&cam);
 
+
+	float scale = 1.0f;
 	Scene scene;
 	Entity cube = scene.m_ecs.create_entity("cube jou");
-	Entity cube2 = scene.m_ecs.create_entity("cube raro");
+	Entity sphere_ent = scene.m_ecs.create_entity("Esfera");
 	Entity cone = scene.m_ecs.create_entity("cono");
 	Entity sponza = scene.m_ecs.create_entity("Sponza");
 	TransformComponent& t = scene.m_ecs.add_component<TransformComponent>(cube);
 	auto& mesh = scene.m_ecs.add_component<MeshComponent>(cube);
-	//mesh.add_material();
 
-	t.set_position({ -2.0f, 4.0f, 0.0f });
+	t.set_position({ -5.0f, 4.0f, 0.0f });
 	t.set_scale({ scale,scale,scale });
 
-	TransformComponent& t2 = scene.m_ecs.add_component<TransformComponent>(cube2);
-	MeshComponent& sphere = scene.m_ecs.add_component<MeshComponent>(cube2);
-	sphere.set_model(engine->get_sphere());
-	t2.set_position({ 2.0f, 4.0f, 5.0f });
-	t2.set_scale({ scale,scale,scale });
+	TransformComponent& t2 = scene.m_ecs.add_component<TransformComponent>(sphere_ent);
+	t2.set_position({ 0.0f, 3.0f, 0.0f });
+	MeshComponent& sphere = scene.m_ecs.add_component<MeshComponent>(sphere_ent);
+	sphere.set_model(engine->get_sphere_high());
+	
+	Material pbr;
+	pbr.set_texture_albedo(engine->m_resource.load_texture("data/materials/rounded_metal/albedo.png"));
+	pbr.set_texture_normal(engine->m_resource.load_texture("data/materials/rounded_metal/normal.png"));
+	pbr.set_texture_roughness(engine->m_resource.load_texture("data/materials/rounded_metal/roughness.png"));
+	pbr.set_texture_metallic(engine->m_resource.load_texture("data/materials/rounded_metal/metallic.png"));
+	pbr.set_texture_ao(engine->m_resource.load_texture("data/materials/rounded_metal/ao.png"));
+	sphere.set_material(pbr);
+
+	
+
+	//t2.set_position({ 2.0f, 4.0f, 5.0f });
+	//t2.set_scale({ scale,scale,scale });
 
 	TransformComponent& tcone = scene.m_ecs.add_component<TransformComponent>(cone);
 	MeshComponent& mesh_cone = scene.m_ecs.add_component<MeshComponent>(cone);
 	mesh_cone.set_model(engine->get_cylinder_high());
-	tcone.set_position({ 2.0f, 4.0f, 0.0f });
+	tcone.set_position({ 5.0f, 4.0f, 0.0f });
 	tcone.set_scale({ scale,scale,scale });
 
 	TransformComponent& t3 = scene.m_ecs.add_component<TransformComponent>(sponza);
@@ -67,6 +77,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//Model* model = engine->get_cone();
 	Model* model = engine->m_resource.load_mesh("data/models/Sponza/Sponza_new.fbx", true);
 	meshCompSponza.set_model(model);
+
+
 
 	Entity directional_light = scene.m_ecs.create_entity("Directional Light");
 	auto& light = scene.m_ecs.add_component<DirectionalLight>(directional_light);

@@ -156,15 +156,24 @@ float Engine::get_time(){
 }
 
 void Engine::load_default_textures(){
-	Texture* t = m_resource.load_texture("data/textures/jou.jpg");
+	Texture* jou = m_resource.load_texture("data/textures/jou.jpg");
+	Texture* t = m_resource.load_texture("data/textures/default_albedo.png");
 	Texture* t2 = m_resource.load_texture("data/textures/kirby.png");
 	Texture* normal = m_resource.load_texture("data/textures/default_normal.png");
+	Texture* metallic = m_resource.load_texture("data/textures/default_metallic.png");
+	Texture* roughness = m_resource.load_texture("data/textures/default_roughness.png");
+	Texture* ao = m_resource.load_texture("data/textures/default_ao.png");
 
 	m_default_texture_albedo = t->get_id();
 	m_texture_tmp = t2->get_id();
 
-	m_default_material.set_texture_albedo(t);
+	m_default_material.set_texture_albedo(jou);
 	m_default_material.set_texture_normal(normal);
+	m_default_material.set_texture_metallic(metallic);
+	m_default_material.set_texture_roughness(roughness);
+	m_default_material.set_texture_ao(ao);
+
+	m_resource.check_textures_to_load();
 }
 
 Texture* Engine::get_default_albedo_texture(){
@@ -226,6 +235,7 @@ void Engine::init_geometries(){
 	auto elapsed = end - start;
 	float load_meshes_time = std::chrono::duration<float>(elapsed).count();
 	printf("Load default meshes time multithread %f\n", load_meshes_time);
+
 #endif
 
 	//m_cube_model =  m_resource.load_mesh("data/models/basics/cube.fbx");
@@ -244,6 +254,8 @@ void Engine::init_geometries(){
 	printf("Load default meshes time single thread %f\n", load_meshes_time);
 #endif
 
+	m_resource.check_models_to_load();
+	
 	std::vector<Model*> tmp = { m_cube_model , m_cylinder_model, m_cylinder_high_model,m_cone_model,m_cone_high_model,m_sphere_model,m_sphere_medium_model,m_sphere_high_model };
 	
 	for (auto& model : tmp) {
@@ -251,10 +263,6 @@ void Engine::init_geometries(){
 		for (auto& mesh : model->meshes) {
 			mesh.material = m_default_material;
 		}
-	}
-	
-	for (Mesh& mesh : m_cylinder_high_model->meshes) {
-		mesh.material.set_texture_albedo(m_resource.get_texture(m_texture_tmp));
 	}
 
 }

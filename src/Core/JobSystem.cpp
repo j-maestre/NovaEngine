@@ -60,7 +60,7 @@ void JobSystem::wait_until_finish() {
 	});
 	*/
 
-	while (m_tasks_queue.empty() && m_active_tasks > 0);
+	while (!m_tasks_queue.empty() || m_active_tasks > 0);
 }
 
 
