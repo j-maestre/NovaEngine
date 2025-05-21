@@ -38,7 +38,7 @@ ResourceManager::~ResourceManager(){
 
 Texture* ResourceManager::load_texture(std::string path){
 
-	unsigned int hash = std::hash<std::string>{}(path);
+	unsigned int hash = (unsigned int)std::hash<std::string>{}(path);
 	
 	if (m_textures.contains(hash)) {
 		return &(m_textures.find(hash)->second);
@@ -111,7 +111,7 @@ Texture* ResourceManager::load_texture(std::string path){
 
 Texture* ResourceManager::load_texture(std::string path, bool async){
 
-	unsigned int hash = std::hash<std::string>{}(path);
+	unsigned int hash = (unsigned int)std::hash<std::string>{}(path);
 
 	if (m_textures.contains(hash)) {
 		return &(m_textures.find(hash)->second);
@@ -166,7 +166,7 @@ Texture* ResourceManager::get_texture(unsigned int id){
 
 Model* ResourceManager::load_mesh(std::string path){
 
-	unsigned int hash = std::hash<std::string>{}(path);
+	unsigned int hash = (unsigned int) std::hash<std::string>{}(path);
 
 	if (m_models.contains(hash)) {
 		return &(m_models.find(hash)->second);
@@ -251,7 +251,7 @@ Model* ResourceManager::load_mesh(std::string path){
 
 Model* ResourceManager::load_mesh(std::string path, bool async){
 
-	unsigned int hash = std::hash<std::string>{}(path);
+	unsigned int hash = (unsigned int) std::hash<std::string>{}(path);
 	
 	// TODO: Race condition here?
 	if (m_models.contains(hash)) {
@@ -290,7 +290,7 @@ Model* ResourceManager::load_mesh(std::string path, bool async){
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
 			printf("Error loading mesh\n %s\n", importer.GetErrorString());
-			return nullptr;
+			//return nullptr;
 		}
 
 		std::string full_path = path;
@@ -380,7 +380,7 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 		}
 	}
 
-	mesh->num_indices = mesh->indices.size();
+	mesh->num_indices = (unsigned int) mesh->indices.size();
 
 	mesh->material = *(m_engine->get_default_material());
 

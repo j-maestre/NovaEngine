@@ -87,7 +87,7 @@ void ImguiManager::resize(HWND hwnd,unsigned int width, unsigned int height){
 	RECT rect;
 	GetClientRect(hwnd, &rect);
 	//io.DisplaySize = ImVec2((float)(rect.right - rect.left), (float)(rect.bottom - rect.top));
-	io.DisplaySize = ImVec2(width, height);
+	io.DisplaySize = ImVec2((float)width, (float)height);
 
 
 	ImGui_ImplDX11_InvalidateDeviceObjects();
@@ -189,8 +189,8 @@ void ImguiManager::main_menu(){
 void ImguiManager::system_info(){
 
 	Engine* e = Engine::get_instance();
-	float mouse_x = e->m_input.get_mouse_x();
-	float mouse_y = e->m_input.get_mouse_y();
+	int mouse_x = e->m_input.get_mouse_x();
+	int mouse_y = e->m_input.get_mouse_y();
 	
 	float fps = e->get_fps();
 	float dt = e->get_delta_time();
@@ -219,7 +219,7 @@ void ImguiManager::system_info(){
 	ImGui::Text("Update transform time: %f", m_update_transform_time);
 	ImGui::PlotLines("Delta time", m_dt_history.data(), m_dt_history_size, m_dt_history_index, nullptr, FLT_MAX, FLT_MAX, ImVec2(0, 70));
 
-	ImGui::Text("Mouse (%.0f, %.0f)", mouse_x, mouse_y);
+	ImGui::Text("Mouse (%d, %d)", mouse_x, mouse_y);
 	ImGui::Text("Delta (%.0f, %.0f)", m_mouse_delta_x, m_mouse_delta_y);
 	
 	bool left_click = Engine::get_instance()->m_input.is_key_pressed(Key::Mouse::LBUTTON);

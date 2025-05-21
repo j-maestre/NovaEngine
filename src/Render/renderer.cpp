@@ -41,8 +41,6 @@ bool Renderer::init_pipeline(Window* win){
 	m_engine_ptr = Engine::get_instance();
 	m_window = win;
 
-	bool ret;
-
 	ID3DBlob* VS = nullptr;
 	ID3DBlob* PS = nullptr;
 	ID3DBlob* error_msg = nullptr;

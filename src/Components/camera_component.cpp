@@ -25,7 +25,7 @@ CameraComponent::CameraComponent(const Input* input, Window* win){
 	m_center_x = ((float)m_window_props->width) * 0.5f;
 	m_center_y = ((float)m_window_props->height) * 0.5f;
 
-	POINT center_tmp = {m_center_x, m_center_y};
+	POINT center_tmp = {LONG(m_center_x), LONG(m_center_y)};
 	m_window_center = center_tmp;
 
 	m_window_handle = info->window_handle;
@@ -72,9 +72,9 @@ void CameraComponent::fly(float dt){
 
 	Vec3 right_float = { DirectX::XMVectorGetX(right),DirectX::XMVectorGetY(right), DirectX::XMVectorGetZ(right) };
 	
-	POINT center_tmp = { m_center_x, m_center_y };
+	POINT center_tmp = { LONG(m_center_x), LONG(m_center_y) };
 
-	if (m_input->is_key_pressed(Key::Mouse::RBUTTON) || m_first_move){
+	if (m_input->is_key_pressed(Key::Mouse::RBUTTON)) {
 
 		ShowCursor(FALSE);
 		
@@ -109,24 +109,8 @@ void CameraComponent::fly(float dt){
 		}
 
 
-		POINT mouse_pos = {MouseX, MouseY};
+		POINT mouse_pos = {LONG(MouseX), LONG(MouseY)};
 		ScreenToClient(m_window_handle, &mouse_pos);
-
-
-		if (m_first_move){
-			if(MouseX != 0.0f && MouseY != 0.0f)m_first_move = false;
-			MouseX = center_tmp.x;
-			MouseY = center_tmp.y;
-			m_last_mouse_x = MouseX;
-			m_last_mouse_y = MouseY;
-			SetCursorPos(m_center_x, m_center_y);
-
-			//m_Pitch = asin(forward.y / forward.length());
-			//m_Yaw = asin(forward.x / (cos(m_Pitch) * forward.length()));
-			
-		}
-		
-
 		
 		//float OffsetX = MouseX - m_last_mouse_x;
 		//float OffsetY = MouseY - m_last_mouse_y;
@@ -158,6 +142,8 @@ void CameraComponent::fly(float dt){
 
 		ClientToScreen(m_window_handle, &center_tmp);
 		SetCursorPos(center_tmp.x, center_tmp.y);
+		
+
 
 		// Check wheel
 

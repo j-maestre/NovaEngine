@@ -4,8 +4,8 @@
 
 Input::Input(){
 
-	m_mouse_x = 0.0f;
-	m_mouse_y = 0.0f;
+	m_mouse_x = 0;
+	m_mouse_y = 0;
 
 	m_mouse_wheel_up = false;
 	m_mouse_wheel_down = false;
@@ -222,12 +222,12 @@ bool Input::is_mouse_wheel_down() const
 	return m_mouse_wheel_down;
 }
 
-float Input::get_mouse_x() const
+int Input::get_mouse_x() const
 {
 	return m_mouse_x;
 }
 
-float Input::get_mouse_y() const
+int Input::get_mouse_y() const
 {
 	return m_mouse_y;
 }

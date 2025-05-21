@@ -28,8 +28,8 @@ public:
 	bool is_mouse_wheel_up() const;
 	bool is_mouse_wheel_down() const;
 
-	float get_mouse_x() const;
-	float get_mouse_y() const;
+	int get_mouse_x() const;
+	int get_mouse_y() const;
 
 private:
 
@@ -39,8 +39,8 @@ private:
 	std::unordered_map<Key::Pad, Key::KeyState> m_pad;
 	
 	std::unordered_map<Key::Mouse, Key::KeyState> m_mouse;
-	float m_mouse_x;
-	float m_mouse_y;
+	int m_mouse_x;
+	int m_mouse_y;
 
 	bool m_mouse_wheel_up;
 	bool m_mouse_wheel_down;
