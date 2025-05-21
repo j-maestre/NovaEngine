@@ -61,12 +61,13 @@ Texture* ResourceManager::load_texture(std::string path){
 	D3D11_TEXTURE2D_DESC texture_desc{};
 	texture_desc.Width = data->width;
 	texture_desc.Height = data->height;
-	texture_desc.MipLevels = 1;
+	texture_desc.MipLevels = 0;				// Generate all mips
 	texture_desc.ArraySize = 1;
 	texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	texture_desc.SampleDesc.Count = 1;
 	texture_desc.Usage = D3D11_USAGE_DEFAULT;
-	texture_desc.BindFlags= D3D11_BIND_SHADER_RESOURCE;
+	texture_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	texture_desc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 	
 	D3D11_SUBRESOURCE_DATA init_data{};
 	init_data.pSysMem = pixels;
@@ -74,19 +75,32 @@ Texture* ResourceManager::load_texture(std::string path){
 	
 	
 	
-	HRESULT hr = m_engine->get_engine_props()->deviceInterface->CreateTexture2D(&texture_desc, &init_data, &data->texture);
+	HRESULT hr = m_engine->get_engine_props()->deviceInterface->CreateTexture2D(&texture_desc, nullptr, &data->texture);
 	if (FAILED(hr)) {
 		stbi_image_free(pixels);
 		return nullptr;
 	}
+
+	m_engine->get_engine_props()->inmediateDeviceContext->UpdateSubresource(data->texture, 0, nullptr, pixels, data->width * 4, 0);
+
 	
 	data->texture_view = nullptr;
-	hr = m_engine->get_engine_props()->deviceInterface->CreateShaderResourceView(data->texture, nullptr, &data->texture_view);
+	D3D11_SHADER_RESOURCE_VIEW_DESC view_desc = {
+		.Format = texture_desc.Format,
+		.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D
+	};
+	view_desc.Texture2D.MostDetailedMip = 0;
+	view_desc.Texture2D.MipLevels = -1;
+
+
+	hr = m_engine->get_engine_props()->deviceInterface->CreateShaderResourceView(data->texture, &view_desc, &data->texture_view);
 	//texture->Release();
 	if (FAILED(hr)) {
 		stbi_image_free(pixels);
 		return nullptr;
 	}
+
+	m_engine->get_engine_props()->inmediateDeviceContext->GenerateMips(data->texture_view);
 
 	stbi_image_free(pixels);
 	
