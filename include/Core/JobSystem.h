@@ -132,7 +132,14 @@ public:
         {
             std::lock_guard<std::mutex> locked{ m_mutex_tasks };
             for (auto& f : func) {
-                m_tasks_queue.push(f);
+                m_active_tasks++;
+
+                auto task = [f, this]() {
+                    f();
+                    m_active_tasks--;
+                    m_condition_variable.notify_all();
+                };
+                m_tasks_queue.push(task);
             }
         }
 

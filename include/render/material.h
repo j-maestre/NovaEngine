@@ -16,6 +16,9 @@ public:
 
 	void set_texture_albedo(Texture* t) { m_texture_albedo = t; }
 	void set_texture_normal(Texture* t) { m_texture_normal = t; }
+	void set_texture_metallic(Texture* t) { m_texture_metallic = t; }
+	void set_texture_roughness(Texture* t) { m_texture_roughness = t; }
+	void set_texture_ao(Texture* t) { m_texture_ao = t; }
 
 	inline Texture* get_albedo() { return m_texture_albedo; }
 	inline Texture* get_normal() { return m_texture_normal; }

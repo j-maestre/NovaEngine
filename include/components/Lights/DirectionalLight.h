@@ -11,7 +11,8 @@ struct DirectionalLightConstantBuffer {
 	float specular_strength = 0.003f;
 	Vec3 specular_color = { 1.0f, 1.0f, 1.0f };
 	float specular_shininess = 32.0f; // 48 bytes
-
+	float intensity = 1.0f;
+	Vec3 padding; // 64
 };
 
 class DirectionalLight : public Light {
@@ -31,6 +32,7 @@ public:
 	void set_specular_strenght(float value);
 	void set_specular_color(Vec3 color);
 	void set_specular_shininess(float value);
+	void set_intensity(float value);
 	
 	Vec3& get_direction();
 	bool get_enabled();
@@ -38,6 +40,8 @@ public:
 	float get_specular_strenght();
 	Vec3& get_specular_color();
 	float get_specular_shininess();
+	float get_intensity();
+
 private:
 	
 	void init_buffers();
