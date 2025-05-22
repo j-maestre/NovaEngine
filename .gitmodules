@@ -11,3 +11,6 @@
 	path = deps/external/imgui
 	url = https://github.com/ocornut/imgui.git
 	branch = docking
+[submodule "deps/external/rapidyaml"]
+	path = deps/external/rapidyaml
+	url = https://github.com/biojppm/rapidyaml.git
