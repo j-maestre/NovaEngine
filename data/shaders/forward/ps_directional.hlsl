@@ -5,6 +5,7 @@ struct PS_INPUT
     float3 normal : NORMAL;
     float2 uv : UV;
     float3 cam_pos : CAMERA_POSITION;
+    float4 tangent : TANGENT;
 };
 
 cbuffer DirectionalLightConstantBuffer : register(b0)
@@ -47,21 +48,22 @@ float3 CalculeDirectionalLight(float3 normal, float3 view_dir, float3 color_base
 
 }
 
-float3 getNormalFromMap(float3 normal_texture, float3 normal, float3 world_position, float2 uv){
+float3 getNormalFromMap(float3 normal_texture, float3 normal, float4 tangent){
     
-    float3 tangentNormal = normal_texture * 2.0 - 1.0;
-
-    
-    float3 Q1 = ddx(world_position);
-    float3 Q2 = ddy(world_position);
-    float2 st1 = ddx(uv);
-    float2 st2 = ddy(uv);
+    // Normal del mapa en espacio tangent (de [0,1] a [-1,1])
+    float3 tangentNormal = normal_texture * 2.0f - 1.0f;
 
     float3 N = normalize(normal);
-    float3 T = normalize(Q1 * st2.x - Q2 * st1.x);
-    float3 B = -normalize(cross(N, T));
+    float3 T = normalize(tangent.xyz);
+    float tangentSign = tangent.w;
+
+    // Calcula bitangent usando el signo almacenado en tangent.w
+    float3 B = tangentSign * cross(N, T);
+
+    // Construye matriz TBN
     float3x3 TBN = float3x3(T, B, N);
-    
+
+    // Transforma la normal del mapa a espacio mundo
     return normalize(mul(tangentNormal, TBN));
 }
 
@@ -132,7 +134,7 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     
     const float texture_ao = (ao_tex.Sample(mySampler, input.uv)).r;
     
-    const float3 normal_procesed = getNormalFromMap(texture_normal.rgb, input.normal, input.world_position, input.uv);
+    const float3 normal_procesed = getNormalFromMap(texture_normal.rgb, input.normal, input.tangent);
     //const float3 normal_procesed = input.normal;
     //const float3 light_color = CalculeDirectionalLight(normal_procesed, view_dir, texture_color.rgb);
     
@@ -189,7 +191,10 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     float tmp = 1.0 / 2.2;
     color = pow(color, float3(tmp, tmp, tmp));
    
-    
     return float4(color, 1.0);
+    
+    //return float4(normal_procesed, 1.0);
+    //return float4(abs(input.tangent.rgb), 1.0);
+    //return float4(texture_color.rgb, 1.0);
 }
 

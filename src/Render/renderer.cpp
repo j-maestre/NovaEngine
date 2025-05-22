@@ -209,10 +209,12 @@ bool Renderer::init_pipeline(Window* win){
 	D3D11_INPUT_ELEMENT_DESC ied[] =
 	{
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(float) * (3 * 1), D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(float) * (3 * 2) , D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, sizeof(float) * 3, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(float) * 6 , D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, sizeof(float) * 8 , D3D11_INPUT_PER_VERTEX_DATA, 0},
+		
 	};
-	m_engine_ptr->get_engine_props()->deviceInterface->CreateInputLayout(ied,3,VS->GetBufferPointer(), VS->GetBufferSize(), &m_pLayout);
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateInputLayout(ied,4,VS->GetBufferPointer(), VS->GetBufferSize(), &m_pLayout);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
 
 	//m_sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;

@@ -29,6 +29,7 @@ struct Vertex {
 	float pos_x, pos_y, pos_z;
 	float nrm_x, nrm_y, nrm_z;
 	float uv_x, uv_y;
+	float tan_x, tan_y, tan_z, tan_w;
 };
 
 

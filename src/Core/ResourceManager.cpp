@@ -177,8 +177,15 @@ Model* ResourceManager::load_mesh(std::string path){
 
 	const aiScene* scene = importer.ReadFile(path.c_str(),
 		aiProcess_Triangulate |
+		aiProcess_CalcTangentSpace |
+		aiProcess_GenSmoothNormals |
+		aiProcess_JoinIdenticalVertices |
+		aiProcess_ImproveCacheLocality |
+		aiProcess_LimitBoneWeights |
+		aiProcess_SortByPType |
+		aiProcess_RemoveRedundantMaterials |
 		aiProcess_FlipUVs |
-		aiProcess_JoinIdenticalVertices);
+		aiProcess_FindInvalidData);
 
 	const char* ret = importer.GetErrorString();
 	assert(scene && "Error loading mesh");
@@ -281,8 +288,15 @@ Model* ResourceManager::load_mesh_async(std::string path, MeshComponent* mesh_co
 		printf("Loading mesh %s\n", path.c_str());
 		const aiScene* scene = importer.ReadFile(path.c_str(),
 			aiProcess_Triangulate |
+			aiProcess_CalcTangentSpace |
+			aiProcess_GenSmoothNormals |
+			aiProcess_JoinIdenticalVertices |
+			aiProcess_ImproveCacheLocality |
+			aiProcess_LimitBoneWeights |
+			aiProcess_SortByPType |
+			aiProcess_RemoveRedundantMaterials |
 			aiProcess_FlipUVs |
-			aiProcess_JoinIdenticalVertices);
+			aiProcess_FindInvalidData);
 
 		imgui_manager->add_resource_loaded({ "Procesing mesh multithread " + path + "\n" });
 
@@ -369,8 +383,16 @@ Model* ResourceManager::load_mesh(std::string path, bool async){
 		printf("Loading mesh %s\n", path.c_str());
 		const aiScene* scene = importer.ReadFile(path.c_str(),
 			aiProcess_Triangulate |
+			aiProcess_CalcTangentSpace |
+			aiProcess_GenSmoothNormals |
+			aiProcess_JoinIdenticalVertices |
+			aiProcess_ImproveCacheLocality |
+			aiProcess_LimitBoneWeights |
+			aiProcess_SortByPType |
+			aiProcess_RemoveRedundantMaterials |
 			aiProcess_FlipUVs |
-			aiProcess_JoinIdenticalVertices);
+			aiProcess_FindInvalidData
+		);
 
 		imgui_manager->add_resource_loaded({ "Procesing mesh multithread " + path + "\n" });
 
@@ -448,6 +470,17 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 
 	// Position, Normals & UVs
 	for (unsigned int i = 0; i < assimp_mesh->mNumVertices; i++) {
+
+		aiVector3D& normal = assimp_mesh->mNormals[i];
+		aiVector3D& tangent = assimp_mesh->mTangents[i];
+		aiVector3D& bitangent = assimp_mesh->mBitangents[i];
+
+		// Calcula el producto cruzado N x T
+		aiVector3D N_cross_T = normal ^ tangent;  // ^ es producto cruzado en Assimp
+
+		// Calcula el signo: si N x T está en la misma dirección que bitangent => +1, sino -1
+		float w = (N_cross_T * bitangent) < 0.0f ? -1.0f : 1.0f;
+
 		Vertex vertex{
 			.pos_x = assimp_mesh->mVertices[i].x,
 			.pos_y = assimp_mesh->mVertices[i].y,
@@ -457,6 +490,10 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 			.nrm_z = assimp_mesh->mNormals[i].z,
 			.uv_x = assimp_mesh->mTextureCoords[0][i].x,
 			.uv_y = assimp_mesh->mTextureCoords[0][i].y,
+			.tan_x = assimp_mesh->mTangents[i].x,
+			.tan_y = assimp_mesh->mTangents[i].y,
+			.tan_z = assimp_mesh->mTangents[i].z,
+			.tan_w = w,
 		};
 		mesh->vertices.push_back(vertex);
 	}
