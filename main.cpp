@@ -65,11 +65,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	sphere.set_material(pbr);
 	
 	Material pbr_red;
-	pbr_red.set_texture_albedo(engine->m_resource.load_texture("data/textures/red.png"));
-	pbr_red.set_texture_normal(engine->m_resource.load_texture("data/materials/rounded_metal/normal.png"));
-	pbr_red.set_texture_roughness(engine->m_resource.load_texture("data/materials/rounded_metal/roughness.png"));
-	pbr_red.set_texture_metallic(engine->m_resource.load_texture("data/materials/rounded_metal/metallic.png"));
-	pbr_red.set_texture_ao(engine->m_resource.load_texture("data/materials/rounded_metal/ao.png"));
+	pbr_red.set_texture_albedo(engine->m_resource.load_texture("data/materials/rusted_metal/albedo.png"));
+	pbr_red.set_texture_normal(engine->m_resource.load_texture("data/materials/rusted_metal/normal.png"));
+	pbr_red.set_texture_roughness(engine->m_resource.load_texture("data/materials/rusted_metal/roughness.png"));
+	pbr_red.set_texture_metallic(engine->m_resource.load_texture("data/materials/rusted_metal/metallic.png"));
+	pbr_red.set_texture_ao(engine->m_resource.load_texture("data/materials/rusted_metal/ao.png"));
 	sphere_red_mesh.set_material(pbr_red);
 
 	

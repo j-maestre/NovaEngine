@@ -48,7 +48,7 @@ Texture* ResourceManager::load_texture(std::string path){
 	Texture texture_class(hash);
 	ImageData* data = texture_class.get_data();
 
-	//stbi_set_flip_vertically_on_load_thread(1);
+	stbi_set_flip_vertically_on_load_thread(1);
 	//stbi_set_flip_vertically_on_load(true);
 	unsigned char* pixels = stbi_load(path.c_str(), &data->width, &data->height, &data->channels,4);
 
@@ -126,7 +126,7 @@ Texture* ResourceManager::load_texture(std::string path, bool async){
 
 	ImageData* data = texture_class.get_data();
 
-	//stbi_set_flip_vertically_on_load_thread(1);
+	stbi_set_flip_vertically_on_load_thread(1);
 	//stbi_set_flip_vertically_on_load(true);
 
 	// Cargo la textura en memoria
@@ -184,7 +184,7 @@ Model* ResourceManager::load_mesh(std::string path){
 		aiProcess_LimitBoneWeights |
 		aiProcess_SortByPType |
 		aiProcess_RemoveRedundantMaterials |
-		aiProcess_FlipUVs |
+		//aiProcess_FlipUVs |
 		aiProcess_FindInvalidData);
 
 	const char* ret = importer.GetErrorString();
@@ -295,7 +295,7 @@ Model* ResourceManager::load_mesh_async(std::string path, MeshComponent* mesh_co
 			aiProcess_LimitBoneWeights |
 			aiProcess_SortByPType |
 			aiProcess_RemoveRedundantMaterials |
-			aiProcess_FlipUVs |
+			//aiProcess_FlipUVs |
 			aiProcess_FindInvalidData);
 
 		imgui_manager->add_resource_loaded({ "Procesing mesh multithread " + path + "\n" });
@@ -390,7 +390,7 @@ Model* ResourceManager::load_mesh(std::string path, bool async){
 			aiProcess_LimitBoneWeights |
 			aiProcess_SortByPType |
 			aiProcess_RemoveRedundantMaterials |
-			aiProcess_FlipUVs |
+			//aiProcess_FlipUVs |
 			aiProcess_FindInvalidData
 		);
 

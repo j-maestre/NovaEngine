@@ -37,28 +37,41 @@ float3 CalculeDirectionalLight(float3 normal, float3 view_dir, float3 color_base
     const float3 albedo = diff * color_base * light_diffuse_color;
     
     // Specular is calculated with freshnel
-    /*
+    
     const float3 reflect_dir = normalize(reflect(-light_dir, normalize(normal)));
     float spec = pow(max(dot(normalize(view_dir), normalize(reflect_dir)), 0.0), specular_shininess);
     float3 specular = specular_strength * spec * specular_color;
     return float3(albedo + specular);
-    */
+    
     
     return albedo;
 
 }
 
-float3 getNormalFromMap(float3 normal_texture, float3 normal, float4 tangent){
+float3 getNormalFromMapNEW(float3 normal_texture, float3 normal, float4 tangent){
+    
+    float3 tangentNormal = normal_texture * 2.0f - 1.0f;
+
+    float3 N = normalize(normal);
+    float3 T = normalize(tangent.xyz - N * dot(N, tangent.xyz)); // ortogonaliza T
+    float3 B = normalize(cross(N, T) * tangent.w);
+
+    float3x3 TBN = float3x3(T, B, N);
+    return normalize(mul(tangentNormal, TBN));
+    
+}
+
+float3 getNormalFromMapOLD(float3 normal_texture, float3 normal, float4 tangent){
     
     // Normal del mapa en espacio tangent (de [0,1] a [-1,1])
     float3 tangentNormal = normal_texture * 2.0f - 1.0f;
 
     float3 N = normalize(normal);
     float3 T = normalize(tangent.xyz);
-    float tangentSign = tangent.w;
 
     // Calcula bitangent usando el signo almacenado en tangent.w
-    float3 B = tangentSign * cross(N, T);
+    //float3 B = tangent.w * cross(N, T);
+    float3 B = normalize(cross(N, T) * tangent.w);
 
     // Construye matriz TBN
     float3x3 TBN = float3x3(T, B, N);
@@ -120,10 +133,6 @@ float4 PShader(PS_INPUT input) : SV_TARGET
 {
     float4 out_color;
     
-    //out_color = float4(1.0f,1.0f, 1.0f, 1.0f);
-    //out_color = float4(input.normal.xyz, 1.0f);
-    //return out_color;
-    
     const float PI = 3.14159265359;
     
     const float3 view_dir = normalize(input.cam_pos - input.world_position);
@@ -131,15 +140,12 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     const float4 texture_normal = (normal_tex.Sample(mySampler, input.uv));
     const float texture_metallic = (metallic_tex.Sample(mySampler, input.uv)).r;
     const float texture_roughness = (roughness_tex.Sample(mySampler, input.uv)).r;
-    
     const float texture_ao = (ao_tex.Sample(mySampler, input.uv)).r;
+    const float3 normal_procesed = getNormalFromMapOLD(texture_normal.rgb, input.normal, input.tangent);
+    const float3 light_color_calculated = CalculeDirectionalLight(normal_procesed, view_dir, texture_color.rgb);
     
-    const float3 normal_procesed = getNormalFromMap(texture_normal.rgb, input.normal, input.tangent);
-    //const float3 normal_procesed = input.normal;
-    //const float3 light_color = CalculeDirectionalLight(normal_procesed, view_dir, texture_color.rgb);
     
     const float3 V = view_dir;
-    
     float3 F0 = float3(0.04, 0.04, 0.04);
     float3 tmp_f = lerp(F0, texture_color.rgb, texture_metallic);
     F0.r = tmp_f.r;
@@ -148,12 +154,8 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     
     float3 Lo = float3(0.0, 0.0, 0.0);
 
-    //float3 L = normalize((point.position - frag_position) * 8.0);
-    //float distance = length(point.position - frag_position);
     float distance = 0.0;
-    //float attenuation = 1.0 / (distance * distance);
     float attenuation = 1.0;
-    //float3 radiance = CalculeDirectionalLight(normal_procesed, view_dir, texture_color.rgb); // directional light color
     float3 radiance = light_diffuse_color * intensity;
     
     float3 L = -direction;
@@ -172,17 +174,20 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     // kS is equal to Fresnel
     float3 kS = F;
     float3 kD = float3(1.0, 1.0, 1.0) - kS;
-    kD *= 1.0 - texture_metallic;
+    kD *= 1.0 - texture_metallic; // by the moment, no reflection on metallic surfaces
     
     // scale light by NdotL
     float NdotL = max(dot(N, L), 0.0);
+    //if (NdotL < 0.05) return float4(0.0, 1.0, 0.0, 1.0 );
     
     // add to outgoing radiance Lo
     Lo += (kD * texture_color.rgb / PI + specular) * radiance * NdotL;
-    //float3 ambient = float3(0.1f, 0.1f, 0.1f) * texture_color.rgb * texture_ao.r;
     
-    //float3 color = Lo + ambient;
-    float3 color = Lo;// * texture_ao.r;
+    float3 ambient = float3(0.01f, 0.01f, 0.01f) * texture_color.rgb * texture_ao;
+    ambient *= (1.0 - texture_metallic); // prevent albedo on full metallic parts
+    
+    float3 color = Lo + ambient;
+    //float3 color = Lo;
     
     // HDR tonemapping
     color = color / (color + float3(1.0, 1.0, 1.0));
@@ -190,11 +195,7 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     // gamma correct
     float tmp = 1.0 / 2.2;
     color = pow(color, float3(tmp, tmp, tmp));
-   
+
     return float4(color, 1.0);
-    
-    //return float4(normal_procesed, 1.0);
-    //return float4(abs(input.tangent.rgb), 1.0);
-    //return float4(texture_color.rgb, 1.0);
 }
 

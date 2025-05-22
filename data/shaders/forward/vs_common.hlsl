@@ -32,10 +32,17 @@ VOut VShader(VS_IN input)
 
     output.position = mul(float4(input.position, 1.0f), vpm);
     output.world_position = mul(float4(input.position, 1.0f), model).xyz;
-    output.normal = mul(float4(input.normal, 0.0f), model).xyz;
+    output.normal = normalize(mul(float4(input.normal, 0.0f), model).xyz);
     
-    float3 tangent_world = mul(float4(input.tangent.xyz, 0.0f), model).xyz;
-    output.tangent = float4(normalize(tangent_world), input.tangent.w);
+    
+    float3 tangent_world = normalize(mul(float4(input.tangent.xyz, 0.0f), model).xyz);
+    output.tangent = float4(tangent_world, input.tangent.w);
+
+    
+    //output.normal = mul(float4(input.normal, 0.0f), model).xyz;
+    
+    //float3 tangent_world = mul(float4(input.tangent.xyz, 0.0f), model).xyz;
+   // output.tangent = float4(normalize(tangent_world), input.tangent.w);
     
     //output.normal = input.normal;
     output.uv = float2(input.uv);

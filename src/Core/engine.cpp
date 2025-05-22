@@ -161,8 +161,8 @@ void Engine::load_default_textures(){
 	Texture* t = m_resource.load_texture("data/textures/red.png");
 	Texture* t2 = m_resource.load_texture("data/textures/kirby.png");
 	Texture* normal = m_resource.load_texture("data/textures/default_normal.png");
-	Texture* metallic = m_resource.load_texture("data/textures/default_metallic.png");
-	Texture* roughness = m_resource.load_texture("data/textures/default_roughness.png");
+	Texture* metallic = m_resource.load_texture("data/textures/default_metallic_new.png");
+	Texture* roughness = m_resource.load_texture("data/textures/default_roughness_new.png");
 	Texture* ao = m_resource.load_texture("data/textures/default_ao.png");
 
 	m_default_texture_albedo = t->get_id();
