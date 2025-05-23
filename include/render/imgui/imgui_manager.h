@@ -85,6 +85,7 @@ private:
 
 	float m_draw_time = 0.0f;
 	float m_update_transform_time = 0.0f;
+	float m_draw_imgui_time = 0.0f;
 
 	std::mutex resources_lock;
 	ImGuiViewport* m_viewport;

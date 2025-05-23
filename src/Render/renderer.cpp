@@ -345,9 +345,16 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
 	ImguiManager::get_instance()->m_draw_time = std::chrono::duration<float>(elapsed).count();
+
+
+	auto start_imgui = std::chrono::high_resolution_clock::now();
 	ImguiManager::get_instance()->render();
 	ImguiManager::get_instance()->scene_info(ecs);
 	ImguiManager::get_instance()->show_cam(m_cam, 0xfff);
+	auto end_imgui = std::chrono::high_resolution_clock::now();
+	auto elapsed_imgui = end_imgui - start_imgui;
+	ImguiManager::get_instance()->m_draw_imgui_time = std::chrono::duration<float>(elapsed_imgui).count();
+
 #endif
 
 }

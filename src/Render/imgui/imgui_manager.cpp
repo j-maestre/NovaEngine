@@ -216,6 +216,7 @@ void ImguiManager::system_info(){
 	ImGui::Text("FPS: %f", m_last_fps);
 	ImGui::Text("Delta Time: %f", dt);
 	ImGui::Text("Draw Time: %f", m_draw_time);
+	ImGui::Text("Draw ImGui Time: %f", m_draw_imgui_time);
 	ImGui::Text("Update transform time: %f", m_update_transform_time);
 	ImGui::PlotLines("Delta time", m_dt_history.data(), m_dt_history_size, m_dt_history_index, nullptr, FLT_MAX, FLT_MAX, ImVec2(0, 70));
 
