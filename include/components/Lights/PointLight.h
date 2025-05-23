@@ -15,7 +15,14 @@ struct PointLightConstantBuffer {
     float linear_att = 0.045f;
     float quadratic_att = 0.0075f;
     float enabled = 0.5f;
-    float attenuation = 1.0f; // 64 bytes
+    float attenuation = 1.0f;
+    float intensity = 1.0f;
+    float expossure = 1.0f;
+    float distance = 1.0f;
+    float fall_off = 7.5f; // 80 bytes
+    float fall_start = 0.2f;
+    Vec3 padding;
+
 };
 
 
@@ -41,6 +48,11 @@ public:
     float get_linear_attenuation() { return m_buffer.linear_att; }
     float get_quadratic_attenuation() { return m_buffer.quadratic_att; }
     float get_attenuation() { return m_buffer.attenuation; }
+    float get_intensity() { return m_buffer.intensity; }
+    float get_expossure() { return m_buffer.expossure; }
+    float get_distance() { return m_buffer.distance; }
+    float get_fall_off() { return m_buffer.fall_off; }
+    float get_fall_start() { return m_buffer.fall_start; }
 
     void set_position(Vec3 pos);
     void set_enabled(bool enabled);
@@ -52,6 +64,11 @@ public:
     void set_linear_attenuation(float value);
     void set_quadratic_attenuation(float value);
     void set_attenuation(float value);
+    void set_intensity(float value);
+    void set_expossure(float value);
+    void set_distance(float value);
+    void set_fall_off(float value);
+    void set_fall_start(float value);
 
 private:
 

@@ -70,6 +70,26 @@ void PointLight::set_attenuation(float value){
 	m_buffer.attenuation = value;
 }
 
+void PointLight::set_intensity(float value){
+	m_buffer.intensity = value;
+}
+
+void PointLight::set_expossure(float value){
+	m_buffer.expossure = value;
+}
+
+void PointLight::set_distance(float value){
+	m_buffer.distance = value;
+}
+
+void PointLight::set_fall_off(float value){
+	m_buffer.fall_off = value;
+}
+
+void PointLight::set_fall_start(float value){
+	m_buffer.fall_start = value;
+}
+
 void PointLight::init_buffers(){
 
 	m_constant_buffer_light = nullptr;

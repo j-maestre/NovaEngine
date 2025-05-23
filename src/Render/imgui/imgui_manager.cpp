@@ -250,8 +250,24 @@ void ImguiManager::show_transform(TransformComponent* trans, int entity_id){
 	float tmp_rot[3] = { rotation.x, rotation.y, rotation.z };
 	float tmp_scale[3] = { scale.x, scale.y, scale.z };
 
+	// TODO: Poner esto guapo
 	std::string label = "Position##" + std::to_string(entity_id);
-	ImGui::DragFloat3(label.c_str(), tmp_pos, 0.1f);
+	ImGui::SameLine();
+	std::string tmp = "X##" + std::to_string(entity_id);
+	ImGui::DragFloat(tmp.c_str(), &tmp_pos[0]);
+	
+	ImGui::SameLine();
+	tmp = "Y##" + std::to_string(entity_id);
+	ImGui::DragFloat(tmp.c_str(), &tmp_pos[1]);
+
+	ImGui::SameLine();
+	tmp = "Z##" + std::to_string(entity_id);
+	ImGui::DragFloat(tmp.c_str(), &tmp_pos[2]);
+	
+	
+	
+	//ImGui::DragFloat3(label.c_str(), tmp_pos, 0.1f);
+	ImGui::ColorButton("", {1.0,0.0,0.0,1.0});
 
 	label = "Rotation##" + std::to_string(entity_id);
 	ImGui::DragFloat3(label.c_str(), tmp_rot, 0.1f);
@@ -290,6 +306,11 @@ void ImguiManager::show_light(PointLight* light, int entity_id){
 	float linear_att = light->get_linear_attenuation();
 	float cuadratic_att = light->get_quadratic_attenuation();
 	float att = light->get_attenuation();
+	float intensity = light->get_intensity();
+	float expossure = light->get_expossure();
+	float distance = light->get_distance();
+	float fall_off = light->get_fall_off();
+	float fall_start = light->get_fall_start();
 
 
 	std::string label = "Position##" + std::to_string(entity_id);
@@ -322,6 +343,21 @@ void ImguiManager::show_light(PointLight* light, int entity_id){
 	label = "Cuadratic atenuattion##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &cuadratic_att, 0.0001f, 0.0f);
 
+	label = "Intensity##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &intensity, 0.1f, 0.0f, 10000.0f);
+
+	label = "Expossure##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &expossure, 0.1f, 0.0f, 200.0f);
+
+	label = "Distance##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &distance, 0.1f, 0.0f, 20000.0f);
+
+	label = "Fall off##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &fall_off, 0.1f, 0.0f, 10000.0f);
+	
+	label = "Fall start##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &fall_start, 0.01f, 0.0f, 1.0f);
+
 	light->set_position({pos_tmp[0], pos_tmp[1], pos_tmp[2] });
 	light->set_enabled(enabled);
 	light->set_color({ color_tmp[0], color_tmp[1], color_tmp[2] });
@@ -332,6 +368,11 @@ void ImguiManager::show_light(PointLight* light, int entity_id){
 	light->set_constant_attenuation(constant_att);
 	light->set_linear_attenuation(linear_att);
 	light->set_quadratic_attenuation(cuadratic_att);
+	light->set_intensity(intensity);
+	light->set_expossure(expossure);
+	light->set_distance(distance);
+	light->set_fall_off(fall_off);
+	light->set_fall_start(fall_start);
 }
 
 void ImguiManager::show_light(SpotLight* light, int entity_id){
