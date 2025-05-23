@@ -48,17 +48,17 @@ float3 CalculePointLight(float3 normal, float3 view_dir, float3 color_base, floa
 
     //Specular
     float3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(view_dir, reflectDir), 0.0), specular_shininess);
+    //float spec = pow(max(dot(view_dir, reflectDir), 0.0), specular_shininess);
 
-    float lightDistance = length(light_position - frag_pos);
-    float attenuation = 1.0 / (constant_att + linear_att * lightDistance + quadratic_att * (lightDistance * lightDistance));
+    //float lightDistance = length(light_position - frag_pos);
+    //float attenuation = 1.0 / (constant_att + linear_att * lightDistance + quadratic_att * (lightDistance * lightDistance));
   
 
     float3 difuse = diffuse_color * diff * color_base;
     //float3 specular = (specular_strength * specular_shininess * spec) * specular_color;
 
 
-    difuse *= (attenuation * attenuation);
+    //difuse *= (attenuation * attenuation);
     //specular *= attenuation;
   
     //return (difuse + specular);
@@ -173,11 +173,11 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     
     float fade_start = light_distance * fall_start;
     float fade = smoothstep(fade_start, light_distance, distance); // 0 a 1 en el borde
-    fade = pow(fade, fall_off);
+    //fade = pow(fade, fall_off);
     fade = 1.0 - fade;
     attenuation *= fade;
     
-    float3 radiance = diffuse_color * attenuation * intensity;
+    float3 radiance = diffuse_color * texture_color.rgb * attenuation * intensity;
 
     float3 N = normal_procesed;
     
