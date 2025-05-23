@@ -79,6 +79,18 @@ void SpotLight::set_outer_circle(float radius){
 	m_buffer.outer_cut_off = radius;
 }
 
+void SpotLight::set_expossure(float value){
+	m_buffer.expossure = value;
+}
+
+void SpotLight::set_intensity(float value){
+	m_buffer.intensity = value;
+}
+
+void SpotLight::set_distance(float value){
+	m_buffer.light_distance = value;
+}
+
 void SpotLight::init_buffers(){
 
 	m_constant_buffer_light = nullptr;

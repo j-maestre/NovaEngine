@@ -10,12 +10,16 @@ struct SpotLightConstantBuffer {
     float cutt_off = 2.5f;
     Vec3 diffuse_color = { 0.5f, 0.5f, 0.5f };
     float outer_cut_off = 50.0f;
-    Vec3 specular_color = { 0.5f, 0.5f, 0.5f };
+    Vec3 specular_color = { 1.0f, 1.0f, 1.0f };
     float specular_strength = 0.003f;
     float specular_shininess = 32.0f;
     float constant_att = 1.0f;
     float linear_att = 0.045f;
     float quadratic_att = 0.0075f;
+    float expossure = 1.0f;
+    float intensity = 1.0f;
+    float light_distance = 10.0f;
+    float padding;
 };
 
 class SpotLight : public Light {
@@ -45,6 +49,11 @@ public:
     float get_inner_circle() { return m_buffer.cutt_off; }
     float get_outside_circle() { return m_buffer.outer_cut_off; }
 
+    float get_expossure() { return m_buffer.expossure; }
+
+    float get_intensity() { return m_buffer.intensity; }
+    float get_distance() { return m_buffer.light_distance; }
+
 
     void set_direction(Vec3 dir);
     void set_position(Vec3 pos);
@@ -59,6 +68,10 @@ public:
 
     void set_inner_circle(float radius);
     void set_outer_circle(float radius);
+
+    void set_expossure(float value);
+    void set_intensity(float value);
+    void set_distance(float value);
 
 private:
 

@@ -100,15 +100,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	auto& point = scene.m_ecs.add_component<PointLight>(point_light);
 	point.set_color({1.0f, 1.0f, 1.0f});
 	point.set_position({0.0f, 5.0f, 0.0f});
-	point.set_enabled(true);
+	point.set_enabled(false);
 	point.set_distance(10.0f);
 
 	Entity spot_light = scene.m_ecs.create_entity("Spot Light");
 	auto& spot = scene.m_ecs.add_component<SpotLight>(spot_light);
-	spot.set_color({0.1f, 1.0f, 0.1f});
-	spot.set_position({0.0f, 4.0f, -8.0f});
+	spot.set_color({1.0f, 1.0f, 1.0f});
+	spot.set_position({0.0f, 4.0f, -7.0f});
 	spot.set_direction({0.0f, 0.0f, 1.0f});
-	spot.set_enabled(false);
+	spot.set_enabled(true);
+	spot.set_distance(15.0f);
 
 	//win.set_full_screen();
 
@@ -129,6 +130,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		TransformComponent* t = scene.m_ecs.get_component<TransformComponent>(cube);
 		float dt = engine->get_delta_time() * 2.0f;
 		//t->rotateXYZ(dt,dt,dt);
+
+		TransformComponent* trans = scene.m_ecs.get_component<TransformComponent>(sphere_red);
+		trans->set_position(spot.get_position());
 
 		
 		scene.update();

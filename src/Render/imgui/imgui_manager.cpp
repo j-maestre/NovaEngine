@@ -400,6 +400,9 @@ void ImguiManager::show_light(SpotLight* light, int entity_id){
 	float constant_att = light->get_constant_attenuation();
 	float linear_att = light->get_linear_attenuation();
 	float cuadratic_att = light->get_quadratic_attenuation();
+	float expossure = light->get_expossure();
+	float distance = light->get_distance();
+	float intensity = light->get_intensity();
 
 
 	std::string label = "Position##" + std::to_string(entity_id);
@@ -438,6 +441,15 @@ void ImguiManager::show_light(SpotLight* light, int entity_id){
 	label = "Cuadratic atenuattion##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &cuadratic_att, 0.0001f, 0.0f);
 
+	label = "Expossure##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &expossure, 0.1f, 0.0f, 200.0f);
+
+	label = "Distance##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &distance, 0.1f, 0.0f, 2000.0f);
+
+	label = "Intensity##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &intensity, 0.1f, 0.0f, 10000.0f);
+
 	light->set_position({ pos_tmp[0], pos_tmp[1], pos_tmp[2] });
 	light->set_direction({ dir_tmp[0], dir_tmp[1], dir_tmp[2] });
 	light->set_inner_circle(cut_off);
@@ -450,6 +462,10 @@ void ImguiManager::show_light(SpotLight* light, int entity_id){
 	light->set_constant_attenuation(constant_att);
 	light->set_linear_attenuation(linear_att);
 	light->set_quadratic_attenuation(cuadratic_att);
+	light->set_expossure(expossure);
+	light->set_distance(distance);
+	light->set_intensity(intensity);
+
 }
 
 void ImguiManager::show_light(DirectionalLight* light, int entity_id){
