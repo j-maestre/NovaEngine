@@ -4,6 +4,7 @@
 
 #define DIRECTX11
 #define ENABLE_IMGUI
+#define MEASURE_TIME
 
 
 constexpr unsigned int SCREEN_WIDTH = 1920;

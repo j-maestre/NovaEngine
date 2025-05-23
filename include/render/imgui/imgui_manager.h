@@ -55,6 +55,7 @@ public:
 
 	std::string m_resources = "";
 private:
+	friend class Engine;
 	friend class Window;
 	friend class CameraComponent;
 	friend class Renderer;
@@ -86,6 +87,11 @@ private:
 	float m_draw_time = 0.0f;
 	float m_update_transform_time = 0.0f;
 	float m_draw_imgui_time = 0.0f;
+	float m_update_cam_time = 0.0f;
+	float m_fly_cam_time = 0.0f;
+	float m_engine_update_time = 0.0f;
+	float m_window_begin_frame_time = 0.0f;
+	float m_window_end_frame_time = 0.0f;
 
 	std::mutex resources_lock;
 	ImGuiViewport* m_viewport;

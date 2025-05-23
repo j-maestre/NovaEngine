@@ -116,15 +116,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	while (true) {
 
 		win.begin_frame();
+
 		// if true no execute game code?
 		if (!win.update()) {
 			printf("window update return false\n");
 			break;
 		}
 
-		
 		engine->update();
+
 		cam.fly(engine->get_delta_time());
+
 		cam.update();
 
 		TransformComponent* t = scene.m_ecs.get_component<TransformComponent>(cube);
@@ -137,8 +139,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		
 		scene.update();
 		render.render_forward(scene.m_ecs);
-		
+
 		win.end_frame();
+		
 	}
 
 	engine->release();

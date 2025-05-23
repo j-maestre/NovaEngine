@@ -213,12 +213,22 @@ void ImguiManager::system_info(){
 
 	ImGui::Begin("System info");
 
-	ImGui::Text("FPS: %f", m_last_fps);
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+	ImGui::Text("FPS: %.0f", m_last_fps);
+	ImGui::PopStyleColor();
+
+#ifdef MEASURE_TIME
 	ImGui::Text("Delta Time: %f", dt);
 	ImGui::Text("Draw Time: %f", m_draw_time);
 	ImGui::Text("Draw ImGui Time: %f", m_draw_imgui_time);
 	ImGui::Text("Update transform time: %f", m_update_transform_time);
+	ImGui::Text("Window begin frame time: %f", m_window_begin_frame_time);
+	ImGui::Text("Window end frame time: %f", m_window_end_frame_time);
+	ImGui::Text("Engine update time: %f", m_engine_update_time);
+	ImGui::Text("Update cam time: %f", m_update_cam_time);
+	ImGui::Text("Fly cam time: %f", m_fly_cam_time);
 	ImGui::PlotLines("Delta time", m_dt_history.data(), m_dt_history_size, m_dt_history_index, nullptr, FLT_MAX, FLT_MAX, ImVec2(0, 70));
+#endif
 
 	ImGui::Text("Mouse (%d, %d)", mouse_x, mouse_y);
 	ImGui::Text("Delta (%.0f, %.0f)", m_mouse_delta_x, m_mouse_delta_y);

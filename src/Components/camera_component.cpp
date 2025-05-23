@@ -48,10 +48,21 @@ CameraComponent::~CameraComponent()
 }
 
 void CameraComponent::update(){
+
+#ifdef MEASURE_TIME
+	auto start = std::chrono::high_resolution_clock::now();
+#endif
+
 	update_view_matrix();
 	update_projection_matrix();
 
 	m_view_projection = (m_projection * m_view);
+
+#ifdef MEASURE_TIME
+	auto end = std::chrono::high_resolution_clock::now();
+	auto elapsed = end - start;
+	ImguiManager::get_instance()->m_fly_cam_time = std::chrono::duration<float>(elapsed).count();
+#endif
 }
 
 
@@ -61,6 +72,9 @@ void CameraComponent::fly(float dt){
 	//printf("Pitch %f Yaw %f\n", m_pitch, m_yaw);
 	//printf("Direction X%f Y%f Z%f\n", DirectX::XMVectorGetX(m_direction), DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction));
 	
+#ifdef MEASURE_TIME
+	auto start = std::chrono::high_resolution_clock::now();
+#endif
 
 	ShowCursor(TRUE);
 
@@ -174,10 +188,11 @@ void CameraComponent::fly(float dt){
 
 	
 	
-
-	
-		
-
+#ifdef MEASURE_TIME
+	auto end = std::chrono::high_resolution_clock::now();
+	auto elapsed = end - start;
+	ImguiManager::get_instance()->m_fly_cam_time = std::chrono::duration<float>(elapsed).count();
+#endif
 }
 
 void CameraComponent::set_aspect_ratio(float value){

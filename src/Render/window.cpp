@@ -188,6 +188,10 @@ void Window::init_imgui(){
 
 void Window::begin_frame(){
 	
+#ifdef MEASURE_TIME
+	auto start = std::chrono::high_resolution_clock::now();
+#endif
+
 	if (m_input->is_key_down(Key::Keyboard::ESCAPE)) {
 		PostQuitMessage(0);
 	}
@@ -219,9 +223,20 @@ void Window::begin_frame(){
 #ifdef ENABLE_IMGUI
 	m_imgui->begin_frame();
 #endif
+
+
+#ifdef MEASURE_TIME
+	auto end = std::chrono::high_resolution_clock::now();
+	auto elapsed = end - start;
+	m_imgui->m_window_begin_frame_time = std::chrono::duration<float>(elapsed).count();
+#endif
 }
 
 void Window::end_frame(){
+
+#ifdef MEASURE_TIME
+	auto start = std::chrono::high_resolution_clock::now();
+#endif
 
 #ifdef ENABLE_IMGUI
 	m_imgui->end_frame();
@@ -229,6 +244,12 @@ void Window::end_frame(){
 
 	// Switch the backbuffer and the front buffer
 	m_swapChain->Present(0,0);
+#ifdef MEASURE_TIME
+	auto end = std::chrono::high_resolution_clock::now();
+	auto elapsed = end - start;
+	m_imgui->m_window_end_frame_time = std::chrono::duration<float>(elapsed).count();
+#endif
+
 }
 
 bool Window::update(){

@@ -110,6 +110,10 @@ void Engine::init(Window* window){
 
 void Engine::update(){
 
+#ifdef MEASURE_TIME
+	auto start = std::chrono::high_resolution_clock::now();
+#endif
+
 	//m_props->inmediateDeviceContext->RSSetViewports(1, &m_viewport);
 
 	auto currentTime = std::chrono::high_resolution_clock::now();
@@ -120,6 +124,12 @@ void Engine::update(){
 	
 	m_resource.check_models_to_load();
 	m_resource.check_textures_to_load();
+
+#ifdef MEASURE_TIME
+	auto end = std::chrono::high_resolution_clock::now();
+	auto elapsed = end - start;
+	ImguiManager::get_instance()->m_engine_update_time = std::chrono::duration<float>(elapsed).count();
+#endif
 }
 
 void Engine::release(){
