@@ -48,9 +48,9 @@ float3 CalculeSpotLight(float3 normal, float3 view_dir, float3 color_base, float
     float diff = max(dot(normal, lightDir), 0.0);
     float3 light_diffuse_calculated = diff * diffuse_color * color_base;
 
-    float3 reflectDir = reflect(-direction, normal);
-    float spec = pow(max(dot(view_dir, reflectDir), 0.0), specular_shininess);
-    float3 light_specular_calculated = specular_strength * spec * specular_color * color_base;
+    //float3 reflectDir = reflect(-direction, normal);
+    //float spec = pow(max(dot(view_dir, reflectDir), 0.0), specular_shininess);
+    //float3 light_specular_calculated = specular_strength * spec * specular_color * color_base;
 
     float distance = length(light_position - frag_pos);
 
@@ -58,21 +58,21 @@ float3 CalculeSpotLight(float3 normal, float3 view_dir, float3 color_base, float
     float attenuationAmount = 1.0 / (constant_att + linear_att * distance + quadratic_att * (distance * distance));
 
     // Fade suave basado en light_distance para que la luz se apague cerca del límite
-    float fade_start = light_distance * 0.8; // empieza a atenuar un 80% antes del límite
+    float fade_start = light_distance * 0.8;
     float fade = smoothstep(fade_start, light_distance, distance);
     fade = 1.0 - fade; // invertir para que sea 1 dentro y 0 fuera
 
     attenuationAmount *= fade;
 
     light_diffuse_calculated *= attenuationAmount;
-    light_specular_calculated *= attenuationAmount;
+    //light_specular_calculated *= attenuationAmount;
 
     float theta = dot(lightDir, normalize(-direction));
     float epsilon = (cut_off - outer_cut_off_calculated);
     float intensity = clamp((theta - outer_cut_off_calculated) / epsilon, 0.0, 1.0);
 
     light_diffuse_calculated *= intensity;
-    light_specular_calculated *= intensity;
+    //light_specular_calculated *= intensity;
 
     return light_diffuse_calculated; // + light_specular_calculated;
 
