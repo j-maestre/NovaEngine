@@ -341,10 +341,9 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 
 
 
+#ifdef ENABLE_IMGUI
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
-
-#ifdef ENABLE_IMGUI
 	ImguiManager::get_instance()->m_draw_time = std::chrono::duration<float>(elapsed).count();
 	ImguiManager::get_instance()->render();
 	ImguiManager::get_instance()->scene_info(ecs);

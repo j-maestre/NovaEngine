@@ -243,44 +243,107 @@ void ImguiManager::system_info(){
 void ImguiManager::show_transform(TransformComponent* trans, int entity_id){
 
 	ImGui::SeparatorText("Transform");
-	Vec3& pos = trans->get_position();
-	Vec3& rotation = trans->get_rotation();
-	Vec3& scale = trans->get_scale();
-	float tmp_pos[3] = { pos.x, pos.y, pos.z };
-	float tmp_rot[3] = { rotation.x, rotation.y, rotation.z };
-	float tmp_scale[3] = { scale.x, scale.y, scale.z };
 
-	// TODO: Poner esto guapo
-	std::string label = "Position##" + std::to_string(entity_id);
-	ImGui::SameLine();
-	std::string tmp = "X##" + std::to_string(entity_id);
-	ImGui::DragFloat(tmp.c_str(), &tmp_pos[0]);
-	
-	ImGui::SameLine();
-	tmp = "Y##" + std::to_string(entity_id);
-	ImGui::DragFloat(tmp.c_str(), &tmp_pos[1]);
+	Vec3 pos = trans->get_position();
+	Vec3 rot = trans->get_rotation();
+	Vec3 scl = trans->get_scale();
 
-	ImGui::SameLine();
-	tmp = "Z##" + std::to_string(entity_id);
-	ImGui::DragFloat(tmp.c_str(), &tmp_pos[2]);
-	
-	
-	
-	//ImGui::DragFloat3(label.c_str(), tmp_pos, 0.1f);
-	ImGui::ColorButton("", {1.0,0.0,0.0,1.0});
+	// Calcular el ancho máximo para las etiquetas
+	const char* labels[] = { "Position", "Rotation", "Scale" };
+	float max_label_width = 0.0f;
+	for (const char* lbl : labels) {
+		float w = ImGui::CalcTextSize(lbl).x;
+		if (w > max_label_width) max_label_width = w;
+	}
+	max_label_width += 10.0f; // margen extra para que no se pegue el texto a los controles
 
-	label = "Rotation##" + std::to_string(entity_id);
-	ImGui::DragFloat3(label.c_str(), tmp_rot, 0.1f);
+	auto draw_vec3_control = [&](const char* label, Vec3& vec) {
+		ImGui::PushID(label);
 
-	label = "Scale##" + std::to_string(entity_id);
-	ImGui::DragFloat3(label.c_str(), tmp_scale, 0.1f);
+		ImGui::AlignTextToFramePadding();
 
+		// 1. Crear espacio reservado para la etiqueta
+		ImGui::BeginGroup();
+		ImGui::TextUnformatted(label);
 
+		// 2. Mover el cursor hacia la derecha, al final del espacio reservado
+		ImGui::SameLine();
+		ImGui::Dummy(ImVec2(max_label_width - ImGui::CalcTextSize(label).x, 0)); // espacio vacío para que la siguiente línea empiece bien alineada
+		ImGui::SameLine();
 
-	trans->set_position({ tmp_pos[0], tmp_pos[1], tmp_pos[2]});
-	trans->set_rotation({ tmp_rot[0], tmp_rot[1], tmp_rot[2]});
-	trans->set_scale({ tmp_scale[0], tmp_scale[1], tmp_scale[2]});
+		// Ahora el cursor está justo donde queremos empezar los controles (botones y sliders)
 
+		const char* axes[3] = { "X", "Y", "Z" };
+		ImVec4 colors[3] = {
+			ImVec4(0.8f, 0.1f, 0.15f, 1.0f),
+			ImVec4(0.2f, 0.7f, 0.2f, 1.0f),
+			ImVec4(0.1f, 0.25f, 0.8f, 1.0f)
+		};
+
+		float* components[3] = { &vec.x, &vec.y, &vec.z };
+		float button_width = 18.0f;
+		float button_height = 18.0f;
+		float spacing = ImGui::GetStyle().ItemSpacing.x;
+		float text_height = ImGui::GetTextLineHeight();
+		float vertical_offset = (text_height - button_height) * 0.5f;
+
+		// Calcular ancho restante para sliders
+		float total_button_area = (button_width + spacing + 2.0f) * 3;
+		float total_available = ImGui::GetContentRegionAvail().x;
+		float slider_width = (total_available - total_button_area) / 3.0f;
+
+		float line_start_y = ImGui::GetCursorPosY();
+
+		for (int i = 0; i < 3; ++i) {
+			ImGui::SetCursorPosY(line_start_y - vertical_offset);
+
+			// Botón coloreado
+			std::string button_id = std::string("##") + label + "_btn_" + axes[i] + "_" + std::to_string(entity_id);
+			ImGui::PushStyleColor(ImGuiCol_Button, colors[i]);
+			ImGui::Button(button_id.c_str(), ImVec2(button_width, button_height));
+			ImGui::PopStyleColor();
+
+			if (ImGui::IsItemHovered()) {
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
+
+			// Centrar texto en el botón
+			ImVec2 btn_min = ImGui::GetItemRectMin();
+			ImVec2 btn_size = ImGui::GetItemRectSize();
+			ImVec2 text_size = ImGui::CalcTextSize(axes[i]);
+			ImVec2 text_pos = {
+				btn_min.x + (btn_size.x - text_size.x) * 0.5f,
+				btn_min.y + (btn_size.y - text_size.y) * 0.5f
+			};
+			ImGui::GetWindowDrawList()->AddText(text_pos, ImGui::GetColorU32(ImGuiCol_Text), axes[i]);
+
+			if (ImGui::IsItemClicked()) {
+				*components[i] = 0.0f;
+			}
+
+			ImGui::SameLine(0.0f, 2.0f);
+
+			// Slider dinámico
+			std::string drag_id = std::string("##") + label + "_drag_" + axes[i] + "_" + std::to_string(entity_id);
+			ImGui::SetNextItemWidth(slider_width);
+			ImGui::DragFloat(drag_id.c_str(), components[i], 0.1f);
+
+			if (i < 2)
+				ImGui::SameLine();
+		}
+
+		ImGui::EndGroup();
+
+		ImGui::PopID();
+		};
+
+	draw_vec3_control("Position", pos);
+	draw_vec3_control("Rotation", rot);
+	draw_vec3_control("Scale", scl);
+
+	trans->set_position(pos);
+	trans->set_rotation(rot);
+	trans->set_scale(scl);
 }
 
 void ImguiManager::show_light(PointLight* light, int entity_id){
@@ -614,6 +677,10 @@ void ImguiManager::scene_info(EntityComponentSystem& ecs){
 			if (spot_light) {
 				show_light(spot_light, e.get_id());
 			}
+		}
+
+		if (ImGui::IsItemHovered()) {
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 		}
 	}
 	ImGui::End();
