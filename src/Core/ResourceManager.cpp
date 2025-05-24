@@ -451,6 +451,7 @@ void ResourceManager::ProcessNode(Model* model, aiNode* node, const aiScene* sce
 
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 		Mesh mesh_tmp;
+		mesh_tmp.material.init_material();
 		ProcessMesh(&mesh_tmp, mesh, scene, absolute_path, async);
 		model->meshes.push_back(std::move(mesh_tmp));
 	}
@@ -508,7 +509,7 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 
 	mesh->num_indices = (unsigned int) mesh->indices.size();
 
-	mesh->material = *(m_engine->get_default_material());
+	//mesh->material = *(m_engine->get_default_material()); // Not needed, do the same when call init_material()
 
 	//mesh->material = nullptr;
 	

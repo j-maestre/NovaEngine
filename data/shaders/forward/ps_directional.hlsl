@@ -6,6 +6,8 @@ struct PS_INPUT
     float2 uv : UV;
     float3 cam_pos : CAMERA_POSITION;
     float4 tangent : TANGENT;
+    float metallic_value : METALLIC;
+    float roughness_value : ROUGHNESS;
 };
 
 cbuffer DirectionalLightConstantBuffer : register(b0)
@@ -138,8 +140,13 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     const float3 view_dir = normalize(input.cam_pos - input.world_position);
     const float4 texture_color = (albedo_tex.Sample(mySampler, input.uv));
     const float4 texture_normal = (normal_tex.Sample(mySampler, input.uv));
-    const float texture_metallic = (metallic_tex.Sample(mySampler, input.uv)).r;
-    const float texture_roughness = (roughness_tex.Sample(mySampler, input.uv)).r;
+    
+    const float texture_metallic = max((metallic_tex.Sample(mySampler, input.uv)).r, input.metallic_value);
+    const float texture_roughness = max((roughness_tex.Sample(mySampler, input.uv)).r, input.roughness_value);
+    
+    //const float texture_metallic = metallic_tex.Sample(mySampler, input.uv).r;
+    //const float texture_roughness = roughness_tex.Sample(mySampler, input.uv).r;
+    
     const float texture_ao = (ao_tex.Sample(mySampler, input.uv)).r;
     const float3 normal_procesed = getNormalFromMapOLD(texture_normal.rgb, input.normal, input.tangent);
     const float3 light_color_calculated = CalculeDirectionalLight(normal_procesed, view_dir, texture_color.rgb);
@@ -186,8 +193,8 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     float3 ambient = float3(0.01f, 0.01f, 0.01f) * texture_color.rgb * texture_ao;
     ambient *= (1.0 - texture_metallic); // prevent albedo on full metallic parts
     
-    float3 color = Lo + ambient;
-    //float3 color = Lo;
+    //float3 color = Lo + ambient;
+    float3 color = Lo;
     
     // HDR tonemapping
     //color = color / (color + float3(1.0, 1.0, 1.0));

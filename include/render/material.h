@@ -3,6 +3,7 @@
 #include "render/texture.h"
 
 
+class Engine;
 class Material {
 
 public:
@@ -14,11 +15,15 @@ public:
 	Material& operator=(const Material&);
 	Material& operator=(Material&&);
 
-	void set_texture_albedo(Texture* t) { m_texture_albedo = t; }
-	void set_texture_normal(Texture* t) { m_texture_normal = t; }
-	void set_texture_metallic(Texture* t) { m_texture_metallic = t; }
-	void set_texture_roughness(Texture* t) { m_texture_roughness = t; }
-	void set_texture_ao(Texture* t) { m_texture_ao = t; }
+	void init_material();
+	void set_texture_albedo(Texture* t) { assert(m_initialised, "Forget to call init_material() ?"); m_texture_albedo = t; }
+	void set_texture_normal(Texture* t) { assert(m_initialised, "Forget to call init_material() ?"); m_texture_normal = t; }
+	void set_texture_metallic(Texture* t) { assert(m_initialised, "Forget to call init_material() ?"); m_texture_metallic = t; m_metallic_value = 0.0f; }
+	void set_texture_roughness(Texture* t) { assert(m_initialised, "Forget to call init_material() ?"); m_texture_roughness = t; m_roughness_value = 0.0f; }
+	void set_texture_ao(Texture* t) { assert(m_initialised, "Forget to call init_material() ?"); m_texture_ao = t; }
+
+	void set_metallic_value(float value) { m_metallic_value = value; }
+	void set_roughness_value(float value) { m_roughness_value = value; }
 
 	inline Texture* get_albedo() { return m_texture_albedo; }
 	inline Texture* get_normal() { return m_texture_normal; }
@@ -27,7 +32,19 @@ public:
 	inline Texture* get_ao() { return m_texture_ao; }
 	inline Texture* get_specular() { return m_texture_specular; }
 
+	float get_metallic_value() { return m_metallic_value; }
+	float get_roughness_value() { return m_roughness_value; }
+
+
 private:
+
+	friend ResourceManager;
+	friend Engine;
+
+	bool m_initialised = false;
+	float m_metallic_value = 0.0f;
+	float m_roughness_value = 0.0f;
+
 	Texture* m_texture_albedo;
 	Texture* m_texture_normal;
 	Texture* m_texture_metallic;

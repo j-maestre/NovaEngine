@@ -80,8 +80,6 @@ private:
 	ID3D11DepthStencilView* m_depth_stencil_view;
 	ID3D11DepthStencilState* m_depth_stencil_state;
 
-
-
 	CameraComponent* m_cam;
 
 	bool m_isInitialized;

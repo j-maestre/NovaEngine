@@ -13,6 +13,8 @@ struct VOut{
     float2 uv : UV;
     float3 cam_pos : CAMERA_POSITION;
     float4 tangent : TANGENT;
+    float metallic_value : METALLIC;
+    float roughness_value : ROUGHNESS;
 };
 
 cbuffer CameraObject : register(b0){
@@ -20,6 +22,8 @@ cbuffer CameraObject : register(b0){
     float4x4 projection;
     float4x4 model;
     float3 cam_pos;
+    float metallic_value;
+    float roughness_value;
 }
 
 
@@ -29,6 +33,9 @@ VOut VShader(VS_IN input)
     float4x4 vpm = mul(model, mul(view, projection));
     
     VOut output;
+    
+    output.metallic_value = metallic_value;
+    output.roughness_value = roughness_value;
 
     output.position = mul(float4(input.position, 1.0f), vpm);
     output.world_position = mul(float4(input.position, 1.0f), model).xyz;

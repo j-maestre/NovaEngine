@@ -70,6 +70,7 @@ private:
 	void show_light(DirectionalLight* light, int entity_id);
 	void show_light(PointLight* light, int entity_id);
 	void show_light(SpotLight* light, int entity_id);
+	void show_mesh_comp(MeshComponent* mesh_comp, int entity_id);
 
 	std::vector<std::string> m_resources_loaded;
 

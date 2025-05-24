@@ -4,6 +4,7 @@
 
 #include "render/imgui/imgui_manager.h"
 
+
 static inline bool  CheckShaderError(HRESULT hr, ID3DBlob* error_msg = nullptr) {
 	if (FAILED(hr)) {
 		if (error_msg != nullptr) {
@@ -34,6 +35,7 @@ Renderer::~Renderer(){
 	m_pLayout->Release();
 	m_sampler_state->Release();
 	m_depth_stencil_state->Release();
+
 }
 
 bool Renderer::init_pipeline(Window* win){
@@ -402,16 +404,24 @@ void Renderer::resize(unsigned int width, unsigned int height){
 }
 
 void Renderer::render_mesh_internal(CameraConstantBuffer* camera_buffer, TransformComponent& trans, Mesh& m){
+	
+	// Set camera values to constant buffer
 	camera_buffer->model = DirectX::XMMatrixTranspose(trans.get_transform());
 
+	// Upload metallic and roughness values to constant buffer
+	camera_buffer->metallic = m.material.get_metallic_value();
+	camera_buffer->roughness = m.material.get_roughness_value();
+	
 	// Buffer de la camara con la model del objeto
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, camera_buffer, 0, 0);
 
+	
+	// Set Vertex buffer
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m.buffer, &stride, &offset);
 
-	// Draw
+	// Upload textures
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0, 1, &(m.material.get_albedo()->m_data.texture_view));
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(1, 1, &(m.material.get_normal()->m_data.texture_view));
@@ -419,6 +429,7 @@ void Renderer::render_mesh_internal(CameraConstantBuffer* camera_buffer, Transfo
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(3, 1, &(m.material.get_roughness()->m_data.texture_view));
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(4, 1, &(m.material.get_ao()->m_data.texture_view));
 
+	// Draw
 	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m.index_buffer, DXGI_FORMAT_R32_UINT, 0);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

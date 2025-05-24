@@ -6,6 +6,8 @@ struct PS_INPUT
     float2 uv : UV;
     float3 cam_pos : CAMERA_POSITION;
     float4 tangent : TANGENT;
+    float metallic_value : METALLIC;
+    float roughness_value : ROUGHNESS;
 };
 
 cbuffer SpotLightConstantBuffer : register(b0)
@@ -54,10 +56,10 @@ float3 CalculeSpotLight(float3 normal, float3 view_dir, float3 color_base, float
 
     float distance = length(light_position - frag_pos);
 
-    // Atenuación por distancia (constante, lineal, cuadrática)
+    // Atenuaciï¿½n por distancia (constante, lineal, cuadrï¿½tica)
     float attenuationAmount = 1.0 / (constant_att + linear_att * distance + quadratic_att * (distance * distance));
 
-    // Fade suave basado en light_distance para que la luz se apague cerca del límite
+    // Fade suave basado en light_distance para que la luz se apague cerca del lï¿½mite
     float fade_start = light_distance * 0.8;
     float fade = smoothstep(fade_start, light_distance, distance);
     fade = 1.0 - fade; // invertir para que sea 1 dentro y 0 fuera
@@ -155,8 +157,13 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     const float3 view_dir = normalize(input.cam_pos - input.world_position);
     const float4 texture_color = (albedo_tex.Sample(mySampler, input.uv));
     const float4 texture_normal = (normal_tex.Sample(mySampler, input.uv));
-    const float texture_metallic = (metallic_tex.Sample(mySampler, input.uv)).r;
-    const float texture_roughness = (roughness_tex.Sample(mySampler, input.uv)).r;
+    
+    const float texture_metallic = max((metallic_tex.Sample(mySampler, input.uv)).r, input.metallic_value);
+    const float texture_roughness = max((roughness_tex.Sample(mySampler, input.uv)).r, input.roughness_value);
+    
+    //const float texture_metallic = metallic_tex.Sample(mySampler, input.uv).r;
+    //const float texture_roughness = roughness_tex.Sample(mySampler, input.uv).r;
+    
     const float texture_ao = (ao_tex.Sample(mySampler, input.uv)).r;
     const float3 normal_procesed = getNormalFromMapOLD(texture_normal.rgb, input.normal, input.tangent);
     

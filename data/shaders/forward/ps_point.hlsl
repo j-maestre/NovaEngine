@@ -6,6 +6,8 @@ struct PS_INPUT
     float2 uv : UV;
     float3 cam_pos : CAMERA_POSITION;
     float4 tangent : TANGENT;
+    float metallic_value : METALLIC;
+    float roughness_value : ROUGHNESS;
 };
 
 cbuffer PointLightConstantBuffer : register(b0)
@@ -143,8 +145,13 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     const float3 view_dir = normalize(input.cam_pos - input.world_position);
     const float4 texture_color = (albedo_tex.Sample(mySampler, input.uv));
     const float4 texture_normal = (normal_tex.Sample(mySampler, input.uv));
-    const float texture_metallic = (metallic_tex.Sample(mySampler, input.uv)).r;
-    const float texture_roughness = (roughness_tex.Sample(mySampler, input.uv)).r;
+    
+    const float texture_metallic = max((metallic_tex.Sample(mySampler, input.uv)).r, input.metallic_value);
+    const float texture_roughness = max((roughness_tex.Sample(mySampler, input.uv)).r, input.roughness_value);
+    
+    //const float texture_metallic = metallic_tex.Sample(mySampler, input.uv).r;
+    //const float texture_roughness = roughness_tex.Sample(mySampler, input.uv).r;
+    
     const float texture_ao = (ao_tex.Sample(mySampler, input.uv)).r;
     const float3 normal_procesed = getNormalFromMapOLD(texture_normal.rgb, input.normal, input.tangent);
     

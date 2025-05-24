@@ -75,6 +75,7 @@ private:
 	friend class PointLight;
 	friend class ImguiManager;
 	friend class Window;
+	friend class Material;
 	
 	inline std::shared_ptr<EngineProps> get_engine_props() { return m_props; }
 

@@ -542,6 +542,31 @@ void ImguiManager::show_light(SpotLight* light, int entity_id){
 
 }
 
+void ImguiManager::show_mesh_comp(MeshComponent* mesh_comp, int entity_id){
+
+	
+	ImGui::SeparatorText("Material");
+	int index = 0;
+	for (auto& m : mesh_comp->get_model()->meshes) {
+
+		std::string label = "Mesh " + std::to_string(index);
+		ImGui::Text(label.c_str());
+		float metallic = m.material.get_metallic_value();
+		float roughness = m.material.get_roughness_value();
+
+		label = "Metallic##" + std::to_string(entity_id) + std::to_string(index);
+		ImGui::DragFloat(label.c_str(), &metallic, 0.01f, 0.0f, 1.0f);
+		
+		label = "Roughness##" + std::to_string(entity_id) + std::to_string(index);
+		ImGui::DragFloat(label.c_str(), &roughness, 0.01f, 0.0f, 1.0f);
+
+		m.material.set_metallic_value(metallic);
+		m.material.set_roughness_value(roughness);
+		index++;
+	}
+	
+}
+
 void ImguiManager::show_light(DirectionalLight* light, int entity_id){
 	
 	ImGui::SeparatorText("Directional Light");
@@ -688,6 +713,13 @@ void ImguiManager::scene_info(EntityComponentSystem& ecs){
 			if (spot_light) {
 				show_light(spot_light, e.get_id());
 			}
+
+			
+			MeshComponent* mesh_comp = ecs.get_component<MeshComponent>(e);
+			if (mesh_comp) {
+				show_mesh_comp(mesh_comp, e.get_id());
+			}
+			
 		}
 
 		if (ImGui::IsItemHovered()) {

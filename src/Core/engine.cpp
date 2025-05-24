@@ -104,7 +104,7 @@ void Engine::init(Window* window){
 	window->m_deviceInterface = m_props->deviceInterface;
 	window->m_inmediateDeviceContext = m_props->inmediateDeviceContext;
 	
-	load_default_textures();
+	//load_default_textures();
 }
 
 
@@ -178,11 +178,16 @@ void Engine::load_default_textures(){
 	m_default_texture_albedo = t->get_id();
 	m_texture_tmp = t2->get_id();
 
+	m_default_material.m_initialised = true;
 	m_default_material.set_texture_albedo(t);
 	m_default_material.set_texture_normal(normal);
 	m_default_material.set_texture_metallic(metallic);
 	m_default_material.set_texture_roughness(roughness);
+	//m_default_material.set_texture_roughness(metallic);		// just for debug
 	m_default_material.set_texture_ao(ao);
+
+	m_default_material.set_metallic_value(0.5f);
+	m_default_material.set_roughness_value(0.5f);
 
 	m_resource.check_textures_to_load();
 }
@@ -195,6 +200,7 @@ Texture* Engine::get_default_albedo_texture(){
 #define MULTI_THREAD
 void Engine::init_geometries(){
 
+	load_default_textures();
 
 	auto start = std::chrono::high_resolution_clock::now();
 	m_resource.load_mesh("data/models/basics/cube.fbx");
