@@ -259,6 +259,10 @@ void ImguiManager::show_transform(TransformComponent* trans, int entity_id){
 	Vec3 rot = trans->get_rotation();
 	Vec3 scl = trans->get_scale();
 
+	rot.x = radToDeg(rot.x);
+	rot.y = radToDeg(rot.y);
+	rot.z = radToDeg(rot.z);
+
 	// Calcular el ancho máximo para las etiquetas
 	const char* labels[] = { "Position", "Rotation", "Scale" };
 	float max_label_width = 0.0f;
@@ -351,6 +355,11 @@ void ImguiManager::show_transform(TransformComponent* trans, int entity_id){
 	draw_vec3_control("Position", pos);
 	draw_vec3_control("Rotation", rot);
 	draw_vec3_control("Scale", scl);
+
+	rot.x = degToRad(rot.x);
+	rot.y = degToRad(rot.y);
+	rot.z = degToRad(rot.z);
+
 
 	trans->set_position(pos);
 	trans->set_rotation(rot);
