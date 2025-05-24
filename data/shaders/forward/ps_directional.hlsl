@@ -156,7 +156,7 @@ float4 PShader(PS_INPUT input) : SV_TARGET
 
     float distance = 0.0;
     float attenuation = 1.0;
-    float3 radiance = light_diffuse_color;// * intensity;
+    float3 radiance = light_diffuse_color * texture_color.rgb;// * intensity;
     
     float3 L = -direction;
     float3 H = normalize(V + L);
