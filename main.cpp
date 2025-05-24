@@ -34,7 +34,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	float scale = 1.0f;
-	Scene scene;
+	Scene scene("scene0.yaml");
 	Entity cube = scene.m_ecs.create_entity("cube jou");
 	Entity sphere_red = scene.m_ecs.create_entity("Esfera red");
 	Entity sphere_ent = scene.m_ecs.create_entity("Esfera");
@@ -58,6 +58,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	MeshComponent& sphere = scene.m_ecs.add_component<MeshComponent>(sphere_ent);
 	MeshComponent& sphere_red_mesh = scene.m_ecs.add_component<MeshComponent>(sphere_red);
 	MeshComponent& sphere_normal_mesh = scene.m_ecs.add_component<MeshComponent>(sphere_normal);
+
 	sphere.set_model(engine->get_sphere_high());
 	sphere_red_mesh.set_model(engine->get_sphere_high());
 	sphere_normal_mesh.set_model(engine->get_sphere_high());

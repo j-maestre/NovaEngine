@@ -6,7 +6,7 @@
 class Scene {
 
 public:
-	Scene();
+	Scene(const std::string& path_scene);
 	Scene(const Scene&);
 	Scene(Scene&&);
 	~Scene();
@@ -16,5 +16,10 @@ public:
 	EntityComponentSystem m_ecs;
 
 private:
+
+	bool load_scene(std::string path);
+
+
+	std::string m_full_path;
 
 };
