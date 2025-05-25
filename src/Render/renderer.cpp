@@ -411,6 +411,7 @@ void Renderer::render_mesh_internal(CameraConstantBuffer* camera_buffer, Transfo
 	// Upload metallic and roughness values to constant buffer
 	camera_buffer->metallic = m.material.get_metallic_value();
 	camera_buffer->roughness = m.material.get_roughness_value();
+	camera_buffer->color = m.material.get_color_value();
 	
 	// Buffer de la camara con la model del objeto
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, camera_buffer, 0, 0);

@@ -95,10 +95,9 @@ struct CameraConstantBuffer {
 	Mat4 projection;
 	Mat4 model;
 	Vec3 camera_position;
-	float roughness;
 	float metallic;
-	Vec2 padding;
-	
+	Vec4 color;
+	float roughness;
 };
 
 

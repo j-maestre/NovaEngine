@@ -6,7 +6,7 @@ Material::Material(){
 	//Engine* e = Engine::get_instance();
 
 	//set_texture_albedo(e->get_default_albedo_texture());
-
+	m_color_value = {0.0f, 0.0f, 0.0f, 1.0f};
 	
 }
 

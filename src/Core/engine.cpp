@@ -168,7 +168,8 @@ float Engine::get_time(){
 void Engine::load_default_textures(){
 	//Texture* t = m_resource.load_texture("data/textures/jou.jpg");
 	//Texture* t = m_resource.load_texture("data/textures/default_albedo.png");
-	Texture* t = m_resource.load_texture("data/textures/red.png");
+	//Texture* t = m_resource.load_texture("data/textures/red.png");
+	Texture* t = m_resource.load_texture("data/textures/black.png");
 	Texture* t2 = m_resource.load_texture("data/textures/kirby.png");
 	Texture* normal = m_resource.load_texture("data/textures/default_normal.png");
 	Texture* metallic = m_resource.load_texture("data/textures/default_metallic_new.png");

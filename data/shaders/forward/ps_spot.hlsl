@@ -8,6 +8,7 @@ struct PS_INPUT
     float4 tangent : TANGENT;
     float metallic_value : METALLIC;
     float roughness_value : ROUGHNESS;
+    float4 color_value : COLOR;
 };
 
 cbuffer SpotLightConstantBuffer : register(b0)
@@ -155,7 +156,7 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     const float PI = 3.14159265359;
     
     const float3 view_dir = normalize(input.cam_pos - input.world_position);
-    const float4 texture_color = (albedo_tex.Sample(mySampler, input.uv));
+    const float4 texture_color = max((albedo_tex.Sample(mySampler, input.uv)), input.color_value);
     const float4 texture_normal = (normal_tex.Sample(mySampler, input.uv));
     
     const float texture_metallic = max((metallic_tex.Sample(mySampler, input.uv)).r, input.metallic_value);

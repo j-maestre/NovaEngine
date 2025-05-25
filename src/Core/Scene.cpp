@@ -203,5 +203,5 @@ bool load_material_component(const ryml::NodeRef& entity_node, Entity& entity, E
 
     mesh->set_material(material);
 
-    return false;
+    return true;
 }
