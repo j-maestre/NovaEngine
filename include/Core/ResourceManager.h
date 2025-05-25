@@ -43,7 +43,7 @@ public:
 	Texture* get_texture(unsigned int id);
 
 	Model* load_mesh(std::string path);
-	Model* load_mesh_async(std::string path, MeshComponent* mesh_comp);
+	void load_mesh_async(std::string path, MeshComponent* mesh_comp);
 
 private:
 	friend class Engine;

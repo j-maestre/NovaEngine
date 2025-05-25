@@ -143,14 +143,15 @@ bool load_mesh_component(const ryml::NodeRef& entity_node, Entity& entity, Entit
     if (entity_node.has_child("MeshComponent")) {
 
         // Create mesh
-        auto& mesh = ecs.add_component<MeshComponent>(entity);
+        ecs.add_component<MeshComponent>(entity);
+        MeshComponent* mesh = ecs.get_component<MeshComponent>(entity);
 
         // Check if is a default model
         std::string model_name(entity_node["MeshComponent"].val().data(), entity_node["MeshComponent"].val().size());
         printf("Loading %s\n", model_name.c_str());
 
-        Model* m = Engine::get_instance()->m_resource.load_mesh(model_name);
-        mesh.set_model(m);
+        Engine::get_instance()->m_resource.load_mesh_async(model_name, mesh);
+        //mesh->set_model(m);
     }
 
 

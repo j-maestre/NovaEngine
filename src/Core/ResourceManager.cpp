@@ -257,13 +257,15 @@ Model* ResourceManager::load_mesh(std::string path){
 	return &(m_models.find(hash)->second);
 }
 
-Model* ResourceManager::load_mesh_async(std::string path, MeshComponent* mesh_comp){
+void ResourceManager::load_mesh_async(std::string path, MeshComponent* mesh_comp){
 
 	unsigned int hash = (unsigned int)std::hash<std::string>{}(path);
 
 	// TODO: Race condition here?
 	if (m_models.contains(hash)) {
-		return &(m_models.find(hash)->second);
+		Model* m = &(m_models.find(hash)->second);
+		mesh_comp->set_model(m);
+		return;
 	}
 
 
@@ -348,8 +350,6 @@ Model* ResourceManager::load_mesh_async(std::string path, MeshComponent* mesh_co
 	tasks.push_back(task);
 
 	m_job_system.add_task(tasks);
-
-	return model;
 }
 
 Model* ResourceManager::load_mesh(std::string path, bool async){
