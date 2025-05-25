@@ -13,4 +13,23 @@ Entities:
       - {Texture: "data/textures/default_ao.png", Type: "AO"}
       - {Metallic: 0.5}
       - {Roughness: 0.6}
+  SphereRoundedMetal:
+    Transform:
+      Position: [-2.0, 3.0, 0.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.0, 1.0, 1.0]
+    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    Material:
+      - {Texture: "data/materials/rounded_metal/albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/rounded_metal/normal.png", Type: "Normal"}
+      - {Texture: "data/materials/rounded_metal/metallic.png", Type: "Metallic"}
+      - {Texture: "data/materials/rounded_metal/roughness.png", Type: "Roughness"}
+      - {Texture: "data/materials/rounded_metal/ao.png", Type: "AO"}
     
+  Sponza:
+    Transform:
+      Position: [0.0, 0.0, 0.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.0, 1.0, 1.0]
+    MeshComponent: "data/models/Sponza/Sponza_new.fbx"
+
