@@ -14,6 +14,7 @@
 
 bool load_transform_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
 bool load_mesh_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
+bool load_material_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
 
 
 Scene::Scene(const std::string& path_scene) : m_ecs() {
@@ -83,6 +84,7 @@ bool Scene::load_scene(std::string path){
         Entity e = m_ecs.create_entity(entity_name);
         succes &= load_transform_component(entity, e, m_ecs);
         succes &= load_mesh_component(entity, e, m_ecs);
+        succes &= load_material_component(entity, e, m_ecs);
 
         if (!succes) {
             ImguiManager::get_instance()->add_resource_loaded("Error loading entity " + entity_name);
@@ -153,4 +155,52 @@ bool load_mesh_component(const ryml::NodeRef& entity_node, Entity& entity, Entit
 
 
     return true;
+}
+
+bool load_material_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs){
+
+
+    MeshComponent* mesh = ecs.get_component<MeshComponent>(entity);
+
+    Material material;
+    material.init_material();
+
+    if (entity_node.has_child("Material")) {
+        auto textures = entity_node["Material"];
+
+        for (auto&& t : textures.children()) {
+            if (t.has_child("Texture")) {
+                std::string textureName(t["Texture"].val().data(), t["Texture"].val().size());
+                std::string type(t["Type"].val().data(), t["Type"].val().size());
+                
+                Texture* t_loaded = Engine::get_instance()->m_resource.load_texture(textureName);
+                
+                if (type == "Albedo") material.set_texture_albedo(t_loaded);
+                if (type == "Normal") material.set_texture_normal(t_loaded);
+                if (type == "Metallic") material.set_texture_metallic(t_loaded);
+                if (type == "Roughness") material.set_texture_roughness(t_loaded);
+                if (type == "AO") material.set_texture_ao(t_loaded);
+                
+            }else {
+                if (t.has_child("Metallic")) {
+                    auto m = t["Metallic"];
+                    float value = std::stof(std::string(m.val().data(), m.val().size()));
+                    material.set_metallic_value(value);
+                    
+                }
+
+                if (t.has_child("Roughness")) {
+                    auto r = t["Roughness"];
+                    float value = std::stof(std::string(r.val().data(), r.val().size()));
+                    material.set_roughness_value(value);
+                }
+            }
+
+
+        }
+    }
+
+    mesh->set_material(material);
+
+    return false;
 }
