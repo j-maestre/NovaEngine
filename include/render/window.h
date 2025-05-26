@@ -46,6 +46,10 @@ private:
 
 	friend class Renderer;
 
+	void destroy_frame_resources();
+	void create_frame_resources();
+	__forceinline void create_full_screen_quad_resources(unsigned int width, unsigned int height);
+
 	Input* m_input;
 	ImguiManager* m_imgui;
 	Renderer* m_renderer;

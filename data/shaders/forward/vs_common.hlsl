@@ -16,6 +16,7 @@ struct VOut{
     float metallic_value : METALLIC;
     float roughness_value : ROUGHNESS;
     float4 color_value : COLOR;
+    float3 emissive_value : EMISSIVE;
 };
 
 cbuffer CameraObject : register(b0){
@@ -26,6 +27,7 @@ cbuffer CameraObject : register(b0){
     float metallic_value;
     float4 color_value;
     float roughness_value;
+    float3 emissive_value;
 }
 
 
@@ -39,6 +41,7 @@ VOut VShader(VS_IN input)
     output.metallic_value = metallic_value;
     output.roughness_value = roughness_value;
     output.color_value = color_value;
+    output.emissive_value = emissive_value;
 
     output.position = mul(float4(input.position, 1.0f), vpm);
     output.world_position = mul(float4(input.position, 1.0f), model).xyz;

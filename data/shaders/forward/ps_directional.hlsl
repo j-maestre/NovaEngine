@@ -9,6 +9,7 @@ struct PS_INPUT
     float metallic_value : METALLIC;
     float roughness_value : ROUGHNESS;
     float4 color_value : COLOR;
+    float3 emissive_value : EMISSIVE;
 };
 
 cbuffer DirectionalLightConstantBuffer : register(b0)
@@ -199,6 +200,9 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     
     // HDR tonemapping
     //color = color / (color + float3(1.0, 1.0, 1.0));
+    
+    //float3 bloom = float3(texture_color.rgb);
+    color += input.emissive_value;
     
     // HDR tonemapping with exposure
     color = float3(1.0, 1.0, 1.0) - exp(-color * intensity);

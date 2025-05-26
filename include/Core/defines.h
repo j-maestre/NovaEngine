@@ -63,12 +63,14 @@ struct ShaderFiles {
 	ID3D11PixelShader* PS_directional = nullptr;
 	ID3D11PixelShader* PS_point = nullptr;
 	ID3D11PixelShader* PS_spot = nullptr;
+	ID3D11PixelShader* PS_emissive = nullptr;
 };
 
 enum class ShaderType {
 	DirectionalLight = 0,
 	SpotLight,
 	PointLight,
+	Emissive,
 };
 
 enum class ErrorCode {
@@ -98,6 +100,9 @@ struct CameraConstantBuffer {
 	float metallic;
 	Vec4 color;
 	float roughness;
+	// TODO: add bloom on imgui
+	Vec3 emissive;
+	float padding;
 };
 
 
@@ -110,6 +115,7 @@ struct WindowInfo {
 	HWND window_handle;
 	WNDCLASSEX window_info;
 	ID3D11RenderTargetView* backbuffer;
+	ID3D11RenderTargetView* emissive_buffer_view;
 };
 
 struct WindowProperties {

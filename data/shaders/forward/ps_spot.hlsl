@@ -219,6 +219,9 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     // HDR tonemapping
     //color = color / (color + float3(1.0, 1.0, 1.0));
     
+    //float3 bloom = float3(texture_color.rgb);
+    //color += bloom;
+    
     // HDR tonemapping with exposure
     color = float3(1.0, 1.0, 1.0) - exp(-color * exposure);
     

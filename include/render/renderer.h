@@ -30,6 +30,8 @@ public:
 	void active_shader(ShaderType type);
 
 	void render_forward(EntityComponentSystem& ecs);
+	void render_deferred(EntityComponentSystem& ecs);
+	void render_emissive(EntityComponentSystem& ecs);
 
 	void set_cull_mode();
 
@@ -38,10 +40,12 @@ public:
 	void release();
 private:
 
-	void clear_depth();
 	void compile_shader(std::string path);
-	void resize(unsigned int width, unsigned int height);
+	__forceinline void clear_depth();
+	__forceinline void clear_emissive();
+	__forceinline void clear_full_quad();
 	__forceinline void render_mesh_internal(CameraConstantBuffer* camera_buffer, TransformComponent& trans, Mesh& m);
+	__forceinline void render_full_screen_quad();
 
 	friend class Window;
 
@@ -60,6 +64,17 @@ private:
 	ID3D11Buffer* m_cube_index_buffer; // tmp
 
 	ID3D11Texture2D* m_backbuffer_texture;
+	
+	// Emissive
+	ID3D11Texture2D* m_emissive_texture;
+	ID3D11ShaderResourceView* m_emissive_SRV = nullptr;
+	float m_clear_emissive_color[4];
+
+	// Full screen quad
+	ID3D11Texture2D* m_quad_texture;
+	ID3D11ShaderResourceView* m_quad_SRV = nullptr;
+	ID3D11RenderTargetView* m_quad_RTV = nullptr;
+
 
 	D3D11_BUFFER_DESC m_buffer_description;
 	D3D11_BUFFER_DESC m_buffer_description_cube;
