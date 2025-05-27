@@ -17,10 +17,10 @@ struct PS_INPUT
 struct PS_OUT
 {
     float4 out_albedo : SV_Target0;
-    float4 out_normal : SV_Target1;
-    float4 out_material : SV_Target2;
-    float4 out_emissive : SV_Target3;
-    float4 out_position : SV_Target4;
+    float4 out_position : SV_Target1;
+    float4 out_normal : SV_Target2;
+    float4 out_material : SV_Target3;
+    float4 out_emissive : SV_Target4;
 };
 
 
@@ -77,10 +77,10 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     
     PS_OUT out_textures;
     out_textures.out_albedo = texture_color;
-    out_textures.out_normal = texture_normal;
-    out_textures.out_emissive = float4(input.emissive_value.rgb, 1.0);
-    out_textures.out_material = float4(texture_metallic.r, texture_roughness.r, texture_ao.r, 0.0); // Last parameter is for specular map
     out_textures.out_position = float4(input.world_position, 1.0);
+    out_textures.out_normal = float4(normal_procesed, 1.0);
+    out_textures.out_material = float4(texture_metallic, texture_roughness, texture_ao, 1.0); // Last parameter is for specular map
+    out_textures.out_emissive = float4(input.emissive_value.rgb, 1.0);
 
     return out_textures;
 }

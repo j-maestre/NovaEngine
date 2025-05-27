@@ -47,7 +47,8 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     const float texture_ao = (gMaterial.Sample(mySampler, input.uv)).b;
 
 
+    float3 color = float3(texture_position.rgb + texture_color.rgb + texture_normal.rgb + texture_metallic.rrr + texture_roughness.rrr + texture_ao.rrr * 0.01);
 
-    return texture_color;
+    return float4(color, 1.0);
 }
 

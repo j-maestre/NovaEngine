@@ -521,6 +521,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	cam_buffer.view = DirectX::XMMatrixTranspose(*view);
 	cam_buffer.projection = DirectX::XMMatrixTranspose(*proj);
 	cam_buffer.camera_position = m_cam->get_position();
+	
 
 	for (auto [entity, trans, mesh] : transforms.each()) {
 
