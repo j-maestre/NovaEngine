@@ -45,7 +45,11 @@ private:
 	__forceinline void clear_emissive();
 	__forceinline void clear_full_quad();
 	__forceinline void render_mesh_internal(CameraConstantBuffer* camera_buffer, TransformComponent& trans, Mesh& m);
+	__forceinline void render_deferred_internal();
 	__forceinline void render_full_screen_quad();
+
+	void create_deferred_resources(unsigned int width, unsigned int height);
+	void release_deferred_resources();
 
 	friend class Window;
 
@@ -70,6 +74,8 @@ private:
 	ID3D11ShaderResourceView* m_emissive_SRV = nullptr;
 	float m_clear_emissive_color[4];
 
+	DeferredResources m_deferred_resources;
+
 	// Full screen quad
 	ID3D11Texture2D* m_quad_texture;
 	ID3D11ShaderResourceView* m_quad_SRV = nullptr;
@@ -82,11 +88,16 @@ private:
 	D3D11_BUFFER_DESC m_cam_constant_buffer;
 	ID3D11Buffer* m_pVBufferConstantCamera;
 
+	D3D11_BUFFER_DESC m_cam_deferred_constant_buffer;
+	ID3D11Buffer* m_pVBufferDeferredConstantCamera;
+
 	ID3D11Buffer* m_pVBufferLight;
 
 	ID3D11Buffer* m_pVBuffer;
+	ID3D11Buffer* m_pVBuffer_full_triangle;
 
 	ID3D11InputLayout* m_pLayout;
+	ID3D11InputLayout* m_pLayout_deferred;
 	
 	ID3D11SamplerState* m_sampler_state;
 	D3D11_SAMPLER_DESC m_sampler_desc;
@@ -97,6 +108,8 @@ private:
 
 	CameraComponent* m_cam;
 
+	VertexQuad m_fs_quad[3];
+	D3D11_BUFFER_DESC m_buffer_description_full_triangle;
 	bool m_isInitialized;
 	
 };

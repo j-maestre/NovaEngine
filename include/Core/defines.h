@@ -26,12 +26,8 @@ static inline float radToDeg(const float radians) {
 }
 
 
-struct Vertex {
-	float pos_x, pos_y, pos_z;
-	float nrm_x, nrm_y, nrm_z;
-	float uv_x, uv_y;
-	float tan_x, tan_y, tan_z, tan_w;
-};
+
+
 
 
 #ifdef DIRECTX11
@@ -59,18 +55,36 @@ struct Vertex {
 #define SHADER_PATH_DEFERRED "data/shaders/deferred";
 
 struct ShaderFiles {
+	// Forward shaders
 	ID3D11VertexShader* VS_common = nullptr;
 	ID3D11PixelShader* PS_directional = nullptr;
 	ID3D11PixelShader* PS_point = nullptr;
 	ID3D11PixelShader* PS_spot = nullptr;
 	ID3D11PixelShader* PS_emissive = nullptr;
+
+	// Deferred shaders
+	
+	// Geometry pass
+	ID3D11VertexShader* VS_deferred = nullptr;
+	ID3D11PixelShader* PS_deferred = nullptr;
+
+	// Light pass
+	ID3D11VertexShader* VS_deferred_common = nullptr;
+	ID3D11PixelShader* PS_deferred_directional = nullptr;
+	ID3D11PixelShader* PS_deferred_passthrough = nullptr;
 };
 
 enum class ShaderType {
 	DirectionalLight = 0,
 	SpotLight,
 	PointLight,
+	GeometryPass,
+	DeferredDirectional,
+	DeferredPointLight,
+	DeferredSpotLight,
+	DeferredPassThrough,
 	Emissive,
+
 };
 
 enum class ErrorCode {
@@ -92,6 +106,19 @@ typedef DirectX::CXMVECTOR CVec4;		// Const ref of XMVector
 
 typedef DirectX::XMMATRIX Mat4;
 
+
+struct Vertex {
+	float pos_x, pos_y, pos_z;
+	float nrm_x, nrm_y, nrm_z;
+	float uv_x, uv_y;
+	float tan_x, tan_y, tan_z, tan_w;
+};
+
+struct VertexQuad {
+	Vec3 position;
+	Vec2 uv_x, uv_y;
+};
+
 struct CameraConstantBuffer {
 	Mat4 view;
 	Mat4 projection;
@@ -102,6 +129,12 @@ struct CameraConstantBuffer {
 	float roughness;
 	// TODO: add bloom on imgui
 	Vec3 emissive;
+	float padding;
+};
+
+struct CameraDeferredConstantBuffer {
+	Mat4 inv_view_proj;
+	Vec3 camera_position;
 	float padding;
 };
 
@@ -116,6 +149,39 @@ struct WindowInfo {
 	WNDCLASSEX window_info;
 	ID3D11RenderTargetView* backbuffer;
 	ID3D11RenderTargetView* emissive_buffer_view;
+};
+
+struct DeferredResources {
+	
+	// Albedo
+	ID3D11RenderTargetView* gbuffer_albedo_render_target_view;
+	ID3D11Texture2D* gbuffer_albedo_texture;
+	ID3D11ShaderResourceView* gbuffer_albedo_shader_resource_view;
+
+	// Position
+	ID3D11RenderTargetView* gbuffer_position_render_target_view;
+	ID3D11Texture2D* gbuffer_position_texture;
+	ID3D11ShaderResourceView* gbuffer_position_shader_resource_view;
+
+	// Normals
+	ID3D11RenderTargetView* gbuffer_normals_render_target_view;
+	ID3D11Texture2D* gbuffer_normals_texture;
+	ID3D11ShaderResourceView* gbuffer_normals_shader_resource_view;
+
+	// Material (Metallic + Roughness + Ambient oclusion + Specular)
+	ID3D11RenderTargetView* gbuffer_material_render_target_view;
+	ID3D11Texture2D* gbuffer_material_texture;
+	ID3D11ShaderResourceView* gbuffer_material_shader_resource_view;
+
+	// Emissive (Albedo)
+	ID3D11RenderTargetView* gbuffer_emissive_render_target_view;
+	ID3D11Texture2D* gbuffer_emissive_texture;
+	ID3D11ShaderResourceView* gbuffer_emissive_shader_resource_view;
+
+	// Light
+	ID3D11RenderTargetView* light_render_target_view;
+	ID3D11Texture2D* light_texture;
+	ID3D11ShaderResourceView* light_shader_resource_view;
 };
 
 struct WindowProperties {

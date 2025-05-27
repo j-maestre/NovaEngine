@@ -21,6 +21,7 @@ Material::Material(const Material& other){
 	m_texture_specular = other.m_texture_specular;
 	m_initialised = other.m_initialised;
 
+	m_color_value = other.m_color_value;
 	m_metallic_value = other.m_metallic_value;
 	m_roughness_value = other.m_roughness_value;
 }
@@ -33,6 +34,7 @@ Material::Material(Material&& other){
 	m_texture_roughness = other.m_texture_roughness;
 	m_texture_specular = other.m_texture_specular;
 
+	m_color_value = other.m_color_value;
 	m_metallic_value = other.m_metallic_value;
 	m_roughness_value = other.m_roughness_value;
 
@@ -45,6 +47,7 @@ Material::Material(Material&& other){
 	other.m_texture_roughness = nullptr;
 	other.m_texture_specular = nullptr;
 
+	other.m_color_value = { 0.0f, 0.0f, 0.0f, 0.0f };
 	other.m_metallic_value = 0.0f;
 	other.m_roughness_value = 0.0f;
 	other.m_initialised = false;
@@ -70,6 +73,7 @@ Material& Material::operator=(const Material& other){
 		m_texture_roughness = other.m_texture_roughness;
 		m_texture_specular = other.m_texture_specular;
 
+		m_color_value = other.m_color_value;
 		m_metallic_value = other.m_metallic_value;
 		m_roughness_value = other.m_roughness_value;
 		m_initialised = other.m_initialised;
@@ -89,6 +93,7 @@ Material& Material::operator=(Material&& other){
 		m_texture_roughness = other.m_texture_roughness;
 		m_texture_specular = other.m_texture_specular;
 
+		m_color_value = other.m_color_value;
 		m_metallic_value = other.m_metallic_value;
 		m_roughness_value = other.m_roughness_value;
 		m_initialised = other.m_initialised;
@@ -100,6 +105,7 @@ Material& Material::operator=(Material&& other){
 		other.m_texture_roughness = nullptr;
 		other.m_texture_specular = nullptr;
 
+		other.m_color_value = { 0.0f, 0.0f, 0.0f, 0.0f };
 		other.m_metallic_value = 0.0f;
 		other.m_roughness_value = 0.0f;
 		other.m_initialised = false;

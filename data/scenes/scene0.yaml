@@ -6,6 +6,7 @@ Entities:
       Scale: [1.0, 1.0, 1.0]
     MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
     Material:
+      - {Albedo: [0.1, 0.8, 0.1] }
       - {Metallic: 0.5}
       - {Roughness: 0.6}
   SphereRoundedMetal:
@@ -20,5 +21,10 @@ Entities:
       - {Texture: "data/materials/rounded_metal/metallic.png", Type: "Metallic"}
       - {Texture: "data/materials/rounded_metal/roughness.png", Type: "Roughness"}
       - {Texture: "data/materials/rounded_metal/ao.png", Type: "AO"}
-    
+  Sponza:
+    Transform:
+      Position: [0.0, 0.0, 0.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.0, 1.0, 1.0]
+    MeshComponent: "data/models/Sponza/Sponza_new.fbx"
 

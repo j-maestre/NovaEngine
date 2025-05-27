@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -210,11 +210,15 @@
     <ClInclude Include="include\render\window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\shaders\forward\common_forward.hlsl" />
     <None Include="data\shaders\forward\ps_directional.hlsl" />
     <None Include="data\shaders\forward\vs_common.hlsl" />
     <None Include="data\shaders\forward\ps_point.hlsl" />
     <None Include="data\shaders\forward\ps_spot.hlsl" />
+    <None Include="data\shaders\deferred\vs_deferred.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred_directional.hlsl" />
+    <None Include="data\shaders\deferred\vs_deferred_common.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred_passthrough.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

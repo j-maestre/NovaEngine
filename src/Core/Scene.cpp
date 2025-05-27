@@ -195,6 +195,12 @@ bool load_material_component(const ryml::NodeRef& entity_node, Entity& entity, E
                     float value = std::stof(std::string(r.val().data(), r.val().size()));
                     material.set_roughness_value(value);
                 }
+                
+                if (t.has_child("Albedo")) {
+                    auto r = t["Albedo"];
+                    Vec3 c = vec3FromYAML(r);
+                    material.set_color_value({ c.x, c.y, c.z, 1.0f });
+                }
             }
 
 

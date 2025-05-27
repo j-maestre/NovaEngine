@@ -370,10 +370,9 @@ void Window::resize(){
 	if (e->get_engine_props()->inmediateDeviceContext) {
 
 		destroy_frame_resources();
-
+		m_renderer->release_deferred_resources();
 		
 		create_frame_resources();
-
 	}
 
 }
@@ -510,6 +509,7 @@ void Window::create_frame_resources(){
 
 	create_full_screen_quad_resources(width_w, height_w);
 
+	m_renderer->create_deferred_resources(width_w, height_w);
 #ifdef ENABLE_IMGUI
 	ImguiManager::get_instance()->resize(m_window_info->window_handle, width_w, height_w);
 #endif
