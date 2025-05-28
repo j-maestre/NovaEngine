@@ -21,10 +21,10 @@ Renderer::Renderer() : m_shader_files(), m_sampler_desc{} {
 	m_isInitialized = false;
 	m_pVBuffer = nullptr;
 	m_pVBuffer_full_triangle = nullptr;
-	m_clear_emissive_color[0] = 0.3f;
-	m_clear_emissive_color[1] = 0.3f;
-	m_clear_emissive_color[2] = 0.3f;
-	m_clear_emissive_color[3] = 0.3f;
+	m_clear_emissive_color[0] = 0.0f;
+	m_clear_emissive_color[1] = 0.0f;
+	m_clear_emissive_color[2] = 0.0f;
+	m_clear_emissive_color[3] = 0.0f;
 
 	m_fs_quad[0] = { {-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f} };
 	m_fs_quad[1] = { {-1.0f,  3.0f, 0.0f}, {0.0f, -1.0f} };
@@ -238,7 +238,7 @@ bool Renderer::init_pipeline(Window* win){
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetDepthStencilState(m_depth_stencil_state,1);
 
 
-	// Blend state
+	// Blend states
 
 	D3D11_BLEND_DESC blend_overwrite_desc{
 		.AlphaToCoverageEnable = false,
@@ -448,7 +448,7 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 	}
 
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->backbuffer, m_depth_stencil_view);
+	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->backbuffer, m_depth_stencil_view);
 
 
 	
@@ -513,6 +513,8 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 
 	auto transforms = ecs.viewComponents<TransformComponent, MeshComponent>();
 	auto directional_light = ecs.viewComponents<DirectionalLight>();
+	auto point_light = ecs.viewComponents<PointLight>();
+	auto spot_light = ecs.viewComponents<SpotLight>();
 
 	const Mat4* view = m_cam->get_view();
 	const Mat4* proj = m_cam->get_projection();
@@ -531,7 +533,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	}
 	// Unbind render targets
 	ID3D11RenderTargetView* nullRTVs[ARRAYSIZE(gbuffer_rtv)] = { nullptr };
-	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(gbuffer_rtv), nullRTVs, nullptr);;
+	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(gbuffer_rtv), nullRTVs, nullptr);
 
 
 	// Light Pass
@@ -542,7 +544,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	active_shader(ShaderType::DeferredDirectional);
 
 
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBufferDeferredConstantCamera);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(1, 1, &m_pVBufferDeferredConstantCamera);
 	props->inmediateDeviceContext->OMSetRenderTargets(1, &m_quad_RTV, m_depth_stencil_view);
 	props->inmediateDeviceContext->IASetInputLayout(m_pLayout_deferred);
 
@@ -565,6 +567,11 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	cam_buffer_light.camera_position = cam_buffer.camera_position;
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferDeferredConstantCamera, 0, nullptr, &cam_buffer_light, 0, 0);
 
+
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
+
+	for (int i = 0; i < 20; i++) {
+
 	for (auto [entity, light] : directional_light.each()) {
 		light.update();
 		light.upload_data();
@@ -574,8 +581,37 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 		props->inmediateDeviceContext->Draw(3, 0);
 	}
 
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
+	}
+	
+	/*
+	for (auto [entity, light] : point_light.each()) {
+		light.update();
+		light.upload_data();
+	
+		props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
+		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		props->inmediateDeviceContext->Draw(3, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
+	}
+	
+	for (auto [entity, light] : spot_light.each()) {
+		light.update();
+		light.upload_data();
+	
+		props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
+		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		props->inmediateDeviceContext->Draw(3, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
+	}
+	*/
+
+	// Unbind light pass rtv
+	ID3D11RenderTargetView* nullRTV[] = { nullptr };
+	props->inmediateDeviceContext->OMSetRenderTargets(1, nullRTV, nullptr);
 
 	// Draw in the back buffer
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->backbuffer, m_depth_stencil_view);
 
 	// Setear textura resultado (SRV)
