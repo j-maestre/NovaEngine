@@ -200,11 +200,9 @@ bool Renderer::init_pipeline(Window* win){
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilView(m_depth_buffer, nullptr, &m_depth_stencil_view);
 	//m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilView(m_depth_buffer, nullptr, nullptr);
 
-
-	// Setting the back buffer
-	m_engine_ptr->get_engine_props()->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&m_backbuffer_texture);									// __uuidof gets the unique id of the COM object
-	m_engine_ptr->get_engine_props()->deviceInterface->CreateRenderTargetView(m_backbuffer_texture, NULL, &(win->get_window_info()->backbuffer));
+	create_backbuffers();
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &(win->get_window_info()->backbuffer), m_depth_stencil_view);	// last argument is depth stencill view
+
 	
 	// Setting the emissive buffer
 	//win->get_window_info()->emissive_buffer_view = nullptr;
@@ -379,7 +377,11 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
 
 	clear_depth();
+	clear_render_target();
+
+	//m_engine_ptr->get_engine_props()->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&m_backbuffer_texture);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->backbuffer, m_depth_stencil_view);
+
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetConstantBuffers(0,1,&m_pVBufferConstantCamera);
 
 	const Mat4* view = m_cam->get_view();
@@ -398,6 +400,8 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 	active_shader(ShaderType::DirectionalLight);
 	
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
+
+	
 	for (auto [entity, directional] : directional_light.each()) {
 
 
@@ -414,6 +418,7 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 		}
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 	}
+	
 
 	// Change blending
 	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
@@ -452,7 +457,7 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 
 
 	
-
+	//++m_buffer_index %= NUM_BUFFERING;
 
 
 #ifdef ENABLE_IMGUI
@@ -680,7 +685,7 @@ void Renderer::render_emissive(EntityComponentSystem& ecs){
 
 
 	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->emissive_buffer_view, m_depth_stencil_view);
-	clear_emissive();
+	clear_render_target();
 
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_quad_RTV, m_depth_stencil_view);
@@ -709,7 +714,7 @@ void Renderer::render_emissive(EntityComponentSystem& ecs){
 	// Change blending
 	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 
-	clear_emissive();
+	clear_render_target();
 	active_shader(ShaderType::PointLight);
 	for (auto [entity, point] : point_light.each()) {
 
@@ -725,7 +730,7 @@ void Renderer::render_emissive(EntityComponentSystem& ecs){
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 	}
 
-	clear_emissive();
+	clear_render_target();
 	active_shader(ShaderType::SpotLight);
 	for (auto [entity, spot] : spot_light.each()) {
 
@@ -831,7 +836,7 @@ void Renderer::render_full_screen_quad(){
 	ID3D11ShaderResourceView* srvs[] = { m_quad_SRV, m_emissive_SRV };
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0, 2, srvs);
 
-	// Bind el shader que combina las texturas (asegúrate de tenerlo activo)
+	// Bind el shader que combina las texturas (asegï¿½rate de tenerlo activo)
 	active_shader(ShaderType::Emissive);
 
 	// Bind y dibuja el fullscreen quad (vertex buffer, input layout, draw call)
@@ -840,6 +845,50 @@ void Renderer::render_full_screen_quad(){
 	// Limpia los shader resource views para evitar warnings y conflictos
 	ID3D11ShaderResourceView* nullSRVs[2] = { nullptr, nullptr };
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0, 2, nullSRVs);
+}
+
+void Renderer::create_backbuffers(){
+	Engine* e = Engine::get_instance();
+
+	RECT clientRect;
+	GetClientRect(m_window->get_window_info()->window_handle, &clientRect);
+	UINT width_w = clientRect.right - clientRect.left;
+	UINT height_w = clientRect.bottom - clientRect.top;
+
+	width_w &= ~1;
+	height_w &= ~1;
+
+
+	if (m_window->get_window_info()->backbuffer) {
+		m_window->get_window_info()->backbuffer->Release();
+		m_window->get_window_info()->backbuffer = nullptr;
+	}
+
+	if (m_backbuffer_texture) {
+		m_backbuffer_texture->Release();
+		m_backbuffer_texture = nullptr;
+	}
+	
+	HRESULT hr = e->get_engine_props()->swapChain->ResizeBuffers(NUM_BUFFERING, width_w, height_w, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+
+	// Backbuffer
+
+	ID3D11Texture2D* backBuffer = nullptr;
+	hr = e->get_engine_props()->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+	if (FAILED(hr)) {
+		printf("GetBuffer(%d) failed with HRESULT 0x%08X\n", 0, hr);
+		assert(false && "Check console for more information");
+	}
+
+
+	D3D11_TEXTURE2D_DESC desc;
+	backBuffer->GetDesc(&desc);
+	printf("Backbuffer size: %u x %u\n", desc.Width, desc.Height);
+
+	e->get_engine_props()->deviceInterface->CreateRenderTargetView(backBuffer, nullptr, &m_window->get_window_info()->backbuffer);
+	m_backbuffer_texture = backBuffer;
+	//backBuffer->Release();
+	
 }
 
 void Renderer::create_deferred_resources(unsigned int width, unsigned int height){
@@ -888,7 +937,7 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 		&m_deferred_resources.gbuffer_normals_shader_resource_view
 	);
 
-	// Material info (Metallic, Roughness, AO, Specular — pack into 4 channels)
+	// Material info (Metallic, Roughness, AO, Specular ï¿½ pack into 4 channels)
 	create_render_target(DXGI_FORMAT_R8G8B8A8_UNORM,
 		&m_deferred_resources.gbuffer_material_texture,
 		&m_deferred_resources.gbuffer_material_render_target_view,
@@ -933,7 +982,7 @@ void Renderer::clear_depth(){
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearDepthStencilView(m_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
-void Renderer::clear_emissive(){
+void Renderer::clear_render_target(){
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_window->get_window_info()->emissive_buffer_view, m_clear_emissive_color);
 }
 

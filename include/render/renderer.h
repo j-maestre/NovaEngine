@@ -42,12 +42,13 @@ private:
 
 	void compile_shader(std::string path);
 	__forceinline void clear_depth();
-	__forceinline void clear_emissive();
+	__forceinline void clear_render_target();
 	__forceinline void clear_full_quad();
 	__forceinline void render_mesh_internal(CameraConstantBuffer* camera_buffer, TransformComponent& trans, Mesh& m);
 	__forceinline void render_deferred_internal();
 	__forceinline void render_full_screen_quad();
 
+	void create_backbuffers();
 	void create_deferred_resources(unsigned int width, unsigned int height);
 	void release_deferred_resources();
 
@@ -111,5 +112,7 @@ private:
 	VertexQuad m_fs_quad[3];
 	D3D11_BUFFER_DESC m_buffer_description_full_triangle;
 	bool m_isInitialized;
+
+	int m_buffer_index = 0;
 	
 };

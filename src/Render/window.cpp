@@ -10,6 +10,11 @@
 #include "Core/engine.h"
 #include "render/renderer.h"
 
+
+#include <dxgi1_4.h>
+#include <wrl/client.h>
+
+using Microsoft::WRL::ComPtr;
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK WindowProc(HWND handle, UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -173,14 +178,17 @@ void Window::init(WindowProperties* props){
 	m_window_props = std::make_shared<WindowProperties>(*props);
 
 	m_window_info->emissive_buffer_view = nullptr;
-	m_window_info->backbuffer = nullptr;
-
+	//for (int i = 0; i < NUM_BUFFERING; i++) {
+		m_window_info->backbuffer = nullptr;
+	//}
+	
 	// Store this class in the window class
 	SetWindowLongPtr(window_handle, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
 
 	// Display window on screen
 	ShowWindow(window_handle, props->nCmdShow);
 
+	
 }
 
 void Window::init_imgui(){
@@ -201,7 +209,7 @@ void Window::begin_frame(){
 		PostQuitMessage(0);
 	}
 
-	m_inmediateDeviceContext->ClearRenderTargetView(m_window_info->backbuffer, (FLOAT*) &(m_window_props->clear_color));
+	m_inmediateDeviceContext->ClearRenderTargetView(m_window_info->backbuffer, (FLOAT*)&(m_window_props->clear_color));
 	for (auto& key : m_input->m_keyboard) {
 
 		switch (key.second) {
@@ -247,8 +255,14 @@ void Window::end_frame(){
 	m_imgui->end_frame();
 #endif
 
+	
+	
 	// Switch the backbuffer and the front buffer
-	m_swapChain->Present(0,0);
+	m_swapChain->Present(m_vsync,0);
+
+	//UINT currentIndex = m_swapChain->GetCurrentBackBufferIndex();
+	//printf("Current backbuffer index %u\n", currentIndex);
+	
 #ifdef MEASURE_TIME
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
@@ -278,7 +292,10 @@ bool Window::update(){
 }
 
 void Window::release(){
-	m_window_info->backbuffer->Release();
+
+	//for (int i = 0; i < NUM_BUFFERING; i++) {
+		m_window_info->backbuffer->Release();
+	//}
 }
 
 WindowInfo* Window::get_window_info(){
@@ -311,14 +328,14 @@ void Window::process_mouse(LPARAM param){
 
 	/*
 	POINT cursorPos;
-	GetCursorPos(&cursorPos);  // Obtener las coordenadas globales del ratón
+	GetCursorPos(&cursorPos);  // Obtener las coordenadas globales del ratï¿½n
 
 	ScreenToClient(handle, &cursorPos);  // Convertir a coordenadas relativas a la ventana
 
 	RECT windowRect;
-	GetClientRect(handle, &windowRect);  // Obtener el tamaño de la ventana
+	GetClientRect(handle, &windowRect);  // Obtener el tamaï¿½o de la ventana
 
-	// Normalizar las coordenadas del ratón a un rango entre 0 y 1
+	// Normalizar las coordenadas del ratï¿½n a un rango entre 0 y 1
 	m_input->m_mouse_x = static_cast<float>(cursorPos.x) / static_cast<float>(windowRect.right - windowRect.left);
 	m_input->m_mouse_y = static_cast<float>(cursorPos.y) / static_cast<float>(windowRect.bottom - windowRect.top);
 	*/
@@ -377,20 +394,25 @@ void Window::resize(){
 
 }
 
+
 void Window::destroy_frame_resources() {
 
 	
 
 	Engine::get_instance()->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(0, 0, 0);
 
-	if (m_renderer->m_backbuffer_texture)m_renderer->m_backbuffer_texture->Release();
+	//for (int i = 0; i < NUM_BUFFERING; i++) {
+		if (m_renderer->m_backbuffer_texture)m_renderer->m_backbuffer_texture->Release();
+	//}
 	if (m_renderer->m_depth_buffer)m_renderer->m_depth_buffer->Release();
 	if (m_renderer->m_depth_stencil_view)m_renderer->m_depth_stencil_view->Release();
 
-
+	
 	// Release render target view
-	if (m_window_info->backbuffer)m_window_info->backbuffer->Release();
-	m_window_info->backbuffer = nullptr;
+	//for (int i = 0; i < NUM_BUFFERING; i++) {
+		if (m_window_info->backbuffer)m_window_info->backbuffer->Release();
+		m_window_info->backbuffer = nullptr;
+	//}
 
 	// Release emissive buffer
 	if (m_renderer->m_emissive_texture) {
@@ -441,10 +463,14 @@ void Window::create_frame_resources(){
 	e->get_engine_props()->deviceInterface->CreateTexture2D(&depth_desc, nullptr, &(m_renderer->m_depth_buffer));
 	e->get_engine_props()->deviceInterface->CreateDepthStencilView(m_renderer->m_depth_buffer, nullptr, &(m_renderer->m_depth_stencil_view));
 
+	e->get_engine_props()->swapChain->ResizeBuffers(NUM_BUFFERING, width_w, height_w, DXGI_FORMAT_UNKNOWN, 0);
 
-	e->get_engine_props()->swapChain->ResizeBuffers(0, width_w, height_w, DXGI_FORMAT_UNKNOWN, 0);
+
+	m_window_props->width = width_w;
+	m_window_props->height = height_w;
 
 	// Backbuffer
+
 	ID3D11Texture2D* backBuffer = nullptr;
 	e->get_engine_props()->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
 
@@ -453,11 +479,11 @@ void Window::create_frame_resources(){
 	printf("Backbuffer size: %u x %u\n", desc.Width, desc.Height);
 
 	e->get_engine_props()->deviceInterface->CreateRenderTargetView(backBuffer, nullptr, &m_window_info->backbuffer);
-	m_window_props->width = width_w;
-	m_window_props->height = height_w;
 	m_renderer->m_backbuffer_texture = backBuffer;
+	
 
 	e->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window_info->backbuffer, nullptr);
+
 	D3D11_VIEWPORT viewport{};
 	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
 	viewport.Width = (FLOAT)width_w;

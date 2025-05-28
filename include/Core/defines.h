@@ -36,9 +36,12 @@ static inline float radToDeg(const float radians) {
 
 #include "windows.h"
 #include "windowsx.h"
+#include <wrl/client.h>
 
 /*** Directx11 include files ***/
-#include <d3d11.h>
+#include <d3d11.h> 
+#include <dxgi1_4.h>
+#include <d3d11_1.h>
 #include <DirectXMath.h>
 /*******************************/
 
@@ -144,6 +147,8 @@ struct Color {
 	float rgba[4];
 };
 
+constexpr unsigned int NUM_BUFFERING = 4;
+
 struct WindowInfo {
 	HWND window_handle;
 	WNDCLASSEX window_info;
@@ -196,11 +201,13 @@ struct WindowProperties {
 	bool fullscreen = false;
 };
 
+
+using Microsoft::WRL::ComPtr;
 struct EngineProps {
 
 	// Swap chain props
-	DXGI_SWAP_CHAIN_DESC scd;
-	IDXGISwapChain* swapChain;
+	DXGI_SWAP_CHAIN_DESC1 scd;
+	ComPtr<IDXGISwapChain3> swapChain;
 	ID3D11Device* deviceInterface;					// D3D11 device interface
 	ID3D11DeviceContext* inmediateDeviceContext;	// D3D11 device context
 

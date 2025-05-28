@@ -5,6 +5,8 @@
 #include <chrono>
 #include <Windows.h>
 #include "Core/JobSystem.h"
+#include <wrl/client.h>
+
 
 Engine::Engine() : m_props(std::make_shared<EngineProps>()), m_input(), m_resource(){
 
@@ -32,22 +34,11 @@ void Engine::init(Window* window){
 	window->m_input = &m_input;
 
 	// clear out the struct for use
-	ZeroMemory(&(m_props->scd), sizeof(DXGI_SWAP_CHAIN_DESC));
+	ZeroMemory(&(m_props->scd), sizeof(DXGI_SWAP_CHAIN_DESC1));
 
 	WindowInfo* window_info = window->get_window_info();
-		
-	m_props->scd.BufferCount = 1;	// One back buffer
-	m_props->scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;	// 32 bit color
-	m_props->scd.BufferDesc.Width = window->get_window_properties()->width;					// Backbuffer width
-	m_props->scd.BufferDesc.Height = window->get_window_properties()->height;				// Backbuffer height
-	m_props->scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;		// How swap chain is going to be used
-	m_props->scd.OutputWindow = window_info->window_handle;			// The window to be used
-	m_props->scd.SampleDesc.Count = 1;								// How many multisamples (anti aliasing, TODO: maybe change to 1 or parametrize in the future) (minium 1 max 4)
-	m_props->scd.Windowed = TRUE;
-	m_props->scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;	// Allows full screen switching
-	//m_props->driverType = D3D_DRIVER_TYPE_HARDWARE;		// Uses advance gpu hardware for rendering	TODO: enable to check performance
-	// m_props->driverType = D3D_DRIVER_TYPE_REFERENCE;		// If your hardware can't run D3D11
-	// m_props->driverType = D3D_DRIVER_TYPE_NULL;			// for non-graphics purpouses
+
+	
 #ifdef _DEBUG
 	m_props->flags |= D3D11_CREATE_DEVICE_DEBUG;				// Debug
 #endif
@@ -56,22 +47,70 @@ void Engine::init(Window* window){
 	//m_props->flags |= D3D11_CREATE_DEVICE_SINGLETHREADED;		// Singlethread
 
 
-
-	D3D11CreateDeviceAndSwapChain(
-		NULL,
+	HRESULT hr = D3D11CreateDevice(
+		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,
-		NULL,
+		nullptr,
 		m_props->flags,
-		NULL,
-		NULL,
+		nullptr,
+		0,
 		D3D11_SDK_VERSION,
-		&(m_props->scd),
-		&(m_props->swapChain),
-		&(m_props->deviceInterface),
-		NULL,
-		&(m_props->inmediateDeviceContext)
+		&m_props->deviceInterface,
+		nullptr,
+		&m_props->inmediateDeviceContext
 	);
+	assert(!FAILED(hr));
 
+	ComPtr<IDXGIDevice> dxgiDevice = nullptr;
+	hr = m_props->deviceInterface->QueryInterface(__uuidof(IDXGIDevice), (void**)&dxgiDevice);
+	assert(!FAILED(hr));
+
+	ComPtr<IDXGIAdapter> dxgiAdapter = nullptr;
+	hr = dxgiDevice->GetAdapter(&dxgiAdapter);
+	assert(!FAILED(hr));
+
+	ComPtr<IDXGIFactory2> dxgiFactory = nullptr;
+	hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory);
+	assert(!FAILED(hr));
+
+	m_props->scd.Width = window->get_window_properties()->width;
+	m_props->scd.Height = window->get_window_properties()->height;
+	m_props->scd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	m_props->scd.Stereo = FALSE;
+	m_props->scd.SampleDesc.Count = 1;
+	m_props->scd.SampleDesc.Quality = 0;
+	m_props->scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	m_props->scd.BufferCount = NUM_BUFFERING;//NUM_BUFFERING;
+	m_props->scd.Scaling = DXGI_SCALING_STRETCH;
+	m_props->scd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	if (NUM_BUFFERING > 1) {
+		m_props->scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+	}
+	m_props->scd.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
+	//m_props->scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+
+	ComPtr<IDXGISwapChain1> swap_chain_tmp;
+
+	hr = dxgiFactory->CreateSwapChainForHwnd(
+		m_props->deviceInterface,
+		window_info->window_handle,
+		&m_props->scd,
+		nullptr,        // fullscreenDesc -> nullptr significa modo ventana
+		nullptr,
+		&swap_chain_tmp
+	);
+	assert(!FAILED(hr));
+	
+	ComPtr<IDXGISwapChain3> tempSwapChain3;
+	hr = swap_chain_tmp.As(&tempSwapChain3);
+	assert(!FAILED(hr));
+	m_props->swapChain = tempSwapChain3;
+
+
+	assert(!FAILED(hr));
+	//swap_chain_tmp->Release();
+	//tempSwapChain3->Release();
+	printf("SwapChain created with BufferCount=%d, SwapEffect=%d\n", m_props->scd.BufferCount, m_props->scd.SwapEffect);
 
 	// Setting rasterizer
 	ZeroMemory(&m_raster, sizeof(D3D11_RASTERIZER_DESC));
@@ -85,7 +124,7 @@ void Engine::init(Window* window){
 	m_raster.MultisampleEnable = FALSE;     // No multisampling
 	m_raster.AntialiasedLineEnable = FALSE; // No se usan lineas antialiasing
 	
-	HRESULT hr = m_props->deviceInterface->CreateRasterizerState(&m_raster, &m_raster_state);
+	hr = m_props->deviceInterface->CreateRasterizerState(&m_raster, &m_raster_state);
 	assert(!FAILED(hr));
 	m_props->inmediateDeviceContext->RSSetState(m_raster_state);
 
@@ -103,8 +142,12 @@ void Engine::init(Window* window){
 	window->m_swapChain = m_props->swapChain;
 	window->m_deviceInterface = m_props->deviceInterface;
 	window->m_inmediateDeviceContext = m_props->inmediateDeviceContext;
-	
-	//load_default_textures();
+
+	//unsigned int count = 0;
+	//m_props->swapChain->GetLastPresentCount(&count);
+	//m_props->swapChain->Present(0,0);
+	//m_props->swapChain->GetLastPresentCount(&count);
+
 }
 
 

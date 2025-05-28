@@ -6,7 +6,7 @@
 struct WindowInfo;
 struct WindowProperties;
 
-struct IDXGISwapChain;
+struct IDXGISwapChain1;
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 class ImguiManager;
@@ -44,6 +44,8 @@ public:
 
 private:
 
+	unsigned int m_vsync = 1;
+
 	friend class Renderer;
 
 	void destroy_frame_resources();
@@ -55,7 +57,7 @@ private:
 	Renderer* m_renderer;
 
 	// Render stuff
-	IDXGISwapChain* m_swapChain;
+	ComPtr<IDXGISwapChain3> m_swapChain;
 	ID3D11Device* m_deviceInterface;
 	ID3D11DeviceContext* m_inmediateDeviceContext;
 
