@@ -75,6 +75,10 @@ struct ShaderFiles {
 	ID3D11VertexShader* VS_deferred_common = nullptr;
 	ID3D11PixelShader* PS_deferred_directional = nullptr;
 	ID3D11PixelShader* PS_deferred_passthrough = nullptr;
+
+	// Deferred post process
+	ID3D11PixelShader* PS_deferred_emissive = nullptr;
+
 };
 
 enum class ShaderType {
@@ -86,7 +90,7 @@ enum class ShaderType {
 	DeferredPointLight,
 	DeferredSpotLight,
 	DeferredPassThrough,
-	Emissive,
+	DeferredEmissive,
 
 };
 
@@ -141,6 +145,13 @@ struct CameraDeferredConstantBuffer {
 	float padding;
 };
 
+struct EmissiveConstantBuffer {
+	Vec2 texel_size;
+	float bloom_intensity;
+	bool horizontal;
+	bool padding[3];
+};
+
 
 
 struct Color {
@@ -178,10 +189,27 @@ struct DeferredResources {
 	ID3D11Texture2D* gbuffer_material_texture;
 	ID3D11ShaderResourceView* gbuffer_material_shader_resource_view;
 
-	// Emissive (Albedo)
+	// Emissive (Input)
 	ID3D11RenderTargetView* gbuffer_emissive_render_target_view;
 	ID3D11Texture2D* gbuffer_emissive_texture;
 	ID3D11ShaderResourceView* gbuffer_emissive_shader_resource_view;
+	
+	// Emissive (Output)
+	ID3D11RenderTargetView* gbuffer_emissive_out_render_target_view;
+	ID3D11Texture2D* gbuffer_emissive_out_texture;
+	ID3D11ShaderResourceView* gbuffer_emissive_out_shader_resource_view;
+	
+	// Emissive (Output B)
+	ID3D11RenderTargetView* gbuffer_emissive_out_b_render_target_view;
+	ID3D11Texture2D* gbuffer_emissive_out_b_texture;
+	ID3D11ShaderResourceView* gbuffer_emissive_out_b_shader_resource_view;
+
+	// Final postprocess
+	ID3D11RenderTargetView* postprocess_render_target_view;
+	ID3D11Texture2D* postprocess_texture;
+	ID3D11ShaderResourceView* postprocess_resource_view;
+
+
 
 	// Light
 	ID3D11RenderTargetView* light_render_target_view;

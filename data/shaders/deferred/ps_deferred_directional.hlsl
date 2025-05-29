@@ -4,6 +4,12 @@ struct PS_INPUT
     float2 uv : UV;
 };
 
+struct PS_OUT
+{
+    float4 out_light : SV_Target0;
+    float4 out_emissive : SV_Target1;
+};
+
 
 Texture2D albedo_tex : register(t0);
 Texture2D position_tex : register(t1);
@@ -84,9 +90,10 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
 
 
 
-float4 PShader(PS_INPUT input) : SV_TARGET
+PS_OUT PShader(PS_INPUT input) : SV_TARGET
 {
-    float4 out_color;
+    PS_OUT out_color;
+
     
     const float PI = 3.14159265359;
     
@@ -163,7 +170,11 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     float tmp = 1.0 / 2.2;
     color = pow(color, float3(tmp, tmp, tmp));
 
-    return float4(color, 1.0);
+    out_color.out_light = float4(color, 1.0);
+    out_color.out_emissive = float4(texture_emissive, 1.0); // + brithness
+    
+    return out_color;
+    //return float4(color, 1.0);
     //return float4(N, 1.0);
 }
 

@@ -230,6 +230,8 @@ void ImguiManager::system_info(){
 	ImGui::PlotLines("Delta time", m_dt_history.data(), m_dt_history_size, m_dt_history_index, nullptr, FLT_MAX, FLT_MAX, ImVec2(0, 70));
 #endif
 
+	ImGui::Checkbox("Show Bloom", &m_bloom);
+
 	ImGui::Text("Mouse (%d, %d)", mouse_x, mouse_y);
 	ImGui::Text("Delta (%.0f, %.0f)", m_mouse_delta_x, m_mouse_delta_y);
 	
@@ -250,6 +252,7 @@ void ImguiManager::system_info(){
 
 	ImGui::End();
 }
+
 
 void ImguiManager::show_transform(TransformComponent* trans, int entity_id){
 

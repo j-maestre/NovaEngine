@@ -31,7 +31,6 @@ public:
 
 	void render_forward(EntityComponentSystem& ecs);
 	void render_deferred(EntityComponentSystem& ecs);
-	void render_emissive(EntityComponentSystem& ecs);
 
 	void set_cull_mode();
 
@@ -46,7 +45,7 @@ private:
 	__forceinline void clear_full_quad();
 	__forceinline void render_mesh_internal(CameraConstantBuffer* camera_buffer, TransformComponent& trans, Mesh& m);
 	__forceinline void render_deferred_internal();
-	__forceinline void render_full_screen_quad();
+	__forceinline void draw_emissive();
 
 	void create_backbuffers();
 	void create_deferred_resources(unsigned int width, unsigned int height);
@@ -92,6 +91,9 @@ private:
 	D3D11_BUFFER_DESC m_cam_deferred_constant_buffer;
 	ID3D11Buffer* m_pVBufferDeferredConstantCamera;
 
+	D3D11_BUFFER_DESC m_emissive_constant_buffer_desc;
+	ID3D11Buffer* m_pVBuffer_emissive_constant_buffer;
+
 	ID3D11Buffer* m_pVBufferLight;
 
 	ID3D11Buffer* m_pVBuffer;
@@ -100,6 +102,7 @@ private:
 	ID3D11InputLayout* m_pLayout;
 	ID3D11InputLayout* m_pLayout_deferred;
 	
+	ID3D11SamplerState* m_sampler_state_emissive;
 	ID3D11SamplerState* m_sampler_state;
 	D3D11_SAMPLER_DESC m_sampler_desc;
 
@@ -112,7 +115,9 @@ private:
 	VertexQuad m_fs_quad[3];
 	D3D11_BUFFER_DESC m_buffer_description_full_triangle;
 	bool m_isInitialized;
+	bool m_bloom_active = true;
 
 	int m_buffer_index = 0;
+
 	
 };

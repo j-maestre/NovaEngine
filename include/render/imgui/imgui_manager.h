@@ -94,6 +94,8 @@ private:
 	float m_window_begin_frame_time = 0.0f;
 	float m_window_end_frame_time = 0.0f;
 
+	bool m_bloom = true;
+
 	std::mutex resources_lock;
 	ImGuiViewport* m_viewport;
 };

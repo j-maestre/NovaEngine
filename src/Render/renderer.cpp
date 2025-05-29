@@ -139,6 +139,12 @@ bool Renderer::init_pipeline(Window* win){
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_passthrough);
+	
+	// Light pass pixel shader PostProcess
+	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_post_process_bloom.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	m_isInitialized = CheckShaderError(hr, error_msg);
+	if (!m_isInitialized)return m_isInitialized;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_emissive);
 
 
 
@@ -179,6 +185,14 @@ bool Renderer::init_pipeline(Window* win){
 	m_cam_deferred_constant_buffer.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	m_cam_deferred_constant_buffer.CPUAccessFlags = 0;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&m_cam_deferred_constant_buffer,NULL, &m_pVBufferDeferredConstantCamera);
+
+	// Emissive postprocess constant buffer creation
+	ZeroMemory(&m_emissive_constant_buffer_desc, sizeof(m_emissive_constant_buffer_desc));
+	m_emissive_constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+	m_emissive_constant_buffer_desc.ByteWidth = sizeof(EmissiveConstantBuffer);
+	m_emissive_constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	m_emissive_constant_buffer_desc.CPUAccessFlags = 0;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&m_emissive_constant_buffer_desc,NULL, &m_pVBuffer_emissive_constant_buffer);
 
 
 	/**** Depth stencil and texture creation ****/
@@ -325,7 +339,18 @@ bool Renderer::init_pipeline(Window* win){
 
 	m_sampler_state = nullptr;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateSamplerState(&m_sampler_desc, &m_sampler_state);
-	
+
+	D3D11_SAMPLER_DESC emissive_sampler_desc = {};
+	emissive_sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; // Bilinear filtering
+	emissive_sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	emissive_sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	emissive_sampler_desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	emissive_sampler_desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	emissive_sampler_desc.MinLOD = 0;
+	emissive_sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	m_sampler_state_emissive = nullptr;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateSamplerState(&emissive_sampler_desc, &m_sampler_state_emissive);
 
 	win->m_renderer = this;
 	clear_depth();
@@ -361,9 +386,9 @@ void Renderer::active_shader(ShaderType type){
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_spot, nullptr, 0);
 		break;
-	case ShaderType::Emissive:
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_common, nullptr, 0);
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_emissive, nullptr, 0);
+	case ShaderType::DeferredEmissive:
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_emissive, nullptr, 0);
 		break;
 	default:break;
 	}
@@ -545,13 +570,20 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	// Light Pass
 
 	float clear_color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	props->inmediateDeviceContext->ClearRenderTargetView(m_quad_RTV, clear_color);
+	props->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.postprocess_render_target_view, clear_color);
 
 	active_shader(ShaderType::DeferredDirectional);
 
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(1, 1, &m_pVBufferDeferredConstantCamera);
-	props->inmediateDeviceContext->OMSetRenderTargets(1, &m_quad_RTV, m_depth_stencil_view);
+
+
+	ID3D11RenderTargetView* light_pass_rtvs[] = {
+		m_deferred_resources.postprocess_render_target_view, // Final color
+		m_deferred_resources.gbuffer_emissive_out_render_target_view
+	};
+	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(light_pass_rtvs), light_pass_rtvs, m_depth_stencil_view);
+	//props->inmediateDeviceContext->OMSetRenderTargets(1, &m_quad_RTV, m_depth_stencil_view);
 	props->inmediateDeviceContext->IASetInputLayout(m_pLayout_deferred);
 
 	UINT stride = sizeof(VertexQuad);
@@ -585,9 +617,9 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 		props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
 		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		props->inmediateDeviceContext->Draw(3, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 	}
 
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 	
 	
 	/*
@@ -612,16 +644,34 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	}
 	*/
 
+	
+
+
+
 	// Unbind light pass rtv
-	ID3D11RenderTargetView* nullRTV[] = { nullptr };
-	props->inmediateDeviceContext->OMSetRenderTargets(1, nullRTV, nullptr);
+	ID3D11RenderTargetView* nullRTV[] = { nullptr, nullptr };
+	props->inmediateDeviceContext->OMSetRenderTargets(2, nullRTV, nullptr);
+
+	ID3D11ShaderResourceView* nullSRV_5[] = { nullptr, nullptr, nullptr, nullptr, nullptr};
+	props->inmediateDeviceContext->PSSetShaderResources(0, 5, nullSRV_5);
+
+	props->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_emissive_out_b_render_target_view, m_clear_emissive_color);
+	draw_emissive();
+
+
 
 	// Draw in the back buffer
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->backbuffer, m_depth_stencil_view);
 
 	// Setear textura resultado (SRV)
-	props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_quad_SRV);
+	if (m_bloom_active) {
+		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_quad_SRV);
+	}else {
+		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &(m_deferred_resources.postprocess_resource_view));
+
+	}
+	//props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_quad_SRV);
 	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
 
 	// Dibujar quad
@@ -648,6 +698,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	ImguiManager::get_instance()->render();
 	ImguiManager::get_instance()->scene_info(ecs);
 	ImguiManager::get_instance()->show_cam(m_cam, 0xfff);
+	m_bloom_active = ImguiManager::get_instance()->m_bloom;
 	auto end_imgui = std::chrono::high_resolution_clock::now();
 	auto elapsed_imgui = end_imgui - start_imgui;
 	ImguiManager::get_instance()->m_draw_imgui_time = std::chrono::duration<float>(elapsed_imgui).count();
@@ -655,121 +706,6 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 #endif
 
 
-}
-
-void Renderer::render_emissive(EntityComponentSystem& ecs){
-
-#ifdef ENABLE_IMGUI
-	auto start = std::chrono::high_resolution_clock::now();
-#endif
-
-	clear_depth();
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->backbuffer, m_depth_stencil_view);
-
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetConstantBuffers(0, 1, &m_pVBufferConstantCamera);
-
-	const Mat4* view = m_cam->get_view();
-	const Mat4* proj = m_cam->get_projection();
-
-	CameraConstantBuffer cam_buffer;
-	cam_buffer.view = DirectX::XMMatrixTranspose(*view);
-	cam_buffer.projection = DirectX::XMMatrixTranspose(*proj);
-	cam_buffer.camera_position = m_cam->get_position();
-
-	auto transforms = ecs.viewComponents<TransformComponent, MeshComponent>();
-	auto directional_light = ecs.viewComponents<DirectionalLight>();
-	auto point_light = ecs.viewComponents<PointLight>();
-	auto spot_light = ecs.viewComponents<SpotLight>();
-
-	//float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-
-
-
-	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->emissive_buffer_view, m_depth_stencil_view);
-	clear_render_target();
-
-
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_quad_RTV, m_depth_stencil_view);
-	clear_full_quad();
-
-	active_shader(ShaderType::DirectionalLight);
-
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
-	for (auto [entity, directional] : directional_light.each()) {
-
-
-		if (!directional.get_enabled()) continue;
-
-		directional.update();
-		directional.upload_data();
-
-		for (auto [entity, trans, mesh] : transforms.each()) {
-			for (Mesh& m : mesh.get_model()->meshes) {
-				//__debugbreak();
-				render_mesh_internal(&cam_buffer, trans, m);
-			}
-		}
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
-	}
-
-	// Change blending
-	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
-
-	clear_render_target();
-	active_shader(ShaderType::PointLight);
-	for (auto [entity, point] : point_light.each()) {
-
-		if (!point.get_enabled()) continue;
-		point.update();
-		point.upload_data();
-
-		for (auto [entity, trans, mesh] : transforms.each()) {
-			for (Mesh& m : mesh.get_model()->meshes) {
-				render_mesh_internal(&cam_buffer, trans, m);
-			}
-		}
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
-	}
-
-	clear_render_target();
-	active_shader(ShaderType::SpotLight);
-	for (auto [entity, spot] : spot_light.each()) {
-
-		if (!spot.get_enabled()) continue;
-		spot.update();
-		spot.upload_data();
-
-		for (auto [entity, trans, mesh] : transforms.each()) {
-			for (Mesh& m : mesh.get_model()->meshes) {
-				render_mesh_internal(&cam_buffer, trans, m);
-			}
-		}
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
-	}
-
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->backbuffer, m_depth_stencil_view);
-
-
-	render_full_screen_quad();
-
-
-
-
-#ifdef ENABLE_IMGUI
-	auto end = std::chrono::high_resolution_clock::now();
-	auto elapsed = end - start;
-	ImguiManager::get_instance()->m_draw_time = std::chrono::duration<float>(elapsed).count();
-
-
-	auto start_imgui = std::chrono::high_resolution_clock::now();
-	ImguiManager::get_instance()->render();
-	ImguiManager::get_instance()->scene_info(ecs);
-	ImguiManager::get_instance()->show_cam(m_cam, 0xfff);
-	auto end_imgui = std::chrono::high_resolution_clock::now();
-	auto elapsed_imgui = end_imgui - start_imgui;
-	ImguiManager::get_instance()->m_draw_imgui_time = std::chrono::duration<float>(elapsed_imgui).count();
-
-#endif
 }
 
 void Renderer::set_cull_mode(){
@@ -828,25 +764,78 @@ void Renderer::render_deferred_internal(){
 
 }
 
-void Renderer::render_full_screen_quad(){
+void Renderer::draw_emissive(){
 
-	// Bind el backbuffer para dibujar el fullscreen quad final
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->backbuffer, nullptr);
+	if (m_bloom_active) {
 
-	// Bind los shader resource views (escena y emissive) al pixel shader
-	ID3D11ShaderResourceView* srvs[] = { m_quad_SRV, m_emissive_SRV };
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0, 2, srvs);
+		UINT stride = sizeof(VertexQuad);
+		UINT offset = 0;
+		ID3D11RenderTargetView* nullRTV[] = { nullptr, nullptr };
+		auto props = Engine::get_instance()->get_engine_props();
 
-	// Bind el shader que combina las texturas (aseg�rate de tenerlo activo)
-	active_shader(ShaderType::Emissive);
+		// Draw postprocess emissive Horizontal
+		ID3D11RenderTargetView* postprocess_pass_rtvs[] = {
+			m_deferred_resources.gbuffer_emissive_out_b_render_target_view,
+		};
 
-	// Bind y dibuja el fullscreen quad (vertex buffer, input layout, draw call)
-	//render_fullscreen_quad();
+		ID3D11ShaderResourceView* srvs_post_process[] = {
+			m_deferred_resources.gbuffer_emissive_out_shader_resource_view,
+			m_deferred_resources.postprocess_resource_view, // first time is not used
+		};
 
-	// Limpia los shader resource views para evitar warnings y conflictos
-	ID3D11ShaderResourceView* nullSRVs[2] = { nullptr, nullptr };
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShaderResources(0, 2, nullSRVs);
+		active_shader(ShaderType::DeferredEmissive);
+		props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(postprocess_pass_rtvs), postprocess_pass_rtvs, m_depth_stencil_view);
+		props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs_post_process), srvs_post_process);
+		props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
+
+		// Set emissive constant buffer
+		EmissiveConstantBuffer emissive_buffer;
+		emissive_buffer.texel_size = { 1.0f / m_window->m_width, 1.0f / m_window->m_height };
+		emissive_buffer.bloom_intensity = 100.0f;
+		emissive_buffer.horizontal = true;
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer, 0, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
+
+
+		// gbuffer_emissive_out_b_render_target_view is empty, need to overwritte
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
+		props->inmediateDeviceContext->IASetInputLayout(m_pLayout_deferred);
+		props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
+		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		props->inmediateDeviceContext->Draw(3, 0);
+
+
+
+
+
+		// Draw postprocess emissive Vertical
+		ID3D11RenderTargetView* postprocess_pass_vertical_rtvs[] = {
+			m_quad_RTV,
+		};
+
+		ID3D11ShaderResourceView* srvs_post_process_vertical[] = {
+			m_deferred_resources.gbuffer_emissive_out_b_shader_resource_view,
+			m_deferred_resources.postprocess_resource_view,
+		};
+
+		props->inmediateDeviceContext->OMSetRenderTargets(1, nullRTV, nullptr);
+		//active_shader(ShaderType::DeferredEmissive);
+		props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(postprocess_pass_vertical_rtvs), postprocess_pass_vertical_rtvs, m_depth_stencil_view);
+		props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs_post_process_vertical), srvs_post_process_vertical);
+		props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
+
+		// Set emissive constant buffer
+		emissive_buffer.horizontal = false;
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer, 0, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
+
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
+		props->inmediateDeviceContext->Draw(3, 0);
+
+	}
 }
+
+
 
 void Renderer::create_backbuffers(){
 	Engine* e = Engine::get_instance();
@@ -945,11 +934,25 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 		&m_deferred_resources.gbuffer_material_shader_resource_view
 	);
 
-	// Emissive (can be HDR if needed)
+	// Emissive (Input)
 	create_render_target(DXGI_FORMAT_R16G16B16A16_FLOAT,
 		&m_deferred_resources.gbuffer_emissive_texture,
 		&m_deferred_resources.gbuffer_emissive_render_target_view,
 		&m_deferred_resources.gbuffer_emissive_shader_resource_view
+	);
+	
+	// Emissive (Output)
+	create_render_target(DXGI_FORMAT_R16G16B16A16_FLOAT,
+		&m_deferred_resources.gbuffer_emissive_out_texture,
+		&m_deferred_resources.gbuffer_emissive_out_render_target_view,
+		&m_deferred_resources.gbuffer_emissive_out_shader_resource_view
+	);
+	
+	// Emissive B (Output)
+	create_render_target(DXGI_FORMAT_R16G16B16A16_FLOAT,
+		&m_deferred_resources.gbuffer_emissive_out_b_texture,
+		&m_deferred_resources.gbuffer_emissive_out_b_render_target_view,
+		&m_deferred_resources.gbuffer_emissive_out_b_shader_resource_view
 	);
 
 	// Light accumulation buffer (HDR format)
@@ -957,6 +960,13 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 		&m_deferred_resources.light_texture,
 		&m_deferred_resources.light_render_target_view,
 		&m_deferred_resources.light_shader_resource_view
+	);
+	
+	// PostProcess
+	create_render_target(DXGI_FORMAT_R16G16B16A16_FLOAT,
+		&m_deferred_resources.postprocess_texture,
+		&m_deferred_resources.postprocess_render_target_view,
+		&m_deferred_resources.postprocess_resource_view
 	);
 
 
@@ -976,7 +986,12 @@ void Renderer::release_deferred_resources(){
 	func(&m_deferred_resources.gbuffer_normals_texture, &m_deferred_resources.gbuffer_normals_render_target_view, &m_deferred_resources.gbuffer_normals_shader_resource_view);
 	func(&m_deferred_resources.gbuffer_material_texture, &m_deferred_resources.gbuffer_material_render_target_view, &m_deferred_resources.gbuffer_material_shader_resource_view);
 	func(&m_deferred_resources.gbuffer_emissive_texture, &m_deferred_resources.gbuffer_emissive_render_target_view, &m_deferred_resources.gbuffer_emissive_shader_resource_view);
+
+	func(&m_deferred_resources.gbuffer_emissive_out_texture, &m_deferred_resources.gbuffer_emissive_out_render_target_view, &m_deferred_resources.gbuffer_emissive_out_shader_resource_view);
+	func(&m_deferred_resources.gbuffer_emissive_out_b_texture, &m_deferred_resources.gbuffer_emissive_out_b_render_target_view, &m_deferred_resources.gbuffer_emissive_out_b_shader_resource_view);
+	
 	func(&m_deferred_resources.light_texture, &m_deferred_resources.light_render_target_view,&m_deferred_resources.light_shader_resource_view);
+	func(&m_deferred_resources.postprocess_texture, &m_deferred_resources.postprocess_render_target_view,&m_deferred_resources.postprocess_resource_view);
 }
 
 void Renderer::clear_depth(){
@@ -985,6 +1000,17 @@ void Renderer::clear_depth(){
 
 void Renderer::clear_render_target(){
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_window->get_window_info()->emissive_buffer_view, m_clear_emissive_color);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_emissive_out_render_target_view, m_clear_emissive_color);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_emissive_out_b_render_target_view, m_clear_emissive_color);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_emissive_render_target_view, m_clear_emissive_color);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.postprocess_render_target_view, m_clear_emissive_color);
+	
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_material_render_target_view, m_clear_emissive_color);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_normals_render_target_view, m_clear_emissive_color);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_position_render_target_view, m_clear_emissive_color);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_albedo_render_target_view, m_clear_emissive_color);
+
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_quad_RTV, m_clear_emissive_color);
 }
 
 void Renderer::clear_full_quad(){
