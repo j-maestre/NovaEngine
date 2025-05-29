@@ -44,7 +44,7 @@ public:
 
 private:
 
-	unsigned int m_vsync = 1;
+	unsigned int m_vsync = 0;
 
 	friend class Renderer;
 

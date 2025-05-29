@@ -164,5 +164,6 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     color = pow(color, float3(tmp, tmp, tmp));
 
     return float4(color, 1.0);
+    //return float4(N, 1.0);
 }
 

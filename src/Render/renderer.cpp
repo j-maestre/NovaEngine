@@ -490,6 +490,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 
 	// Geometry pass
 	clear_depth();
+	clear_render_target();
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetConstantBuffers(0, 1, &m_pVBufferConstantCamera);
 
@@ -569,13 +570,13 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	CameraDeferredConstantBuffer cam_buffer_light;
 	Mat4 view_proj = (*view) * (*proj);
 	cam_buffer_light.inv_view_proj = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, view_proj));;
-	cam_buffer_light.camera_position = cam_buffer.camera_position;
+	cam_buffer_light.camera_position = m_cam->get_position();
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferDeferredConstantCamera, 0, nullptr, &cam_buffer_light, 0, 0);
 
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
 
-	for (int i = 0; i < 20; i++) {
+
 
 	for (auto [entity, light] : directional_light.each()) {
 		light.update();
@@ -587,7 +588,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	}
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
-	}
+	
 	
 	/*
 	for (auto [entity, light] : point_light.each()) {
@@ -924,7 +925,7 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 	);
 	
 	// Position
-	create_render_target(DXGI_FORMAT_R8G8B8A8_UNORM,
+	create_render_target(DXGI_FORMAT_R16G16B16A16_FLOAT,
 		&m_deferred_resources.gbuffer_position_texture,
 		&m_deferred_resources.gbuffer_position_render_target_view,
 		&m_deferred_resources.gbuffer_position_shader_resource_view
@@ -938,7 +939,7 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 	);
 
 	// Material info (Metallic, Roughness, AO, Specular � pack into 4 channels)
-	create_render_target(DXGI_FORMAT_R8G8B8A8_UNORM,
+	create_render_target(DXGI_FORMAT_R16G16B16A16_FLOAT,
 		&m_deferred_resources.gbuffer_material_texture,
 		&m_deferred_resources.gbuffer_material_render_target_view,
 		&m_deferred_resources.gbuffer_material_shader_resource_view

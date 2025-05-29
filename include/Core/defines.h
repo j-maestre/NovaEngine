@@ -127,10 +127,10 @@ struct CameraConstantBuffer {
 	Mat4 projection;
 	Mat4 model;
 	Vec3 camera_position;
+
 	float metallic;
 	Vec4 color;
 	float roughness;
-	// TODO: add bloom on imgui
 	Vec3 emissive;
 	float padding;
 };
@@ -147,7 +147,7 @@ struct Color {
 	float rgba[4];
 };
 
-constexpr unsigned int NUM_BUFFERING = 4;
+constexpr unsigned int NUM_BUFFERING = 3;
 
 struct WindowInfo {
 	HWND window_handle;

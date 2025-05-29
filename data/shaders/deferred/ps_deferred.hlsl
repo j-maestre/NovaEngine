@@ -79,8 +79,8 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     out_textures.out_albedo = texture_color;
     out_textures.out_position = float4(input.world_position, 1.0);
     out_textures.out_normal = float4(normal_procesed, 1.0);
-    out_textures.out_material = float4(texture_metallic, texture_roughness, texture_ao, 1.0); // Last parameter is for specular map
-    out_textures.out_emissive = float4(input.emissive_value.rgb, 1.0);
+    out_textures.out_material = float4(texture_metallic, texture_roughness, texture_ao, 1.0); // Last parameter is for specular map or brithness
+    out_textures.out_emissive = float4(input.emissive_value.rgb, 1.0); // Also add object's brithness
 
     return out_textures;
 }
