@@ -564,7 +564,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	}
 	// Unbind render targets
 	ID3D11RenderTargetView* nullRTVs[ARRAYSIZE(gbuffer_rtv)] = { nullptr };
-	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(gbuffer_rtv), nullRTVs, nullptr);
+	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(nullRTVs), nullRTVs, nullptr);
 
 
 	// Light Pass
@@ -649,8 +649,8 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 
 
 	// Unbind light pass rtv
-	ID3D11RenderTargetView* nullRTV[] = { nullptr, nullptr };
-	props->inmediateDeviceContext->OMSetRenderTargets(2, nullRTV, nullptr);
+	//ID3D11RenderTargetView* nullRTV[] = { nullptr, nullptr };
+	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(nullRTVs), nullRTVs, nullptr);
 
 	ID3D11ShaderResourceView* nullSRV_5[] = { nullptr, nullptr, nullptr, nullptr, nullptr};
 	props->inmediateDeviceContext->PSSetShaderResources(0, 5, nullSRV_5);
@@ -770,8 +770,13 @@ void Renderer::draw_emissive(){
 
 		UINT stride = sizeof(VertexQuad);
 		UINT offset = 0;
-		ID3D11RenderTargetView* nullRTV[] = { nullptr, nullptr };
+		ID3D11RenderTargetView* nullRTV[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
+		ID3D11ShaderResourceView* nullSRV[] = { nullptr, nullptr };
+
 		auto props = Engine::get_instance()->get_engine_props();
+		props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(nullRTV), nullRTV, nullptr);
+		props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(nullSRV), nullSRV);
+
 
 		// Draw postprocess emissive Horizontal
 		ID3D11RenderTargetView* postprocess_pass_rtvs[] = {
@@ -780,7 +785,7 @@ void Renderer::draw_emissive(){
 
 		ID3D11ShaderResourceView* srvs_post_process[] = {
 			m_deferred_resources.gbuffer_emissive_out_shader_resource_view,
-			m_deferred_resources.postprocess_resource_view, // first time is not used
+			//m_deferred_resources.postprocess_resource_view, // first time is not used
 		};
 
 		active_shader(ShaderType::DeferredEmissive);
@@ -791,7 +796,7 @@ void Renderer::draw_emissive(){
 		// Set emissive constant buffer
 		EmissiveConstantBuffer emissive_buffer;
 		emissive_buffer.texel_size = { 1.0f / m_window->m_width, 1.0f / m_window->m_height };
-		emissive_buffer.bloom_intensity = 100.0f;
+		emissive_buffer.bloom_intensity = 10.0f;
 		emissive_buffer.horizontal = true;
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer, 0, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
@@ -807,6 +812,8 @@ void Renderer::draw_emissive(){
 
 
 
+		props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(nullRTV), nullRTV, nullptr);
+		props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(nullSRV), nullSRV);
 
 		// Draw postprocess emissive Vertical
 		ID3D11RenderTargetView* postprocess_pass_vertical_rtvs[] = {
@@ -815,10 +822,12 @@ void Renderer::draw_emissive(){
 
 		ID3D11ShaderResourceView* srvs_post_process_vertical[] = {
 			m_deferred_resources.gbuffer_emissive_out_b_shader_resource_view,
-			m_deferred_resources.postprocess_resource_view,
+			m_deferred_resources.postprocess_resource_view, // Light color previously calculated
 		};
 
-		props->inmediateDeviceContext->OMSetRenderTargets(1, nullRTV, nullptr);
+
+		props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs_post_process_vertical), srvs_post_process_vertical);
+
 		//active_shader(ShaderType::DeferredEmissive);
 		props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(postprocess_pass_vertical_rtvs), postprocess_pass_vertical_rtvs, m_depth_stencil_view);
 		props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs_post_process_vertical), srvs_post_process_vertical);
@@ -829,13 +838,11 @@ void Renderer::draw_emissive(){
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer, 0, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
 
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
+		//m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 		props->inmediateDeviceContext->Draw(3, 0);
 
 	}
 }
-
-
 
 void Renderer::create_backbuffers(){
 	Engine* e = Engine::get_instance();
