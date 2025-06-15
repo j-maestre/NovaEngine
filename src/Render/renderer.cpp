@@ -1,6 +1,7 @@
 #include <render/renderer.h>
 #include <d3dcompiler.h>
 #include <filesystem>
+#include <algorithm>
 
 #include "render/imgui/imgui_manager.h"
 
@@ -145,6 +146,13 @@ bool Renderer::init_pipeline(Window* win){
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_emissive);
+
+	// Bloom downscaling
+	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_post_process_bloom_downscaling.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	m_isInitialized = CheckShaderError(hr, error_msg);
+	if (!m_isInitialized)return m_isInitialized;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_emissive_downsample);
+	
 
 
 
@@ -390,6 +398,9 @@ void Renderer::active_shader(ShaderType type){
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_emissive, nullptr, 0);
 		break;
+	case ShaderType::BloomDownsample:
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_emissive_downsample, nullptr, 0);
 	default:break;
 	}
 }
@@ -510,7 +521,6 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	auto start = std::chrono::high_resolution_clock::now();
 #endif
 
-	ID3D11ShaderResourceView* nullSRVs[5] = { nullptr, nullptr, nullptr, nullptr, nullptr };
 
 
 	// Geometry pass
@@ -531,7 +541,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	auto props = Engine::get_instance()->get_engine_props();
 	
 	// Unbind render targets
-	props->inmediateDeviceContext->PSSetShaderResources(0, 5, nullSRVs);
+	clear_shader_reources();
 
 	// Clear render targets
 	for (int i = 0; i < ARRAYSIZE(gbuffer_rtv); ++i) props->inmediateDeviceContext->ClearRenderTargetView(gbuffer_rtv[i], m_clear_emissive_color);
@@ -563,8 +573,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 		}
 	}
 	// Unbind render targets
-	ID3D11RenderTargetView* nullRTVs[ARRAYSIZE(gbuffer_rtv)] = { nullptr };
-	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(nullRTVs), nullRTVs, nullptr);
+	clear_shader_reources();
 
 
 	// Light Pass
@@ -573,7 +582,6 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	props->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.postprocess_render_target_view, clear_color);
 
 	active_shader(ShaderType::DeferredDirectional);
-
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(1, 1, &m_pVBufferDeferredConstantCamera);
 
@@ -650,10 +658,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 
 	// Unbind light pass rtv
 	//ID3D11RenderTargetView* nullRTV[] = { nullptr, nullptr };
-	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(nullRTVs), nullRTVs, nullptr);
-
-	ID3D11ShaderResourceView* nullSRV_5[] = { nullptr, nullptr, nullptr, nullptr, nullptr};
-	props->inmediateDeviceContext->PSSetShaderResources(0, 5, nullSRV_5);
+	clear_shader_reources();
 
 	props->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_emissive_out_b_render_target_view, m_clear_emissive_color);
 	draw_emissive();
@@ -735,6 +740,7 @@ void Renderer::render_mesh_internal(CameraConstantBuffer* camera_buffer, Transfo
 	camera_buffer->roughness = m.material.get_roughness_value();
 	camera_buffer->color = m.material.get_color_value();
 	camera_buffer->emissive = m.material.get_emissive_value();
+	camera_buffer->emissive_intensity = m.material.get_emissive_intensity();
 	
 	// Buffer de la camara con la model del objeto
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, camera_buffer, 0, 0);
@@ -770,13 +776,10 @@ void Renderer::draw_emissive(){
 
 		UINT stride = sizeof(VertexQuad);
 		UINT offset = 0;
-		ID3D11RenderTargetView* nullRTV[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
-		ID3D11ShaderResourceView* nullSRV[] = { nullptr, nullptr };
-
+		
 		auto props = Engine::get_instance()->get_engine_props();
-		props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(nullRTV), nullRTV, nullptr);
-		props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(nullSRV), nullSRV);
-
+		
+		clear_shader_reources();
 
 		// Draw postprocess emissive Horizontal
 		ID3D11RenderTargetView* postprocess_pass_rtvs[] = {
@@ -797,7 +800,7 @@ void Renderer::draw_emissive(){
 		EmissiveConstantBuffer emissive_buffer;
 		emissive_buffer.texel_size = { 1.0f / m_window->m_width, 1.0f / m_window->m_height };
 		emissive_buffer.bloom_intensity = 10.0f;
-		emissive_buffer.horizontal = true;
+		emissive_buffer.horizontal = 1;
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer, 0, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
 
@@ -810,10 +813,7 @@ void Renderer::draw_emissive(){
 		props->inmediateDeviceContext->Draw(3, 0);
 
 
-
-
-		props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(nullRTV), nullRTV, nullptr);
-		props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(nullSRV), nullSRV);
+		clear_shader_reources();
 
 		// Draw postprocess emissive Vertical
 		ID3D11RenderTargetView* postprocess_pass_vertical_rtvs[] = {
@@ -834,7 +834,8 @@ void Renderer::draw_emissive(){
 		props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
 
 		// Set emissive constant buffer
-		emissive_buffer.horizontal = false;
+		emissive_buffer.horizontal = 0;
+
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer, 0, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
 
@@ -842,6 +843,57 @@ void Renderer::draw_emissive(){
 		props->inmediateDeviceContext->Draw(3, 0);
 
 	}
+}
+
+void Renderer::draw_emissive_downsample(){
+
+	auto props = m_engine_ptr->get_engine_props();
+	for (int i = 1; i < NUM_MIPMAPS_EMISSIVE; i++) {
+		
+		clear_shader_reources();
+
+		props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[i], nullptr);
+		props->inmediateDeviceContext->PSSetShaderResources(0,1, &m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[i - 1]);
+
+		D3D11_TEXTURE2D_DESC desc;
+		m_deferred_resources.gbuffer_emissive_mipmap_texture[i - 1]->GetDesc(&desc);
+
+		// Horizontal blur
+		EmissiveConstantBuffer emissive_buffer{};
+		emissive_buffer.texel_size = {1.0f / desc.Width, 1.0f / desc.Height};
+		emissive_buffer.horizontal = 0;
+		emissive_buffer.bloom_intensity = 1.0f;
+
+		props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer, 0, 0);
+
+		active_shader(ShaderType::BloomDownsample);
+
+
+		UINT stride = sizeof(VertexQuad);
+		UINT offset = 0;
+
+		props->inmediateDeviceContext->IASetInputLayout(m_pLayout_deferred);
+		props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
+		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		props->inmediateDeviceContext->Draw(3, 0);
+
+		// TODO: Crear RTV temporal igual que en la otra funcion o mejor reutilizarlos
+
+		// Vertical blur
+		emissive_buffer.horizontal = 1;
+		props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer, 0, 0);
+		props->inmediateDeviceContext->Draw(3, 0);
+	}
+}
+
+void Renderer::clear_shader_reources(){
+
+	ID3D11RenderTargetView* nullRTV[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
+	ID3D11ShaderResourceView* nullSRV[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
+
+	auto props = Engine::get_instance()->get_engine_props();
+	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(nullRTV), nullRTV, nullptr);
+	props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(nullSRV), nullSRV);
 }
 
 void Renderer::create_backbuffers(){
@@ -892,10 +944,10 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 	Engine* e = Engine::get_instance();
 	auto device = e->get_engine_props()->deviceInterface;
 
-	auto create_render_target = [&](DXGI_FORMAT format, ID3D11Texture2D** outTex, ID3D11RenderTargetView** outRTV, ID3D11ShaderResourceView** outSRV) {
+	auto create_render_target = [&](DXGI_FORMAT format, ID3D11Texture2D** outTex, ID3D11RenderTargetView** outRTV, ID3D11ShaderResourceView** outSRV, unsigned int width_tmp = 0, unsigned int height_tmp = 0) {
 		D3D11_TEXTURE2D_DESC desc{};
-		desc.Width = width;
-		desc.Height = height;
+		desc.Width = width_tmp == 0 ? width : width_tmp;
+		desc.Height = height_tmp == 0 ? height: height_tmp;
 		desc.MipLevels = 1;
 		desc.ArraySize = 1;
 		desc.Format = format;
@@ -961,6 +1013,21 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 		&m_deferred_resources.gbuffer_emissive_out_b_render_target_view,
 		&m_deferred_resources.gbuffer_emissive_out_b_shader_resource_view
 	);
+	
+	// Emissive Mipmaps
+	for (unsigned int i = 0; i < NUM_MIPMAPS_EMISSIVE; i++) {
+
+		unsigned int mip_width = std::max(1u, width >> (i + 1));
+		unsigned int mip_height= std::max(1u, height >> (i + 1));
+
+		create_render_target(DXGI_FORMAT_R16G16B16A16_FLOAT,
+			&m_deferred_resources.gbuffer_emissive_mipmap_texture[i],
+			&m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[i],
+			&m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[i],
+			mip_width,
+			mip_height
+		);
+	}
 
 	// Light accumulation buffer (HDR format)
 	create_render_target(DXGI_FORMAT_R16G16B16A16_FLOAT,
@@ -996,6 +1063,10 @@ void Renderer::release_deferred_resources(){
 
 	func(&m_deferred_resources.gbuffer_emissive_out_texture, &m_deferred_resources.gbuffer_emissive_out_render_target_view, &m_deferred_resources.gbuffer_emissive_out_shader_resource_view);
 	func(&m_deferred_resources.gbuffer_emissive_out_b_texture, &m_deferred_resources.gbuffer_emissive_out_b_render_target_view, &m_deferred_resources.gbuffer_emissive_out_b_shader_resource_view);
+	
+	for (unsigned int i = 0; i < NUM_MIPMAPS_EMISSIVE; i++) {
+		func(&m_deferred_resources.gbuffer_emissive_mipmap_texture[i], &m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[i], &m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[i]);
+	}
 	
 	func(&m_deferred_resources.light_texture, &m_deferred_resources.light_render_target_view,&m_deferred_resources.light_shader_resource_view);
 	func(&m_deferred_resources.postprocess_texture, &m_deferred_resources.postprocess_render_target_view,&m_deferred_resources.postprocess_resource_view);

@@ -12,17 +12,17 @@ Texture2D final_texture : register(t1);
 
 SamplerState mySampler : register(s0);
 
-cbuffer PostprocessConstants : register(b0)
-{
+cbuffer PostprocessConstants : register(b0){
+    
     float2 texelSize; // 1.0 / texture resolution (e.g., (1.0 / 1920.0, 1.0 / 1080.0))
     float bloomIntensity; // how strong the bloom is
-    bool horizontal;
-    bool padding[3];
+    int horizontal;
 }
 
 float4 PShader(PS_INPUT input) : SV_TARGET{
     
-    float3 emissiveBloom = emissive_texture.Sample(mySampler, input.uv).rgb;
+    float4 emissiveBloom = emissive_texture.Sample(mySampler, input.uv);
+    float emissive_intensity = emissiveBloom.a;
     float3 finalColor = final_texture.Sample(mySampler, input.uv).rgb;
     float2 uv = input.uv;
     
@@ -37,10 +37,10 @@ float4 PShader(PS_INPUT input) : SV_TARGET{
     
    
     
-    if (horizontal){
+    if (horizontal == 1){
         for (int i = 1; i < 5; ++i){
-            result += emissive_texture.Sample(mySampler, input.uv + float2(texel_size.x * i * bloomIntensity, 0.0)).rgb * weight[i];
-            result += emissive_texture.Sample(mySampler, input.uv - float2(texel_size.x * i * bloomIntensity, 0.0)).rgb * weight[i];
+            result += emissive_texture.Sample(mySampler, input.uv + float2(texel_size.x * i * emissive_intensity, 0.0)).rgb * weight[i];
+            result += emissive_texture.Sample(mySampler, input.uv - float2(texel_size.x * i * emissive_intensity, 0.0)).rgb * weight[i];
         }
         
         // HDR
@@ -53,8 +53,8 @@ float4 PShader(PS_INPUT input) : SV_TARGET{
 
         for (int i = 1; i < 5; ++i)
         {
-            result += emissive_texture.Sample(mySampler, input.uv + float2(0.0, texel_size.y * i * bloomIntensity)).rgb * weight[i];
-            result += emissive_texture.Sample(mySampler, input.uv - float2(0.0, texel_size.y * i * bloomIntensity)).rgb * weight[i];
+            result += emissive_texture.Sample(mySampler, input.uv + float2(0.0, texel_size.y * i * emissive_intensity)).rgb * weight[i];
+            result += emissive_texture.Sample(mySampler, input.uv - float2(0.0, texel_size.y * i * emissive_intensity)).rgb * weight[i];
 
         }
         

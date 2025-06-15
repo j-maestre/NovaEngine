@@ -111,7 +111,7 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     const float texture_roughness = (gMaterial.Sample(mySampler, input.uv)).g;
     const float texture_ao = (gMaterial.Sample(mySampler, input.uv)).b;
     
-    const float3 texture_emissive = gEmissive.Sample(mySampler, input.uv).rgb;
+    const float4 texture_emissive = gEmissive.Sample(mySampler, input.uv);
 
     const float3 V = view_dir;
     float3 F0 = float3(0.04, 0.04, 0.04);
@@ -161,7 +161,7 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     //color = color / (color + float3(1.0, 1.0, 1.0));
     
     //float3 bloom = float3(texture_color.rgb);
-    color += texture_emissive;
+    color += texture_emissive.rgb;
     
     // HDR tonemapping with exposure
     color = float3(1.0, 1.0, 1.0) - exp(-color * intensity);
@@ -171,7 +171,7 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     color = pow(color, float3(tmp, tmp, tmp));
 
     out_color.out_light = float4(color, 1.0);
-    out_color.out_emissive = float4(texture_emissive, 1.0); // + brithness
+    out_color.out_emissive = float4(texture_emissive); // + brithness
     
     return out_color;
     //return float4(color, 1.0);

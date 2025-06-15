@@ -79,6 +79,8 @@ struct ShaderFiles {
 	// Deferred post process
 	ID3D11PixelShader* PS_deferred_emissive = nullptr;
 
+	// Emissive downsample
+	ID3D11PixelShader* PS_deferred_emissive_downsample;
 };
 
 enum class ShaderType {
@@ -91,6 +93,7 @@ enum class ShaderType {
 	DeferredSpotLight,
 	DeferredPassThrough,
 	DeferredEmissive,
+	BloomDownsample,
 
 };
 
@@ -136,7 +139,7 @@ struct CameraConstantBuffer {
 	Vec4 color;
 	float roughness;
 	Vec3 emissive;
-	float padding;
+	float emissive_intensity;
 };
 
 struct CameraDeferredConstantBuffer {
@@ -148,8 +151,7 @@ struct CameraDeferredConstantBuffer {
 struct EmissiveConstantBuffer {
 	Vec2 texel_size;
 	float bloom_intensity;
-	bool horizontal;
-	bool padding[3];
+	int horizontal;
 };
 
 
@@ -166,6 +168,8 @@ struct WindowInfo {
 	ID3D11RenderTargetView* backbuffer;
 	ID3D11RenderTargetView* emissive_buffer_view;
 };
+
+constexpr unsigned int NUM_MIPMAPS_EMISSIVE = 5;
 
 struct DeferredResources {
 	
@@ -203,6 +207,11 @@ struct DeferredResources {
 	ID3D11RenderTargetView* gbuffer_emissive_out_b_render_target_view;
 	ID3D11Texture2D* gbuffer_emissive_out_b_texture;
 	ID3D11ShaderResourceView* gbuffer_emissive_out_b_shader_resource_view;
+
+	// Emissive mipmaps
+	ID3D11RenderTargetView* gbuffer_emissive_mipmap_render_target_view[NUM_MIPMAPS_EMISSIVE];
+	ID3D11Texture2D* gbuffer_emissive_mipmap_texture[NUM_MIPMAPS_EMISSIVE];
+	ID3D11ShaderResourceView* gbuffer_emissive_mipmap_shader_resource_view[NUM_MIPMAPS_EMISSIVE];
 
 	// Final postprocess
 	ID3D11RenderTargetView* postprocess_render_target_view;

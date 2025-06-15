@@ -220,6 +220,7 @@
     <None Include="data\shaders\deferred\vs_deferred_common.hlsl" />
     <None Include="data\shaders\deferred\ps_deferred_passthrough.hlsl" />
     <None Include="data\shaders\deferred\ps_deferred_post_process_bloom.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred_post_process_bloom_downscaling.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

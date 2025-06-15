@@ -12,6 +12,7 @@ struct PS_INPUT
     float4 color_value : COLOR;
     float roughness_value : ROUGHNESS;
     float3 emissive_value : EMISSIVE;
+    float emissive_intensity : EMISSIVE_INTENSITY;
 };
 
 struct PS_OUT
@@ -80,7 +81,7 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     out_textures.out_position = float4(input.world_position, 1.0);
     out_textures.out_normal = float4(normal_procesed, 1.0);
     out_textures.out_material = float4(texture_metallic, texture_roughness, texture_ao, 1.0); // Last parameter is for specular map or brithness
-    out_textures.out_emissive = float4(input.emissive_value.rgb, 1.0); // Also add object's brithness
+    out_textures.out_emissive = float4(input.emissive_value.rgb, input.emissive_intensity); // Also add object's brithness
 
     return out_textures;
 }

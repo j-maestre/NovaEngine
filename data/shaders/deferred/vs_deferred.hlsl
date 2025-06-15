@@ -19,6 +19,7 @@ struct VOut{
     float4 color_value : COLOR;
     float roughness_value : ROUGHNESS;
     float3 emissive_value : EMISSIVE;
+    float emissive_intensity : EMISSIVE_INTENSITY;
 };
 
 cbuffer CameraObject : register(b0){
@@ -30,6 +31,7 @@ cbuffer CameraObject : register(b0){
     float4 color_value;
     float roughness_value;
     float3 emissive_value;
+    float emissive_intensity;
 }
 
 
@@ -57,6 +59,7 @@ VOut VShader(VS_IN input){
     output.color_value = color_value;
     output.roughness_value = roughness_value;
     output.emissive_value = emissive_value;
+    output.emissive_intensity = emissive_intensity;
 
     return output;
 }

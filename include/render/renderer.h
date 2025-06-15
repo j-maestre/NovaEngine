@@ -46,6 +46,10 @@ private:
 	__forceinline void render_mesh_internal(CameraConstantBuffer* camera_buffer, TransformComponent& trans, Mesh& m);
 	__forceinline void render_deferred_internal();
 	__forceinline void draw_emissive();
+	__forceinline void draw_emissive_downsample();
+
+	void clear_shader_reources();
+
 
 	void create_backbuffers();
 	void create_deferred_resources(unsigned int width, unsigned int height);
