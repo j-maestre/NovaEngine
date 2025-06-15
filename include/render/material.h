@@ -26,6 +26,7 @@ public:
 	void set_roughness_value(float value) { m_roughness_value = value; }
 	void set_color_value(Vec4 value) { m_color_value = value; }
 	void set_emissive_value(Vec3 value) { m_emissive = value; }
+	void set_emissive_intensity(float value) { m_emissive_intensity = value; }
 
 	inline Texture* get_albedo() { return m_texture_albedo; }
 	inline Texture* get_normal() { return m_texture_normal; }
@@ -38,6 +39,9 @@ public:
 	float get_roughness_value() { return m_roughness_value; }
 	Vec4 get_color_value() { return m_color_value; }
 	Vec3 get_emissive_value() { return m_emissive; }
+	float get_emissive_intensity() { return m_emissive_intensity; }
+
+	// TODO: anade emissive_intensity, guardalo en el gbuffer en el alpha de la textura de emissivo, anade imgui tambien
 
 
 private:
@@ -50,6 +54,7 @@ private:
 	float m_roughness_value = 0.0f;
 	Vec4 m_color_value;
 	Vec3 m_emissive;
+	float m_emissive_intensity = 1.0f;
 
 	Texture* m_texture_albedo;
 	Texture* m_texture_normal;
