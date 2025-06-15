@@ -565,9 +565,10 @@ void ImguiManager::show_mesh_comp(MeshComponent* mesh_comp, int entity_id){
 		ImGui::Text(label.c_str());
 		Vec4 color_v = m.material.get_color_value();
 		Vec3 color_emissive = m.material.get_emissive_value();
-		float color[3] = {color_v.x, color_v.y,color_v.z};
+		float color[4] = {color_v.x, color_v.y,color_v.z, color_v.w};
 		float emissive[3] = { color_emissive.x, color_emissive.y,color_emissive.z };
 
+		float emissive_intensity = m.material.get_emissive_intensity();
 		float metallic = m.material.get_metallic_value();
 		float roughness = m.material.get_roughness_value();
 
@@ -578,6 +579,9 @@ void ImguiManager::show_mesh_comp(MeshComponent* mesh_comp, int entity_id){
 		
 		label = "Emissive##" + std::to_string(entity_id) + std::to_string(index);
 		ImGui::ColorEdit3(label.c_str(), emissive, flags);
+
+		label = "Emissive Intensity##" + std::to_string(entity_id) + std::to_string(index);
+		ImGui::DragFloat(label.c_str(), &emissive_intensity, 0.1f, 0.0f);
 		
 		label = "Metallic##" + std::to_string(entity_id) + std::to_string(index);
 		ImGui::DragFloat(label.c_str(), &metallic, 0.01f, 0.0f, 1.0f);
@@ -588,6 +592,7 @@ void ImguiManager::show_mesh_comp(MeshComponent* mesh_comp, int entity_id){
 
 		m.material.set_color_value({color[0],color[1], color[2], color[3] });
 		m.material.set_emissive_value({ emissive[0],emissive[1], emissive[2] });
+		m.material.set_emissive_intensity(emissive_intensity);
 		m.material.set_metallic_value(metallic);
 		m.material.set_roughness_value(roughness);
 		index++;
