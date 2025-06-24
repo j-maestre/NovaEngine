@@ -16,9 +16,10 @@ cbuffer PostprocessConstants : register(b0)
     float2 texel_size; // 1.0 / texture resolution (e.g., (1.0 / 1920.0, 1.0 / 1080.0))
     float bloom_intensity; // how strong the bloom is
     int horizontal;
-}
+};
 
-float4 main(PS_INPUT input) : SV_TARGET
+
+float4 PShader(PS_INPUT input) : SV_TARGET
 {
     float2 offsets[9] =
     {
@@ -38,31 +39,47 @@ float4 main(PS_INPUT input) : SV_TARGET
     float3 color_sum = float3(0, 0, 0);
     
     
-    if (horizontal == 1)
-    {
-        for (int i = 0; i < 3; i++)
-        {
+    if (horizontal == 0){
+
+        for (int i = 0; i < 3; i++){
+
             float2 offset_uv = input.uv + float2(offsets[i + 3].x * texel_size.x, 0);
             float3 sample = finalTexture.Sample(samp, offset_uv).rgb;
             float weight = kernel[i + 3];
             color_sum += sample * weight;
             weight_sum += weight;
         }
-    }
-    else
-    {
-        for (int i = 0; i < 3; i++)
-        {
+
+
+        // HDR
+        //color_sum = float3(1.0, 1.0, 1.0) - exp(-color_sum * 1.0);
+
+        // Gamma
+        //float3 gamma_exponent = float3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2);
+        //color_sum = pow(color_sum, gamma_exponent);
+    } else {
+        for (int i = 0; i < 3; i++){
+
             float2 offset_uv = input.uv + float2(0, offsets[3 * i + 1].y * texel_size.y);
             float3 sample = finalTexture.Sample(samp, offset_uv).rgb;
             float weight = kernel[3 * i + 1];
             color_sum += sample * weight;
             weight_sum += weight;
         }
+
+        // Add final color
+
+        // HDR
+        //color_sum = float3(1.0, 1.0, 1.0) - exp(-color_sum * 1.0);
+
+        // Gamma
+        //float3 gamma_exponent = float3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2);
+        //color_sum = pow(color_sum, gamma_exponent);
     }
 
     float3 final_color = color_sum / weight_sum;
 
+    //return float4(1.0, 1.0, 1.0, 1.0);
     return float4(final_color * bloom_intensity, 1.0);
     
-}
+};

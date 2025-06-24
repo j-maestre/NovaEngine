@@ -48,8 +48,11 @@ private:
 	__forceinline void draw_emissive();
 	__forceinline void draw_emissive_downsample();
 
-	void clear_shader_reources();
+	void clear_shader_reources(int size = 5);
+	__forceinline void clear_rtv(int size);
+	__forceinline void clear_srv(int size);
 
+	__forceinline void set_viewport(unsigned int width, unsigned int height);
 
 	void create_backbuffers();
 	void create_deferred_resources(unsigned int width, unsigned int height);

@@ -96,10 +96,7 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
 
     
     const float PI = 3.14159265359;
-    
-    // TODO: Mira a ver, que tienes que pasarle al vertex shader el valor de los materiales
-    // para poder guardar en una textura el color de la textura de albedo o el color del material a pelo,
-    // igual en los otros, suerte espabilao
+
     const float4 texture_position = (position_tex.Sample(mySampler, input.uv));
     
     const float3 view_dir = normalize(cam_pos - texture_position.rgb);

@@ -169,7 +169,7 @@ struct WindowInfo {
 	ID3D11RenderTargetView* emissive_buffer_view;
 };
 
-constexpr unsigned int NUM_MIPMAPS_EMISSIVE = 5;
+constexpr unsigned int NUM_MIPMAPS_EMISSIVE = (5 + 1);
 
 struct DeferredResources {
 	
@@ -212,6 +212,10 @@ struct DeferredResources {
 	ID3D11RenderTargetView* gbuffer_emissive_mipmap_render_target_view[NUM_MIPMAPS_EMISSIVE];
 	ID3D11Texture2D* gbuffer_emissive_mipmap_texture[NUM_MIPMAPS_EMISSIVE];
 	ID3D11ShaderResourceView* gbuffer_emissive_mipmap_shader_resource_view[NUM_MIPMAPS_EMISSIVE];
+
+	ID3D11RenderTargetView* emissive_dowscaling_render_target_view[NUM_MIPMAPS_EMISSIVE];
+	ID3D11Texture2D* emissive_dowscaling_texture[NUM_MIPMAPS_EMISSIVE];
+	ID3D11ShaderResourceView* emissive_dowscaling_shader_resource_view[NUM_MIPMAPS_EMISSIVE];
 
 	// Final postprocess
 	ID3D11RenderTargetView* postprocess_render_target_view;

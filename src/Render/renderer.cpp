@@ -588,7 +588,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 
 	ID3D11RenderTargetView* light_pass_rtvs[] = {
 		m_deferred_resources.postprocess_render_target_view, // Final color
-		m_deferred_resources.gbuffer_emissive_out_render_target_view
+		m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[0]	// first mipmap level
 	};
 	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(light_pass_rtvs), light_pass_rtvs, m_depth_stencil_view);
 	//props->inmediateDeviceContext->OMSetRenderTargets(1, &m_quad_RTV, m_depth_stencil_view);
@@ -661,8 +661,8 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	clear_shader_reources();
 
 	props->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_emissive_out_b_render_target_view, m_clear_emissive_color);
-	draw_emissive();
-
+	//draw_emissive();
+	draw_emissive_downsample();
 
 
 	// Draw in the back buffer
@@ -671,7 +671,8 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 
 	// Setear textura resultado (SRV)
 	if (m_bloom_active) {
-		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_quad_SRV);
+		//props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_quad_SRV);
+		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.emissive_dowscaling_shader_resource_view[0]);
 	}else {
 		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &(m_deferred_resources.postprocess_resource_view));
 
@@ -847,27 +848,40 @@ void Renderer::draw_emissive(){
 
 void Renderer::draw_emissive_downsample(){
 
+	// TODO: Crear Texturas temporales para cada mipmap level, no puedo escribir el blur horizontal siempre en gbuffer_emissive_out porque es del tamaño del original, tiene que ser del tamaño del nuevo mip
+
 	auto props = m_engine_ptr->get_engine_props();
+
+	clear_render_target();
+	//clear_shader_reources();
+	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.emissive_dowscaling_render_target_view[i - 1], m_clear_emissive_color);
+	
+
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
 	for (int i = 1; i < NUM_MIPMAPS_EMISSIVE; i++) {
 		
-		clear_shader_reources();
+		clear_srv(1);
+		clear_rtv(1);
+		active_shader(ShaderType::BloomDownsample);
 
-		props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[i], nullptr);
-		props->inmediateDeviceContext->PSSetShaderResources(0,1, &m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[i - 1]);
 
 		D3D11_TEXTURE2D_DESC desc;
 		m_deferred_resources.gbuffer_emissive_mipmap_texture[i - 1]->GetDesc(&desc);
 
+		set_viewport(desc.Width, desc.Height);
+
+
+		props->inmediateDeviceContext->PSSetShaderResources(0,1, &m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[i - 1]);		// This texture has the emissive texture (and brightness)
+		props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.emissive_dowscaling_render_target_view[i - 1], nullptr);			// Disable dpeth stencil, not needed here
+		//props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
+
 		// Horizontal blur
 		EmissiveConstantBuffer emissive_buffer{};
 		emissive_buffer.texel_size = {1.0f / desc.Width, 1.0f / desc.Height};
-		emissive_buffer.horizontal = 0;
 		emissive_buffer.bloom_intensity = 1.0f;
-
+		emissive_buffer.horizontal = 1;
 		props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer, 0, 0);
-
-		active_shader(ShaderType::BloomDownsample);
-
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
 
 		UINT stride = sizeof(VertexQuad);
 		UINT offset = 0;
@@ -877,23 +891,35 @@ void Renderer::draw_emissive_downsample(){
 		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		props->inmediateDeviceContext->Draw(3, 0);
 
-		// TODO: Crear RTV temporal igual que en la otra funcion o mejor reutilizarlos
+		clear_srv(1);
+		clear_rtv(1);
+
+		m_deferred_resources.gbuffer_emissive_mipmap_texture[i]->GetDesc(&desc);
+		set_viewport(desc.Width, desc.Height);
 
 		// Vertical blur
-		emissive_buffer.horizontal = 1;
-		props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer, 0, 0);
+		// Horizontal blur
+		EmissiveConstantBuffer emissive_buffer2{};
+		emissive_buffer2.texel_size = { 1.0f / desc.Width, 1.0f / desc.Height };
+		emissive_buffer2.bloom_intensity = 1.0f;
+		emissive_buffer2.horizontal = 0;
+		props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer2, 0, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
+
+		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.emissive_dowscaling_shader_resource_view[i - 1]);
+		props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[i], nullptr);
+		//props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
+
 		props->inmediateDeviceContext->Draw(3, 0);
 	}
+
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->RSSetViewports(1, &m_engine_ptr->m_viewport);
 }
 
-void Renderer::clear_shader_reources(){
+void Renderer::clear_shader_reources(int size){
 
-	ID3D11RenderTargetView* nullRTV[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
-	ID3D11ShaderResourceView* nullSRV[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
-
-	auto props = Engine::get_instance()->get_engine_props();
-	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(nullRTV), nullRTV, nullptr);
-	props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(nullSRV), nullSRV);
+	clear_rtv(size);
+	clear_srv(size);
 }
 
 void Renderer::create_backbuffers(){
@@ -1017,8 +1043,8 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 	// Emissive Mipmaps
 	for (unsigned int i = 0; i < NUM_MIPMAPS_EMISSIVE; i++) {
 
-		unsigned int mip_width = std::max(1u, width >> (i + 1));
-		unsigned int mip_height= std::max(1u, height >> (i + 1));
+		unsigned int mip_width = std::max(1u, width >> (i));
+		unsigned int mip_height= std::max(1u, height >> (i));
 
 		create_render_target(DXGI_FORMAT_R16G16B16A16_FLOAT,
 			&m_deferred_resources.gbuffer_emissive_mipmap_texture[i],
@@ -1027,6 +1053,16 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 			mip_width,
 			mip_height
 		);
+		
+		create_render_target(DXGI_FORMAT_R16G16B16A16_FLOAT,
+			&m_deferred_resources.emissive_dowscaling_texture[i],
+			&m_deferred_resources.emissive_dowscaling_render_target_view[i],
+			&m_deferred_resources.emissive_dowscaling_shader_resource_view[i],
+			mip_width,
+			mip_height
+		);
+
+
 	}
 
 	// Light accumulation buffer (HDR format)
@@ -1066,6 +1102,7 @@ void Renderer::release_deferred_resources(){
 	
 	for (unsigned int i = 0; i < NUM_MIPMAPS_EMISSIVE; i++) {
 		func(&m_deferred_resources.gbuffer_emissive_mipmap_texture[i], &m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[i], &m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[i]);
+		func(&m_deferred_resources.emissive_dowscaling_texture[i], &m_deferred_resources.emissive_dowscaling_render_target_view[i], &m_deferred_resources.emissive_dowscaling_shader_resource_view[i]);
 	}
 	
 	func(&m_deferred_resources.light_texture, &m_deferred_resources.light_render_target_view,&m_deferred_resources.light_shader_resource_view);
@@ -1098,4 +1135,37 @@ void Renderer::clear_full_quad(){
 
 void Renderer::compile_shader(std::string path){
 
+}
+
+void Renderer::clear_rtv(int size){
+
+	assert(size <= 5 && "RTV size must be 5 or less");
+	ID3D11RenderTargetView* nullRTV[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
+
+	auto props = Engine::get_instance()->get_engine_props();
+
+	props->inmediateDeviceContext->OMSetRenderTargets(size, nullRTV, nullptr);
+}
+
+void Renderer::clear_srv(int size){
+
+	assert(size <= 5 && "SRV size must be 5 or less");
+	ID3D11ShaderResourceView* nullSRV[] = { nullptr, nullptr, nullptr, nullptr, nullptr };
+
+	auto props = Engine::get_instance()->get_engine_props();
+	props->inmediateDeviceContext->PSSetShaderResources(0, size, nullSRV);
+}
+
+void Renderer::set_viewport(unsigned int width, unsigned int height){
+
+	D3D11_VIEWPORT viewport{};
+	ZeroMemory(&viewport, sizeof(D3D11_VIEWPORT));
+	viewport.Width = (FLOAT)width;
+	viewport.Height = (FLOAT)height;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->RSSetViewports(1, &viewport);
 }

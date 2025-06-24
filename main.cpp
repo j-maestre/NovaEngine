@@ -75,8 +75,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		cam.update();
 
-		// TODO: Mira el specular del leon en deferred
-
 		
 		scene.update();
 		//render.render_forward(scene.m_ecs);
