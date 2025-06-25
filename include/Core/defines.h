@@ -152,6 +152,8 @@ struct EmissiveConstantBuffer {
 	Vec2 texel_size;
 	float bloom_intensity;
 	int horizontal;
+	int blend;
+	Vec3 padding;
 };
 
 

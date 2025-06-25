@@ -8,6 +8,7 @@ struct PS_INPUT
 
 
 Texture2D finalTexture : register(t0);
+Texture2D lightTexture : register(t1);
 SamplerState samp : register(s0);
 
 cbuffer PostprocessConstants : register(b0)
@@ -16,6 +17,8 @@ cbuffer PostprocessConstants : register(b0)
     float2 texel_size; // 1.0 / texture resolution (e.g., (1.0 / 1920.0, 1.0 / 1080.0))
     float bloom_intensity; // how strong the bloom is
     int horizontal;
+    int blend;
+    float3 padding;
 };
 
 
@@ -39,7 +42,7 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     float3 color_sum = float3(0, 0, 0);
     
     
-    if (horizontal == 0){
+    if (horizontal == 1){
 
         for (int i = 0; i < 3; i++){
 
@@ -78,8 +81,12 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     }
 
     float3 final_color = color_sum / weight_sum;
+    final_color *= finalTexture.Sample(samp, input.uv).a;
+        
+    if (blend == 1){
+        final_color += lightTexture.Sample(samp, input.uv).rgb;
+    }
 
-    //return float4(1.0, 1.0, 1.0, 1.0);
-    return float4(final_color * bloom_intensity, 1.0);
+    return float4(final_color, 1.0);
     
 };

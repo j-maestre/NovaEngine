@@ -17,6 +17,7 @@ cbuffer PostprocessConstants : register(b0){
     float2 texelSize; // 1.0 / texture resolution (e.g., (1.0 / 1920.0, 1.0 / 1080.0))
     float bloomIntensity; // how strong the bloom is
     int horizontal;
+    int blend;
 }
 
 float4 PShader(PS_INPUT input) : SV_TARGET{

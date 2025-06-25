@@ -664,6 +664,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	//draw_emissive();
 	draw_emissive_downsample();
 
+	clear_srv(2);
 
 	// Draw in the back buffer
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
@@ -672,11 +673,12 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	// Setear textura resultado (SRV)
 	if (m_bloom_active) {
 		//props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_quad_SRV);
-		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.emissive_dowscaling_shader_resource_view[0]);
+		//props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.emissive_dowscaling_shader_resource_view[0]);
+		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[0]);
 	}else {
 		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &(m_deferred_resources.postprocess_resource_view));
-
 	}
+
 	//props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_quad_SRV);
 	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
 
@@ -852,12 +854,14 @@ void Renderer::draw_emissive_downsample(){
 
 	auto props = m_engine_ptr->get_engine_props();
 
-	clear_render_target();
+	//clear_render_target();
 	//clear_shader_reources();
 	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.emissive_dowscaling_render_target_view[i - 1], m_clear_emissive_color);
 	
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
+
+	// DownScale
 	for (int i = 1; i < NUM_MIPMAPS_EMISSIVE; i++) {
 		
 		clear_srv(1);
@@ -873,13 +877,14 @@ void Renderer::draw_emissive_downsample(){
 
 		props->inmediateDeviceContext->PSSetShaderResources(0,1, &m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[i - 1]);		// This texture has the emissive texture (and brightness)
 		props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.emissive_dowscaling_render_target_view[i - 1], nullptr);			// Disable dpeth stencil, not needed here
-		//props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
+		props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
 
 		// Horizontal blur
 		EmissiveConstantBuffer emissive_buffer{};
 		emissive_buffer.texel_size = {1.0f / desc.Width, 1.0f / desc.Height};
 		emissive_buffer.bloom_intensity = 1.0f;
 		emissive_buffer.horizontal = 1;
+		emissive_buffer.blend = 0;
 		props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer, 0, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
 
@@ -903,12 +908,84 @@ void Renderer::draw_emissive_downsample(){
 		emissive_buffer2.texel_size = { 1.0f / desc.Width, 1.0f / desc.Height };
 		emissive_buffer2.bloom_intensity = 1.0f;
 		emissive_buffer2.horizontal = 0;
+		emissive_buffer2.blend = 0;
 		props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer2, 0, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
 
 		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.emissive_dowscaling_shader_resource_view[i - 1]);
 		props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[i], nullptr);
-		//props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
+		props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
+
+		props->inmediateDeviceContext->Draw(3, 0);
+	}
+
+	// UpScale
+	for (int i = (NUM_MIPMAPS_EMISSIVE - 2); i >= 0; i--) {
+
+		clear_srv(1);
+		clear_rtv(1);
+		active_shader(ShaderType::BloomDownsample);
+
+
+		D3D11_TEXTURE2D_DESC desc;
+		m_deferred_resources.gbuffer_emissive_mipmap_texture[i + 1]->GetDesc(&desc);
+
+		set_viewport(desc.Width, desc.Height);
+
+
+		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[i + 1]);		// This texture has the emissive texture (and brightness)
+		props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.emissive_dowscaling_render_target_view[i + 1], nullptr);			// Disable dpeth stencil, not needed here
+		props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
+
+		// Horizontal blur
+		EmissiveConstantBuffer emissive_buffer{};
+		emissive_buffer.texel_size = { 1.0f / desc.Width, 1.0f / desc.Height };
+		emissive_buffer.bloom_intensity = 1.0f;
+		emissive_buffer.horizontal = 1;
+		emissive_buffer.blend = 0;
+		props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer, 0, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
+
+		UINT stride = sizeof(VertexQuad);
+		UINT offset = 0;
+
+		props->inmediateDeviceContext->IASetInputLayout(m_pLayout_deferred);
+		props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
+		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		props->inmediateDeviceContext->Draw(3, 0);
+
+		clear_srv(1);
+		clear_rtv(1);
+
+		m_deferred_resources.gbuffer_emissive_mipmap_texture[i]->GetDesc(&desc);
+		set_viewport(desc.Width, desc.Height);
+
+		// Vertical blur
+		// Horizontal blur
+		EmissiveConstantBuffer emissive_buffer2{};
+		emissive_buffer2.texel_size = { 1.0f / desc.Width, 1.0f / desc.Height };
+		emissive_buffer2.bloom_intensity = 1.0f;
+		emissive_buffer2.horizontal = 0;
+		emissive_buffer2.blend = 0;
+
+		// Last iteration, blend with light
+		if (i == 0) {
+			ID3D11ShaderResourceView* srvs[] = {
+				m_deferred_resources.emissive_dowscaling_shader_resource_view[i + 1],
+				m_deferred_resources.postprocess_resource_view
+			};
+
+			props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs), srvs);
+			emissive_buffer2.blend = 1;
+		}else {
+			props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.emissive_dowscaling_shader_resource_view[i + 1]);
+		}
+
+		props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer2, 0, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
+
+		props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[i], nullptr);
+		props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
 
 		props->inmediateDeviceContext->Draw(3, 0);
 	}
