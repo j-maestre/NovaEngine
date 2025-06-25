@@ -154,6 +154,18 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     //float3 color = Lo + ambient;
     float3 color = Lo;
     
+    
+    // Calculate brightness before HDR
+    out_color.out_emissive = float4(texture_emissive);
+    
+    float3 ambient_tmp = ambient * 50.0;
+    float brightness = dot(color + ambient_tmp, float3(0.2126, 0.7152, 0.0722));
+    if (brightness > 1.0){
+        
+        out_color.out_emissive += float4(color, 1.0);
+    }
+    
+    
     // HDR tonemapping
     //color = color / (color + float3(1.0, 1.0, 1.0));
     
@@ -168,7 +180,8 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     color = pow(color, float3(tmp, tmp, tmp));
 
     out_color.out_light = float4(color, 1.0);
-    out_color.out_emissive = float4(texture_emissive); // + brithness
+    
+    
     
     return out_color;
     //return float4(color, 1.0);
