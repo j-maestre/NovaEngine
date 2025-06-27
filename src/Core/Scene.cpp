@@ -128,6 +128,11 @@ bool load_transform_component(const ryml::NodeRef& entity_node, Entity& entity, 
         Vec3 rotation = vec3FromYAML(transform["Rotation"]);
         Vec3 scale = vec3FromYAML(transform["Scale"]);
 
+
+        rotation.x = degToRad(rotation.x);
+        rotation.y = degToRad(rotation.y);
+        rotation.z = degToRad(rotation.z);
+
        auto& t = ecs.add_component<TransformComponent>(entity);
        t.set_position(position);
        t.set_rotation(rotation);
@@ -150,8 +155,9 @@ bool load_mesh_component(const ryml::NodeRef& entity_node, Entity& entity, Entit
         std::string model_name(entity_node["MeshComponent"].val().data(), entity_node["MeshComponent"].val().size());
         printf("Loading %s\n", model_name.c_str());
 
-        Engine::get_instance()->m_resource.load_mesh_async(model_name, mesh);
-        //mesh->set_model(m);
+        //Engine::get_instance()->m_resource.load_mesh_async(model_name, mesh);
+        Model* m = Engine::get_instance()->m_resource.load_mesh(model_name);
+        mesh->set_model(m);
     }
 
 
@@ -181,6 +187,7 @@ bool load_material_component(const ryml::NodeRef& entity_node, Entity& entity, E
                 if (type == "Metallic") material.set_texture_metallic(t_loaded);
                 if (type == "Roughness") material.set_texture_roughness(t_loaded);
                 if (type == "AO") material.set_texture_ao(t_loaded);
+                if (type == "Emissive") material.set_texture_emissive(t_loaded);
                 
             }else {
                 if (t.has_child("Metallic")) {

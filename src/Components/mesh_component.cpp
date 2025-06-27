@@ -36,4 +36,20 @@ void MeshComponent::set_material(Material mat){
 	for (auto& meshes : m_model.meshes) {
 		meshes.material = mat;
 	}
+
+	/*
+	for (auto& meshes : m_model.meshes_copy) {
+		meshes.material = mat;
+	}
+	*/
+
+	/*
+	for (auto& meshes : m_model_to_reload->meshes) {
+		meshes.material = mat;
+	}
+	
+	for (auto& meshes : m_model_to_reload->meshes_copy) {
+		meshes.material = mat;
+	}
+	*/
 }

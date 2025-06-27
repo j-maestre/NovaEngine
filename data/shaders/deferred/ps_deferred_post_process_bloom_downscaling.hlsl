@@ -81,7 +81,7 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     }
 
     float3 final_color = color_sum / weight_sum;
-    final_color *= finalTexture.Sample(samp, input.uv).a;
+    //final_color *= finalTexture.Sample(samp, input.uv).a;
         
     if (blend == 1){
         final_color += lightTexture.Sample(samp, input.uv).rgb;

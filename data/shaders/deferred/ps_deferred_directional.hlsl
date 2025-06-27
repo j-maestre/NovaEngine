@@ -156,13 +156,17 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     
     
     // Calculate brightness before HDR
+    
+    // Emissive texture color
     out_color.out_emissive = float4(texture_emissive);
+    out_color.out_emissive.rgb *= out_color.out_emissive.a;
     
     float3 ambient_tmp = ambient * 50.0;
     float brightness = dot(color + ambient_tmp, float3(0.2126, 0.7152, 0.0722));
     if (brightness > 1.0){
         
-        out_color.out_emissive += float4(color, 1.0);
+        // If the emissive is because of his brightness, just add the albedo
+        out_color.out_emissive = float4(color + (color * out_color.out_emissive.rgb), 1.0); // * texture_emissive.a; // bloom intensity, 1.0f by default
     }
     
     

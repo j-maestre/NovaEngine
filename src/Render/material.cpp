@@ -19,6 +19,7 @@ Material::Material(const Material& other){
 	m_texture_metallic = other.m_texture_metallic;
 	m_texture_roughness = other.m_texture_roughness;
 	m_texture_specular = other.m_texture_specular;
+	m_texture_emissive = other.m_texture_emissive;
 	m_initialised = other.m_initialised;
 
 	m_color_value = other.m_color_value;
@@ -33,6 +34,7 @@ Material::Material(Material&& other){
 	m_texture_metallic = other.m_texture_metallic;
 	m_texture_roughness = other.m_texture_roughness;
 	m_texture_specular = other.m_texture_specular;
+	m_texture_emissive = other.m_texture_emissive;
 
 	m_color_value = other.m_color_value;
 	m_metallic_value = other.m_metallic_value;
@@ -46,6 +48,7 @@ Material::Material(Material&& other){
 	other.m_texture_metallic = nullptr;
 	other.m_texture_roughness = nullptr;
 	other.m_texture_specular = nullptr;
+	other.m_texture_emissive = nullptr;
 
 	other.m_color_value = { 0.0f, 0.0f, 0.0f, 0.0f };
 	other.m_metallic_value = 0.0f;
@@ -72,6 +75,7 @@ Material& Material::operator=(const Material& other){
 		m_texture_metallic = other.m_texture_metallic;
 		m_texture_roughness = other.m_texture_roughness;
 		m_texture_specular = other.m_texture_specular;
+		m_texture_emissive = other.m_texture_emissive;
 
 		m_color_value = other.m_color_value;
 		m_metallic_value = other.m_metallic_value;
@@ -92,6 +96,7 @@ Material& Material::operator=(Material&& other){
 		m_texture_metallic = other.m_texture_metallic;
 		m_texture_roughness = other.m_texture_roughness;
 		m_texture_specular = other.m_texture_specular;
+		m_texture_emissive = other.m_texture_emissive;
 
 		m_color_value = other.m_color_value;
 		m_metallic_value = other.m_metallic_value;
@@ -104,6 +109,7 @@ Material& Material::operator=(Material&& other){
 		other.m_texture_metallic = nullptr;
 		other.m_texture_roughness = nullptr;
 		other.m_texture_specular = nullptr;
+		other.m_texture_emissive = nullptr;
 
 		other.m_color_value = { 0.0f, 0.0f, 0.0f, 0.0f };
 		other.m_metallic_value = 0.0f;
@@ -124,6 +130,7 @@ void Material::init_material(){
 	set_texture_metallic(m->get_metallic());
 	set_texture_roughness(m->get_roughness());
 	set_texture_ao(m->get_ao());
+	set_texture_emissive(m->get_emissive());
 }
 
 

@@ -21,6 +21,7 @@ public:
 	void set_texture_metallic(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); m_texture_metallic = t; m_metallic_value = 0.0f; }
 	void set_texture_roughness(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); m_texture_roughness = t; m_roughness_value = 0.0f; }
 	void set_texture_ao(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); m_texture_ao = t; }
+	void set_texture_emissive(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); m_texture_emissive = t; }
 
 	void set_metallic_value(float value) { m_metallic_value = value; }
 	void set_roughness_value(float value) { m_roughness_value = value; }
@@ -33,6 +34,7 @@ public:
 	inline Texture* get_metallic() { return m_texture_metallic; }
 	inline Texture* get_roughness() { return m_texture_roughness; }
 	inline Texture* get_ao() { return m_texture_ao; }
+	inline Texture* get_emissive() { return m_texture_emissive; }
 	inline Texture* get_specular() { return m_texture_specular; }
 
 	float get_metallic_value() { return m_metallic_value; }
@@ -61,5 +63,6 @@ private:
 	Texture* m_texture_metallic;
 	Texture* m_texture_roughness;
 	Texture* m_texture_ao;
+	Texture* m_texture_emissive;
 	Texture* m_texture_specular;
 };

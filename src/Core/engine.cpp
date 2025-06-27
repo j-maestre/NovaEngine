@@ -218,6 +218,7 @@ void Engine::load_default_textures(){
 	Texture* metallic = m_resource.load_texture("data/textures/default_metallic_new.png");
 	Texture* roughness = m_resource.load_texture("data/textures/default_roughness_new.png");
 	Texture* ao = m_resource.load_texture("data/textures/default_ao.png");
+	Texture* emissive = m_resource.load_texture("data/textures/black.png");
 
 	m_default_texture_albedo = t->get_id();
 	m_texture_tmp = t2->get_id();
@@ -229,6 +230,7 @@ void Engine::load_default_textures(){
 	m_default_material.set_texture_roughness(roughness);
 	//m_default_material.set_texture_roughness(metallic);		// just for debug
 	m_default_material.set_texture_ao(ao);
+	m_default_material.set_texture_emissive(emissive);
 
 	m_default_material.set_metallic_value(0.5f);
 	m_default_material.set_roughness_value(0.5f);

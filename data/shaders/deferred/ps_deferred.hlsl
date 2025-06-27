@@ -30,6 +30,7 @@ Texture2D normal_tex : register(t1);
 Texture2D metallic_tex : register(t2);
 Texture2D roughness_tex : register(t3);
 Texture2D ao_tex : register(t4);
+Texture2D emissive_tex : register(t5);
 
 
 SamplerState mySampler : register(s0);
@@ -69,6 +70,8 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     const float texture_roughness = max((roughness_tex.Sample(mySampler, input.uv)).r, input.roughness_value);
     
     const float texture_ao = (ao_tex.Sample(mySampler, input.uv)).r;
+    const float3 texture_emissive = (emissive_tex.Sample(mySampler, input.uv)).rgb;
+    
     const float3 normal_procesed = getNormalFromMap(texture_normal.rgb, input.normal, input.tangent);
    
     
@@ -77,7 +80,7 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     out_textures.out_position = float4(input.world_position, 1.0);
     out_textures.out_normal = float4(normal_procesed, 1.0);
     out_textures.out_material = float4(texture_metallic, texture_roughness, texture_ao, 1.0); // Last parameter is for specular map or brithness
-    out_textures.out_emissive = float4(input.emissive_value.rgb, input.emissive_intensity); // Also add object's brithness
+    out_textures.out_emissive = float4(max(input.emissive_value.rgb, texture_emissive), input.emissive_intensity); // Also add object's brithness
 
     return out_textures;
 }
