@@ -21,6 +21,20 @@ Entities:
       - {Texture: "data/materials/rounded_metal/metallic.png", Type: "Metallic"}
       - {Texture: "data/materials/rounded_metal/roughness.png", Type: "Roughness"}
       - {Texture: "data/materials/rounded_metal/ao.png", Type: "AO"}
+  Helmet:
+    Transform:
+      Position: [2.5, 3.0, 0.0]
+      Rotation: [-90.0, 180.0, 0.0]
+      Scale: [1.0, 1.0, 1.0]
+    MeshComponent: "data/models/helmet/DamagedHelmet.gltf"
+    Material:
+      - {Texture: "data/models/helmet/Default_albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/models/helmet/Default_normal.jpg", Type: "Normal"}
+      - {Texture: "data/models/helmet/metallic.jpg", Type: "Metallic"}
+      - {Texture: "data/models/helmet/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/models/helmet/Default_AO.jpg", Type: "AO"}
+      - {Texture: "data/models/helmet/emissive.jpg", Type: "Emissive"}
+
   Sponza:
     Transform:
       Position: [0.0, 0.0, 0.0]

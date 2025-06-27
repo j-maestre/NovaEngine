@@ -155,9 +155,9 @@ bool load_mesh_component(const ryml::NodeRef& entity_node, Entity& entity, Entit
         std::string model_name(entity_node["MeshComponent"].val().data(), entity_node["MeshComponent"].val().size());
         printf("Loading %s\n", model_name.c_str());
 
-        //Engine::get_instance()->m_resource.load_mesh_async(model_name, mesh);
-        Model* m = Engine::get_instance()->m_resource.load_mesh(model_name);
-        mesh->set_model(m);
+        Engine::get_instance()->m_resource.load_mesh_async(model_name, mesh);
+        //Model* m = Engine::get_instance()->m_resource.load_mesh(model_name);
+        //mesh->set_model(m);
     }
 
 
@@ -167,12 +167,12 @@ bool load_mesh_component(const ryml::NodeRef& entity_node, Entity& entity, Entit
 bool load_material_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs){
 
 
-    MeshComponent* mesh = ecs.get_component<MeshComponent>(entity);
-
-    Material material;
-    material.init_material();
-
     if (entity_node.has_child("Material")) {
+        MeshComponent* mesh = ecs.get_component<MeshComponent>(entity);
+
+        Material material;
+        material.init_material();
+
         auto textures = entity_node["Material"];
 
         for (auto&& t : textures.children()) {
@@ -212,9 +212,11 @@ bool load_material_component(const ryml::NodeRef& entity_node, Entity& entity, E
 
 
         }
+
+        mesh->set_material(material);
+        mesh->set_pending_material(false);
     }
 
-    mesh->set_material(material);
 
     return true;
 }

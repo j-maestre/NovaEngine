@@ -196,7 +196,7 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     ambient *= (1.0 - texture_metallic); // prevent albedo on full metallic parts
     
     //float3 color = Lo + ambient;
-    float3 color = Lo;
+    float3 color = Lo * intensity;
     
     // HDR tonemapping
     //color = color / (color + float3(1.0, 1.0, 1.0));
@@ -205,7 +205,7 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     color += input.emissive_value;
     
     // HDR tonemapping with exposure
-    color = float3(1.0, 1.0, 1.0) - exp(-color * intensity);
+    color = float3(1.0, 1.0, 1.0) - exp(-color );
     
     // gamma correct
     float tmp = 1.0 / 2.2;

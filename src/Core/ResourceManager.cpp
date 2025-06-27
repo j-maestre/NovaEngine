@@ -279,6 +279,10 @@ void ResourceManager::load_mesh_async(std::string path, MeshComponent* mesh_comp
 	}
 
 	Model* model = &(m_models.find(hash)->second);
+	
+	// En el que me viene por parametro me guardo lo nuevo, asi despues lo que modifico es lo nuevo y no lo viejo
+	//mesh_comp->set_material(model->meshes[0].material);
+
 	//model->meshes.clear();
 	ImguiManager* imgui_manager = ImguiManager::get_instance();
 	auto task = [this, path, model, e, imgui_manager, hash, mesh_comp]() {
@@ -329,6 +333,7 @@ void ResourceManager::load_mesh_async(std::string path, MeshComponent* mesh_comp
 		// Swap
 		//model->meshes.clear();
 		model->meshes_copy = model_tmp.meshes;
+		//model->meshes_copy[0].material = mesh_comp->get_model()->meshes[0].material;
 		//*model = model_tmp;
 
 
@@ -730,6 +735,8 @@ void ResourceManager::check_models_to_load(){
 		
 			pair.model->meshes = std::move(pair.model->meshes_copy);
 			pair.model->meshes_copy.clear();
+
+			// Aqui mesh_component ya tiene el material que le toca, y al meterle el que tenia en el hasmap se le pone basura
 			pair.mesh_component->set_model(pair.model.get());
 		}
 
