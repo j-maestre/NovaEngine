@@ -220,6 +220,7 @@ void ImguiManager::system_info(){
 #ifdef MEASURE_TIME
 	ImGui::Text("Delta Time: %f", dt);
 	ImGui::Text("Draw Time: %f", m_draw_time);
+	ImGui::Text("Daw calls: %u", m_draw_calls);
 	ImGui::Text("Draw ImGui Time: %f", m_draw_imgui_time);
 	ImGui::Text("Update transform time: %f", m_update_transform_time);
 	ImGui::Text("Window begin frame time: %f", m_window_begin_frame_time);
@@ -252,7 +253,6 @@ void ImguiManager::system_info(){
 
 	ImGui::End();
 }
-
 
 void ImguiManager::show_transform(TransformComponent* trans, int entity_id){
 

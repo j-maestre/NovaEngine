@@ -116,13 +116,13 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>Yes</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)deps\external\assimp\include;$(SolutionDir)deps\external\rapidyaml\src;$(SolutionDir)deps\external\rapidyaml\ext\c4core\src;$(SolutionDir)deps\external\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)deps\external\assimp\include;$(SolutionDir)deps\external\rapidyaml\src;$(SolutionDir)deps\external\rapidyaml\ext\c4core\src;$(SolutionDir)deps\external\imgui;$(SolutionDir)deps\external\DirectXTK\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3dcompiler.lib;assimp-vc143-mtd.lib;ryml.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x64;$(SolutionDir)deps\external\assimp\lib\Debug;$(SolutionDir)deps\external\rapidyaml\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3dcompiler.lib;assimp-vc143-mtd.lib;ryml.lib;DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x64;$(SolutionDir)deps\external\assimp\lib\Debug;$(SolutionDir)deps\external\rapidyaml\Debug;$(SolutionDir)deps\external\DirectXTK\Bin\Desktop_2022_Win10\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)deps\external\assimp\bin\Debug\assimp-vc143-mtd.dll" "$(OutDir)"</Command>
@@ -138,15 +138,15 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <MultiProcessorCompilation>Yes</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)deps\external\assimp\include;$(SolutionDir)deps\external\imgui;$(SolutionDir)deps\external\rapidyaml\src;$(SolutionDir)deps\external\rapidyaml\ext\c4core\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)deps\external\assimp\include;$(SolutionDir)deps\external\imgui;$(SolutionDir)deps\external\rapidyaml\src;$(SolutionDir)deps\external\rapidyaml\ext\c4core\src;$(SolutionDir)deps\external\DirectXTK\Inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3dcompiler.lib;assimp-vc143-mt.lib;ryml.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x64;$(SolutionDir)deps\external\assimp\lib\Release;$(SolutionDir)deps\external\rapidyaml\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3dcompiler.lib;assimp-vc143-mt.lib;ryml.lib;DirectXTK.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x64;$(SolutionDir)deps\external\assimp\lib\Release;$(SolutionDir)deps\external\rapidyaml\Release;$(SolutionDir)deps\external\DirectXTK\Bin\Desktop_2022_Win10\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y "$(SolutionDir)deps\external\assimp\bin\Release\assimp-vc143-mt.dll" "$(OutDir)"</Command>

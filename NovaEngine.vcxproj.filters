@@ -247,18 +247,12 @@
     <None Include="data\shaders\deferred\ps_deferred_directional.hlsl" />
     <None Include="data\shaders\deferred\vs_deferred_common.hlsl" />
     <None Include="data\shaders\deferred\ps_deferred_passthrough.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred_post_process_bloom.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred_post_process_bloom_downscaling.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\deferred\vs_deferred.hlsl">
       <Filter>Shaders\Deferred</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="data\shaders\deferred\ps_deferred_post_process_bloom.hlsl">
-      <Filter>Shaders\Deferred</Filter>
-    </FxCompile>
-    <FxCompile Include="data\shaders\deferred\vs_deferred_post_process_bloom.hlsl">
-      <Filter>Shaders\Deferred</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>

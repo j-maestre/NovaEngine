@@ -81,6 +81,10 @@ struct ShaderFiles {
 
 	// Emissive downsample
 	ID3D11PixelShader* PS_deferred_emissive_downsample;
+
+	// Skybox
+	ID3D11VertexShader* VS_deferred_skybox = nullptr;
+	ID3D11PixelShader* PS_deferred_skybox = nullptr;
 };
 
 enum class ShaderType {
@@ -94,6 +98,7 @@ enum class ShaderType {
 	DeferredPassThrough,
 	DeferredEmissive,
 	BloomDownsample,
+	Skybox,
 
 };
 

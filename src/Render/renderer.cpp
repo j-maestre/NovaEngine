@@ -57,6 +57,7 @@ bool Renderer::init_pipeline(Window* win){
 
 	ID3DBlob* VS = nullptr;
 	ID3DBlob* VS_deferred = nullptr;
+	ID3DBlob* VS_skybox = nullptr;
 	ID3DBlob* PS = nullptr;
 	ID3DBlob* error_msg = nullptr;
 	
@@ -153,10 +154,22 @@ bool Renderer::init_pipeline(Window* win){
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_emissive_downsample);
 	
+	
+	
+	// Skybox VS
+	hr = D3DCompileFromFile(L"data/shaders/deferred/vs_deferred_skybox.hlsl", nullptr, nullptr, "VShader", "vs_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS_skybox, &error_msg);
+	m_isInitialized = CheckShaderError(hr, error_msg);
+	if (!m_isInitialized)return m_isInitialized;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS_skybox->GetBufferPointer(), VS_skybox->GetBufferSize(), NULL, &m_shader_files.VS_deferred_skybox);
 
+	// Skybox PS
+	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_skybox.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	m_isInitialized = CheckShaderError(hr, error_msg);
+	if (!m_isInitialized)return m_isInitialized;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_skybox);
+	
 
-
-
+	
 
 	/**** Buffers creation ****/
 	ZeroMemory(&m_buffer_description, sizeof(m_buffer_description));
@@ -222,6 +235,8 @@ bool Renderer::init_pipeline(Window* win){
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilView(m_depth_buffer, nullptr, &m_depth_stencil_view);
 	//m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilView(m_depth_buffer, nullptr, nullptr);
 
+
+
 	create_backbuffers();
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &(win->get_window_info()->backbuffer), m_depth_stencil_view);	// last argument is depth stencill view
 
@@ -254,12 +269,27 @@ bool Renderer::init_pipeline(Window* win){
 		//.DepthFunc = D3D11_COMPARISON_LESS,			// For one light only	
 	};
 	m_depth_stencil_state = nullptr;
-	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilState(&depth_stencil_desc, &m_depth_stencil_state);
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilState(&depth_stencil_desc, &m_depth_stencil_state);	
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetDepthStencilState(m_depth_stencil_state,1);
 
+	
+	// Depth stencil for skybox
+	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc_skybox = {
+	  .DepthEnable = true,
+	  .DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO,
+	  .DepthFunc = D3D11_COMPARISON_LESS_EQUAL,
+	  .StencilEnable = false,
+	  .StencilReadMask = 0,
+	  .StencilWriteMask = 0,
+	  .FrontFace = {},
+	  .BackFace = {}
+	};
+	m_depth_stencil_state_skybox = nullptr;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilState(&depth_stencil_desc_skybox, &m_depth_stencil_state_skybox);
+	
+	
 
 	// Blend states
-
 	D3D11_BLEND_DESC blend_overwrite_desc{
 		.AlphaToCoverageEnable = false,
 		.IndependentBlendEnable = false,
@@ -305,7 +335,45 @@ bool Renderer::init_pipeline(Window* win){
 	m_blend_state_additive = nullptr;
 	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateBlendState(&blend_additive_desc, &m_blend_state_additive);
 	CheckShaderError(hr, error_msg);
+
+
+	// Blend for skybox
+	D3D11_BLEND_DESC blend_skybox_desc = {
+		 .AlphaToCoverageEnable = false,
+		 .IndependentBlendEnable = false,
+		 .RenderTarget = {
+		   {
+			 .BlendEnable = false,
+			 .SrcBlend = D3D11_BLEND_ONE,
+			 .DestBlend = D3D11_BLEND_ZERO,
+			 .BlendOp = D3D11_BLEND_OP_ADD,
+			 .SrcBlendAlpha = D3D11_BLEND_ONE,
+			 .DestBlendAlpha = D3D11_BLEND_ZERO,
+			 .BlendOpAlpha = D3D11_BLEND_OP_ADD,
+			 .RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL
+		   }
+		 },
+	};
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateBlendState(&blend_skybox_desc, &m_blend_skybox);
+
+
+
+	D3D11_BLEND_DESC blendDesc = {};
+	blendDesc.RenderTarget[0].BlendEnable = FALSE;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateBlendState(&blendDesc, &m_blend_off);
 	
+	// Skybox buffer
+	D3D11_BUFFER_DESC bd = {};
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(m_skybox_vertices);
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA initData_skybox = {};
+	initData_skybox.pSysMem = m_skybox_vertices;
+
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&bd, &initData_skybox, &m_pVBuffer_skybox_buffer);
 
 
 	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, m_blend_factor, m_blend_mask);
@@ -330,6 +398,15 @@ bool Renderer::init_pipeline(Window* win){
 
 	};
 	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateInputLayout(ied_deferred, 2, VS_deferred->GetBufferPointer(), VS_deferred->GetBufferSize(), &m_pLayout_deferred);
+	CheckShaderError(hr);
+
+	// Skybox input layout
+	D3D11_INPUT_ELEMENT_DESC ied_skybox[] =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+
+	};
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateInputLayout(ied_skybox, 1, VS_skybox->GetBufferPointer(), VS_skybox->GetBufferSize(), &m_pLayout_skybox);
 	CheckShaderError(hr);
 	//m_sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	m_sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
@@ -362,6 +439,8 @@ bool Renderer::init_pipeline(Window* win){
 
 	win->m_renderer = this;
 	clear_depth();
+
+
 
 	return m_isInitialized;
 }
@@ -401,6 +480,11 @@ void Renderer::active_shader(ShaderType type){
 	case ShaderType::BloomDownsample:
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_emissive_downsample, nullptr, 0);
+		break;
+	case ShaderType::Skybox:
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_skybox, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_skybox, nullptr, 0);
+		break;
 	default:break;
 	}
 }
@@ -521,15 +605,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	auto start = std::chrono::high_resolution_clock::now();
 #endif
 
-
-
-	// Geometry pass
-	clear_depth();
 	clear_render_target();
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetConstantBuffers(0, 1, &m_pVBufferConstantCamera);
-
-	
 	ID3D11RenderTargetView* gbuffer_rtv[] = {
 		m_deferred_resources.gbuffer_albedo_render_target_view,
 		m_deferred_resources.gbuffer_position_render_target_view,
@@ -539,12 +615,26 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	};
 
 	auto props = Engine::get_instance()->get_engine_props();
-	
+
 	// Unbind render targets
 	clear_shader_reources();
 
 	// Clear render targets
 	for (int i = 0; i < ARRAYSIZE(gbuffer_rtv); ++i) props->inmediateDeviceContext->ClearRenderTargetView(gbuffer_rtv[i], m_clear_emissive_color);
+
+	
+
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetDepthStencilState(m_depth_stencil_state, 1);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->RSSetState(m_engine_ptr->m_raster_state);
+
+	// Geometry pass
+	clear_depth();
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetConstantBuffers(0, 1, &m_pVBufferConstantCamera);
+
+	
+
 	
 	// Bind render targets
 	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(gbuffer_rtv), gbuffer_rtv, m_depth_stencil_view);
@@ -577,7 +667,6 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 
 
 	// Light Pass
-
 	float clear_color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	props->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.postprocess_render_target_view, clear_color);
 
@@ -590,7 +679,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 		m_deferred_resources.postprocess_render_target_view, // Final color
 		m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[0]	// first mipmap level
 	};
-	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(light_pass_rtvs), light_pass_rtvs, m_depth_stencil_view);
+	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(light_pass_rtvs), light_pass_rtvs, nullptr); // no m_depth_stencil_view, is a full screen triangle 
 	//props->inmediateDeviceContext->OMSetRenderTargets(1, &m_quad_RTV, m_depth_stencil_view);
 	props->inmediateDeviceContext->IASetInputLayout(m_pLayout_deferred);
 
@@ -625,6 +714,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 		props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
 		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		props->inmediateDeviceContext->Draw(3, 0);
+		add_draw_call();
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 	}
 
@@ -658,9 +748,13 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 
 	// Unbind light pass rtv
 	//ID3D11RenderTargetView* nullRTV[] = { nullptr, nullptr };
-	clear_shader_reources();
 
+	
+	clear_shader_reources();
 	props->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_emissive_out_b_render_target_view, m_clear_emissive_color);
+
+	draw_skybox();
+
 	//draw_emissive();
 	draw_emissive_downsample();
 
@@ -672,8 +766,6 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 
 	// Setear textura resultado (SRV)
 	if (m_bloom_active) {
-		//props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_quad_SRV);
-		//props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.emissive_dowscaling_shader_resource_view[0]);
 		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[0]);
 	}else {
 		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &(m_deferred_resources.postprocess_resource_view));
@@ -688,6 +780,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
 	props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	props->inmediateDeviceContext->Draw(3, 0);
+	add_draw_call();
 
 	// Limpiar SRV
 	ID3D11ShaderResourceView* nullSRV = nullptr;
@@ -768,6 +861,7 @@ void Renderer::render_mesh_internal(CameraConstantBuffer* camera_buffer, Transfo
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m.index_buffer, DXGI_FORMAT_R32_UINT, 0);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->DrawIndexed(m.num_indices, 0, 0);
+	add_draw_call();
 }
 
 void Renderer::render_deferred_internal(){
@@ -815,7 +909,7 @@ void Renderer::draw_emissive(){
 		props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
 		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		props->inmediateDeviceContext->Draw(3, 0);
-
+		add_draw_call();
 
 		clear_shader_reources();
 
@@ -845,6 +939,7 @@ void Renderer::draw_emissive(){
 
 		//m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 		props->inmediateDeviceContext->Draw(3, 0);
+		add_draw_call();
 
 	}
 }
@@ -896,6 +991,7 @@ void Renderer::draw_emissive_downsample(){
 		props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
 		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		props->inmediateDeviceContext->Draw(3, 0);
+		add_draw_call();
 
 		clear_srv(1);
 		clear_rtv(1);
@@ -918,6 +1014,7 @@ void Renderer::draw_emissive_downsample(){
 		props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
 
 		props->inmediateDeviceContext->Draw(3, 0);
+		add_draw_call();
 	}
 
 	// UpScale
@@ -954,6 +1051,7 @@ void Renderer::draw_emissive_downsample(){
 		props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
 		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		props->inmediateDeviceContext->Draw(3, 0);
+		add_draw_call();
 
 		clear_srv(1);
 		clear_rtv(1);
@@ -989,9 +1087,48 @@ void Renderer::draw_emissive_downsample(){
 		props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
 
 		props->inmediateDeviceContext->Draw(3, 0);
+		add_draw_call();
 	}
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->RSSetViewports(1, &m_engine_ptr->m_viewport);
+}
+
+void Renderer::draw_skybox(){
+	active_shader(ShaderType::Skybox);
+	//clear_depth();
+
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->RSSetState(m_engine_ptr->m_raster_state_skybox);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetDepthStencilState(m_depth_stencil_state, 1);
+
+	auto props = m_engine_ptr->get_engine_props();
+	props->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
+
+	props->inmediateDeviceContext->IASetInputLayout(m_pLayout_skybox);
+	props->inmediateDeviceContext->VSSetConstantBuffers(0, 1, &m_pVBufferConstantCamera);
+
+	ID3D11ShaderResourceView* srv = m_engine_ptr->m_resource.get_skybox_srv();
+
+	//props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.gbuffer_albedo_render_target_view, nullptr);
+	props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.postprocess_render_target_view, m_depth_stencil_view);
+	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
+
+	const Mat4* view = m_cam->get_view();
+	const Mat4* proj = m_cam->get_projection();
+
+	CameraConstantBuffer cam_buffer;
+	cam_buffer.view = DirectX::XMMatrixTranspose(*view);
+	cam_buffer.projection = DirectX::XMMatrixTranspose(*proj);
+	cam_buffer.camera_position = m_cam->get_position();
+	props->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, &cam_buffer, 0, 0);
+
+	UINT stride = sizeof(float) * 3;
+	UINT offset = 0;
+	props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_skybox_buffer, &stride, &offset);
+	props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	props->inmediateDeviceContext->PSSetShaderResources(0, 1, &srv);
+	props->inmediateDeviceContext->Draw(36,0);
+	add_draw_call();
 }
 
 void Renderer::clear_shader_reources(int size){
@@ -1187,6 +1324,12 @@ void Renderer::release_deferred_resources(){
 	func(&m_deferred_resources.postprocess_texture, &m_deferred_resources.postprocess_render_target_view,&m_deferred_resources.postprocess_resource_view);
 }
 
+void Renderer::add_draw_call(){
+#ifdef ENABLE_IMGUI
+	ImguiManager::get_instance()->m_draw_calls++;
+#endif
+}
+
 void Renderer::clear_depth(){
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearDepthStencilView(m_depth_stencil_view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
@@ -1204,6 +1347,10 @@ void Renderer::clear_render_target(){
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_albedo_render_target_view, m_clear_emissive_color);
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_quad_RTV, m_clear_emissive_color);
+
+	for (int i = 0; i < NUM_MIPMAPS_EMISSIVE; i++) {
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[i], m_clear_emissive_color);
+	}
 }
 
 void Renderer::clear_full_quad(){

@@ -5,6 +5,10 @@
 #include "Core/engine.h"
 #include "render/imgui/imgui_manager.h"
 #include "components/mesh_component.h"
+#include "DDSTextureLoader.h"
+#include "WICTextureLoader.h"
+#include "SimpleMath.h"
+
 
 
 ResourceManager::ResourceManager() : m_job_system(){
@@ -35,6 +39,23 @@ ResourceManager::~ResourceManager(){
 			m.buffer->Release();
 		}
 	}
+}
+
+void ResourceManager::load_cube_map(std::string path){
+
+	std::wstring path_tmp(path.begin(), path.end());
+	ID3D11Device* tmp = m_engine->get_engine_props()->deviceInterface;
+	HRESULT hr = DirectX::CreateDDSTextureFromFile(
+		tmp,
+		path_tmp.c_str(),
+		m_skybox_texture,
+		&m_skybox_srv
+	);
+
+	if (FAILED(hr)) {
+		printf("\n*** Error loading %s\n ***", path.c_str());
+	}
+	
 }
 
 Texture* ResourceManager::load_texture(std::string path){

@@ -87,6 +87,9 @@ private:
 	D3D11_RASTERIZER_DESC m_raster;
 	ID3D11RasterizerState* m_raster_state;
 
+	D3D11_RASTERIZER_DESC m_raster_skybox;
+	ID3D11RasterizerState* m_raster_state_skybox;
+
 	std::vector<Vertex> m_geometry_cube;
 	std::vector<Vertex> m_geometry_sphere;
 

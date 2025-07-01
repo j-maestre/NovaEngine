@@ -14,3 +14,6 @@
 [submodule "deps/external/rapidyaml"]
 	path = deps/external/rapidyaml
 	url = https://github.com/biojppm/rapidyaml.git
+[submodule "deps/external/DirectXTK"]
+	path = deps/external/DirectXTK
+	url = https://github.com/microsoft/DirectXTK.git

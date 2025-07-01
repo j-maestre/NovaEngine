@@ -82,6 +82,8 @@ private:
 	int m_dt_history_size;
 	int m_dt_history_index;
 
+	unsigned int m_draw_calls = 0;
+
 	float m_mouse_delta_x = 0.0f;
 	float m_mouse_delta_y = 0.0f;
 

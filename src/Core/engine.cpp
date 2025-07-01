@@ -128,6 +128,20 @@ void Engine::init(Window* window){
 	assert(!FAILED(hr));
 	m_props->inmediateDeviceContext->RSSetState(m_raster_state);
 
+	
+	
+
+	// Setting rasterizer for skybox
+	ZeroMemory(&m_raster_skybox, sizeof(D3D11_RASTERIZER_DESC));
+	m_raster_skybox.FillMode = D3D11_FILL_SOLID;  
+	m_raster_skybox.CullMode = D3D11_CULL_NONE;
+	m_raster_skybox.DepthClipEnable = true;
+	//m_raster_skybox.FrontCounterClockwise = TRUE;
+
+	hr = m_props->deviceInterface->CreateRasterizerState(&m_raster_skybox, &m_raster_state_skybox);
+	assert(!FAILED(hr));
+	
+
 	// Setting the viewport
 	WindowProperties* win_props = window->get_window_properties();
 	ZeroMemory(&m_viewport, sizeof(D3D11_VIEWPORT));
@@ -167,6 +181,10 @@ void Engine::update(){
 	
 	m_resource.check_models_to_load();
 	m_resource.check_textures_to_load();
+
+#ifdef ENABLE_IMGUI
+	ImguiManager::get_instance()->m_draw_calls = 0;
+#endif
 
 #ifdef MEASURE_TIME
 	auto end = std::chrono::high_resolution_clock::now();
@@ -234,6 +252,8 @@ void Engine::load_default_textures(){
 
 	m_default_material.set_metallic_value(0.5f);
 	m_default_material.set_roughness_value(0.5f);
+
+	m_resource.load_cube_map("data/textures/earth_cubemap.dds");
 
 	m_resource.check_textures_to_load();
 }

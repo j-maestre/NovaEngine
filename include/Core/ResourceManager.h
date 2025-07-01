@@ -39,11 +39,16 @@ public:
 	ResourceManager(ResourceManager&&);
 	~ResourceManager();
 
+	void load_cube_map(std::string path = "");
+
 	Texture* load_texture(std::string path);
 	Texture* get_texture(unsigned int id);
 
 	Model* load_mesh(std::string path);
 	void load_mesh_async(std::string path, MeshComponent* mesh_comp);
+
+	__forceinline ID3D11ShaderResourceView* get_skybox_srv() { return m_skybox_srv; }
+	__forceinline ID3D11Resource** get_skybox_texture() { return m_skybox_texture; }
 
 private:
 	friend class Engine;
@@ -62,6 +67,8 @@ private:
 	std::vector<std::shared_ptr<TextureToLoad>> m_texture_to_load;
 
 	JobSystem m_job_system;
+	ID3D11ShaderResourceView* m_skybox_srv = nullptr;
+	ID3D11Resource** m_skybox_texture = nullptr;
 
 	std::mutex m_mutex_textures;
 	std::mutex m_mutex_textures_to_load;

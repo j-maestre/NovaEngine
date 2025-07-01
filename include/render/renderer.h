@@ -48,15 +48,20 @@ private:
 	__forceinline void draw_emissive();
 	__forceinline void draw_emissive_downsample();
 
+	void draw_skybox();
+
 	void clear_shader_reources(int size = 5);
 	__forceinline void clear_rtv(int size);
 	__forceinline void clear_srv(int size);
 
 	__forceinline void set_viewport(unsigned int width, unsigned int height);
 
+
 	void create_backbuffers();
 	void create_deferred_resources(unsigned int width, unsigned int height);
 	void release_deferred_resources();
+
+	__forceinline void add_draw_call();
 
 	friend class Window;
 
@@ -67,6 +72,8 @@ private:
 
 	ID3D11BlendState* m_blend_state_overwrite;
 	ID3D11BlendState* m_blend_state_additive;
+	ID3D11BlendState* m_blend_off;
+	ID3D11BlendState* m_blend_skybox;
 	unsigned int m_blend_mask = 0xffffffff;
 	float m_blend_factor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	//ID3D11BlendState* m_blend_state_opaque;
@@ -101,6 +108,9 @@ private:
 	D3D11_BUFFER_DESC m_emissive_constant_buffer_desc;
 	ID3D11Buffer* m_pVBuffer_emissive_constant_buffer;
 
+	D3D11_BUFFER_DESC m_skybox_constant_buffer_desc;
+	ID3D11Buffer* m_pVBuffer_skybox_buffer;
+
 	ID3D11Buffer* m_pVBufferLight;
 
 	ID3D11Buffer* m_pVBuffer;
@@ -108,6 +118,7 @@ private:
 
 	ID3D11InputLayout* m_pLayout;
 	ID3D11InputLayout* m_pLayout_deferred;
+	ID3D11InputLayout* m_pLayout_skybox;
 	
 	ID3D11SamplerState* m_sampler_state_emissive;
 	ID3D11SamplerState* m_sampler_state;
@@ -116,6 +127,8 @@ private:
 	ID3D11Texture2D* m_depth_buffer;
 	ID3D11DepthStencilView* m_depth_stencil_view;
 	ID3D11DepthStencilState* m_depth_stencil_state;
+
+	ID3D11DepthStencilState* m_depth_stencil_state_skybox;
 
 	CameraComponent* m_cam;
 
@@ -126,5 +139,49 @@ private:
 
 	int m_buffer_index = 0;
 
+	float m_skybox_vertices[36 * 3] = {
+		// positions          
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f, -1.0f,
+		 1.0f,  1.0f,  1.0f,
+		 1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f, -1.0f,
+		 1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		 1.0f, -1.0f,  1.0f
+	};
 	
 };
