@@ -32,6 +32,27 @@ Entities:
       - {Texture: "data/materials/titanium/normal.png", Type: "Normal"}
       - {Texture: "data/materials/titanium/metallic.png", Type: "Metallic"}
       - {Texture: "data/materials/titanium/roughness.png", Type: "Roughness"}
+  CubeTitanium:
+    Transform:
+      Position: [-6.0, 3.0, 0.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.0, 1.0, 1.0]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/titanium/albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/titanium/normal.png", Type: "Normal"}
+      - {Texture: "data/materials/titanium/metallic.png", Type: "Metallic"}
+      - {Texture: "data/materials/titanium/roughness.png", Type: "Roughness"}
+  Cube:
+    Transform:
+      Position: [-6.0, 3.0, 0.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.0, 1.0, 1.0]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [1.0, 0.72, 0.325] }
+      - {Metallic: 1.0}
+      - {Roughness: 0.0}
       
   Helmet:
     Transform:

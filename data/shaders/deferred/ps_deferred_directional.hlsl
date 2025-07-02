@@ -147,6 +147,7 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     float NDF = DistributionGGX(N, H, texture_roughness);
     float G = GeometrySmith(N, V, L, texture_roughness);
     float3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+    //float3 F = fresnelSchlickRoughness(max(dot(H, V), 0.0), F0, texture_roughness);
     
     float3 numerator = NDF * G * F;
     float denominator = 4.0f * max(dot(N, V), 0.0f) * max(dot(N, L), 0.0f) + 0.0001f; // + 0.0001 to prevent divide by zero
@@ -159,7 +160,7 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     
     // Environment mapping
     float3 reflected = reflect(-view_dir, normalize(texture_normal.rgb));
-    float mip_level = texture_roughness * cubemap_max_mip_level;
+    float mip_level = (texture_roughness)  * cubemap_max_mip_level;
     float3 reflect_color = skybox_tex.Sample(mySampler, reflected, mip_level).rgb;
     
     float NdotV = max(dot(N, V), 0.0f);
@@ -172,6 +173,7 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     
     // add to outgoing radiance Lo
     float3 Lo = (kD * texture_color.rgb / PI + specular + specularIBL) * radiance * NdotL;
+    //Lo += specularIBL;
 
     //float3 ambient_tmp_reflection = (kD * (texture_color.rgb * 0.01) + specularIBL) * texture_ao;
     
@@ -189,18 +191,14 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     out_color.out_emissive = float4(texture_emissive);
     out_color.out_emissive.rgb *= out_color.out_emissive.a;
     
-    float3 ambient_tmp = ambient * 50.0;
+    float3 ambient_tmp = ambient;// * 50.0;
     float brightness = dot(color + ambient_tmp, float3(0.2126, 0.7152, 0.0722));
     if (brightness > 1.0){
-        
         // If the emissive is because of his brightness, just add the albedo
         out_color.out_emissive = float4(color + (color * out_color.out_emissive.rgb), 1.0); // * texture_emissive.a; // bloom intensity, 1.0f by default
     }
 
 
-
-    
-    
     // HDR tonemapping
     //color = color / (color + float3(1.0, 1.0, 1.0));
     
@@ -215,11 +213,7 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     color = pow(color, float3(tmp, tmp, tmp));
 
     out_color.out_light = float4(color, 1.0);
-    //out_color.out_light = float4(reflect_color,1.0);
-    //out_color.out_light = float4(envBRDF,0.0,1.0);
     
     return out_color;
-    //return float4(color, 1.0);
-    //return float4(N, 1.0);
 }
 
