@@ -53,9 +53,42 @@ void ResourceManager::load_cube_map(std::string path){
 	);
 
 	if (FAILED(hr)) {
-		printf("\n*** Error loading %s\n ***", path.c_str());
+		printf("\n*** Error loading %s ***\n", path.c_str());
+		return;
 	}
-	
+
+	ID3D11Resource* resource = nullptr;
+	m_skybox_srv->GetResource(&resource);
+
+	ID3D11Texture2D* texture = nullptr;
+	hr = resource->QueryInterface(__uuidof(ID3D11Texture2D), (void**)&texture);
+	resource->Release();
+	if (SUCCEEDED(hr) && texture){
+		D3D11_TEXTURE2D_DESC desc;
+		texture->GetDesc(&desc);
+		m_cubemap_max_mip_level = desc.MipLevels - 1;
+		texture->Release();
+	}
+	// Load pre calculed brdf
+	Texture* t = load_texture("data/textures/BRDF_lut.png");
+	m_brdf_srv = t->m_data.texture_view;
+
+
+	/*
+	// Load pre calculed brdf
+	std::string brdf_path = "data/textures/Output.dds";
+	std::wstring path_tmp_brdf(brdf_path.begin(), brdf_path.end());
+	hr = DirectX::CreateDDSTextureFromFile(
+		tmp,	
+		path_tmp_brdf.c_str(),
+		m_brdf_texture,
+		&m_brdf_srv
+	);
+	if (FAILED(hr)) {
+		printf("\n*** Error loading %s ***\n", brdf_path.c_str());
+		return;
+	}
+	*/
 }
 
 Texture* ResourceManager::load_texture(std::string path){

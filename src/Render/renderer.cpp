@@ -30,6 +30,9 @@ Renderer::Renderer() : m_shader_files(), m_sampler_desc{} {
 	m_fs_quad[0] = { {-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f} };
 	m_fs_quad[1] = { {-1.0f,  3.0f, 0.0f}, {0.0f, -1.0f} };
 	m_fs_quad[2] = { { 3.0f, -1.0f, 0.0f}, {2.0f, 1.0f} };
+
+	m_pixel_shader_model = "ps_5_0";
+	m_vertex_shader_model = "vs_5_0";
 }
 
 Renderer::Renderer(Renderer&&){
@@ -87,23 +90,23 @@ bool Renderer::init_pipeline(Window* win){
 
 	// Forward rendering shaders
 
-	HRESULT hr = D3DCompileFromFile(L"data/shaders/forward/vs_common.hlsl", nullptr, nullptr, "VShader", "vs_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS, &error_msg);
+	HRESULT hr = D3DCompileFromFile(L"data/shaders/forward/vs_common.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &m_shader_files.VS_common);
 
 
-	hr = D3DCompileFromFile(L"data/shaders/forward/ps_directional.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	hr = D3DCompileFromFile(L"data/shaders/forward/ps_directional.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_directional);
 
-	hr = D3DCompileFromFile(L"data/shaders/forward/ps_point.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	hr = D3DCompileFromFile(L"data/shaders/forward/ps_point.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_point);
 
-	hr = D3DCompileFromFile(L"data/shaders/forward/ps_spot.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	hr = D3DCompileFromFile(L"data/shaders/forward/ps_spot.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_spot);
@@ -113,43 +116,43 @@ bool Renderer::init_pipeline(Window* win){
 	// Deferred rendering shaders
 
 	// Vertex shader geometry pass
-	hr = D3DCompileFromFile(L"data/shaders/deferred/vs_deferred.hlsl", nullptr, nullptr, "VShader", "vs_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS, &error_msg);
+	hr = D3DCompileFromFile(L"data/shaders/deferred/vs_deferred.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(),NULL, &m_shader_files.VS_deferred);
 	
 	// Pixel shader geometry pass
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred);
 
 	// Light pass vertex shader
-	hr = D3DCompileFromFile(L"data/shaders/deferred/vs_deferred_common.hlsl", nullptr, nullptr, "VShader", "vs_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS_deferred, &error_msg);
+	hr = D3DCompileFromFile(L"data/shaders/deferred/vs_deferred_common.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS_deferred, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS_deferred->GetBufferPointer(), VS_deferred->GetBufferSize(), NULL, &m_shader_files.VS_deferred_common);
 
 	// Light pass pixel shader directional
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_directional.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_directional.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_directional);
 
 	// Light pass pixel shader Passthrough
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_passthrough.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_passthrough.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_passthrough);
 	
 	// Light pass pixel shader PostProcess
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_post_process_bloom.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_post_process_bloom.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_emissive);
 
 	// Bloom downscaling
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_post_process_bloom_downscaling.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_post_process_bloom_downscaling.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_emissive_downsample);
@@ -157,13 +160,13 @@ bool Renderer::init_pipeline(Window* win){
 	
 	
 	// Skybox VS
-	hr = D3DCompileFromFile(L"data/shaders/deferred/vs_deferred_skybox.hlsl", nullptr, nullptr, "VShader", "vs_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS_skybox, &error_msg);
+	hr = D3DCompileFromFile(L"data/shaders/deferred/vs_deferred_skybox.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS_skybox, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS_skybox->GetBufferPointer(), VS_skybox->GetBufferSize(), NULL, &m_shader_files.VS_deferred_skybox);
 
 	// Skybox PS
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_skybox.hlsl", nullptr, nullptr, "PShader", "ps_4_0", D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_skybox.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_skybox);
@@ -691,7 +694,10 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 		m_deferred_resources.gbuffer_position_shader_resource_view,
 		m_deferred_resources.gbuffer_normals_shader_resource_view,
 		m_deferred_resources.gbuffer_material_shader_resource_view,
-		m_deferred_resources.gbuffer_emissive_shader_resource_view
+		m_deferred_resources.gbuffer_emissive_shader_resource_view,
+		m_engine_ptr->m_resource.get_skybox_srv(),
+		m_engine_ptr->m_resource.get_brdf_srv(),
+
 	};
 	props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs), srvs);
 	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
@@ -700,6 +706,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	Mat4 view_proj = (*view) * (*proj);
 	cam_buffer_light.inv_view_proj = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, view_proj));;
 	cam_buffer_light.camera_position = m_cam->get_position();
+	cam_buffer_light.cubemap_max_mip_level = m_engine_ptr->m_resource.get_skybox_max_miplevel();
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferDeferredConstantCamera, 0, nullptr, &cam_buffer_light, 0, 0);
 
 

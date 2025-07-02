@@ -16,8 +16,9 @@ Texture2D position_tex : register(t1);
 Texture2D normal_tex : register(t2);
 Texture2D gMaterial : register(t3); // RGB = metallic, roughness, ao
 Texture2D gEmissive : register(t4);
-
-Texture2D gDepth : register(t5); // Needed to reconstruct world pos
+TextureCube skybox_tex : register(t5);
+Texture2D brdf_tex : register(t6);
+//Texture2D gDepth : register(t5); // Needed to reconstruct world pos
 
 
 SamplerState mySampler : register(s0);
@@ -37,7 +38,7 @@ cbuffer CameraDeferred : register(b1){
     
     float4x4 inv_view_proj;
     float3 cam_pos;
-    float padding;
+    float cubemap_max_mip_level;
 }
 
 
@@ -63,6 +64,9 @@ float GeometrySchlickGGX(float NdotV, float roughness)
     float r = (roughness + 1.0f);
     float k = (r * r) / 8.0f;
 
+    //float a = roughness;
+    //float k = (a * a) / 2.0f;
+    
     float nom = NdotV;
     float denom = NdotV * (1.0f - k) + k;
 
@@ -88,6 +92,12 @@ float3 fresnelSchlick(float cosTheta, float3 F0)
     
 }
 
+float3 fresnelSchlickRoughness(float cosTheta, float3 F0, float roughness){
+
+    float tmp = 1.0 - roughness;
+    return F0 + (max(float3(tmp, tmp, tmp), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}   
+
 
 
 PS_OUT PShader(PS_INPUT input) : SV_TARGET
@@ -106,9 +116,11 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     
     const float texture_metallic = (gMaterial.Sample(mySampler, input.uv)).r;
     const float texture_roughness = (gMaterial.Sample(mySampler, input.uv)).g;
+    //texture_roughness *= texture_roughness;
     const float texture_ao = (gMaterial.Sample(mySampler, input.uv)).b;
     
     const float4 texture_emissive = gEmissive.Sample(mySampler, input.uv);
+
 
     const float3 V = view_dir;
     float3 F0 = float3(0.04, 0.04, 0.04);
@@ -117,7 +129,7 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     F0.g = tmp_f.g;
     F0.b = tmp_f.b;
     
-    float3 Lo = float3(0.0, 0.0, 0.0);
+    
 
     float distance = 0.0;
     float attenuation = 1.0;
@@ -126,6 +138,10 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     float3 L = -direction;
     float3 H = normalize(V + L);
     float3 N = texture_normal.rgb;
+
+ 
+
+
     
     // Cook-Torrance BRDF specular
     float NDF = DistributionGGX(N, H, texture_roughness);
@@ -141,18 +157,30 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     float3 kD = float3(1.0, 1.0, 1.0) - kS;
     kD *= 1.0 - texture_metallic; // by the moment, no reflection on metallic surfaces
     
+    // Environment mapping
+    float3 reflected = reflect(-view_dir, normalize(texture_normal.rgb));
+    float mip_level = texture_roughness * cubemap_max_mip_level;
+    float3 reflect_color = skybox_tex.Sample(mySampler, reflected, mip_level).rgb;
+    
+    float NdotV = max(dot(N, V), 0.0f);
+    float2 envBRDF = brdf_tex.Sample(mySampler, float2(NdotV, texture_roughness)).rg;
+    float3 kS_tmp = fresnelSchlickRoughness(NdotV, F0, texture_roughness);
+    float3 specularIBL = reflect_color * (kS_tmp * envBRDF.x + envBRDF.y);
+
     // scale light by NdotL
     float NdotL = max(dot(N, L), 0.0);
-    //if (NdotL < 0.05) return float4(0.0, 1.0, 0.0, 1.0 );
     
     // add to outgoing radiance Lo
-    Lo += (kD * texture_color.rgb / PI + specular) * radiance * NdotL;
+    float3 Lo = (kD * texture_color.rgb / PI + specular + specularIBL) * radiance * NdotL;
+
+    //float3 ambient_tmp_reflection = (kD * (texture_color.rgb * 0.01) + specularIBL) * texture_ao;
+    
     
     float3 ambient = float3(0.01f, 0.01f, 0.01f) * texture_color.rgb * texture_ao;
     ambient *= (1.0 - texture_metallic); // prevent albedo on full metallic parts
     
     //float3 color = Lo + ambient;
-    float3 color = Lo;
+    float3 color = Lo;// + ambient_tmp_reflection;
     
     
     // Calculate brightness before HDR
@@ -168,6 +196,9 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
         // If the emissive is because of his brightness, just add the albedo
         out_color.out_emissive = float4(color + (color * out_color.out_emissive.rgb), 1.0); // * texture_emissive.a; // bloom intensity, 1.0f by default
     }
+
+
+
     
     
     // HDR tonemapping
@@ -184,8 +215,8 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     color = pow(color, float3(tmp, tmp, tmp));
 
     out_color.out_light = float4(color, 1.0);
-    
-    
+    //out_color.out_light = float4(reflect_color,1.0);
+    //out_color.out_light = float4(envBRDF,0.0,1.0);
     
     return out_color;
     //return float4(color, 1.0);

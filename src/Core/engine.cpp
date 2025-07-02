@@ -253,7 +253,9 @@ void Engine::load_default_textures(){
 	m_default_material.set_metallic_value(0.5f);
 	m_default_material.set_roughness_value(0.5f);
 
-	m_resource.load_cube_map("data/textures/earth_cubemap.dds");
+	//m_resource.load_cube_map("data/textures/sky.dds");
+	m_resource.load_cube_map("data/textures/cubemap/pruebaEnvHDR.dds");
+	// m_resource.load_cube_map("data/textures/clouds.dds");
 
 	m_resource.check_textures_to_load();
 }

@@ -150,7 +150,7 @@ struct CameraConstantBuffer {
 struct CameraDeferredConstantBuffer {
 	Mat4 inv_view_proj;
 	Vec3 camera_position;
-	float padding;
+	float cubemap_max_mip_level;
 };
 
 struct EmissiveConstantBuffer {

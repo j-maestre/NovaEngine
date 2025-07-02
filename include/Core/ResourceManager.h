@@ -49,6 +49,10 @@ public:
 
 	__forceinline ID3D11ShaderResourceView* get_skybox_srv() { return m_skybox_srv; }
 	__forceinline ID3D11Resource** get_skybox_texture() { return m_skybox_texture; }
+	unsigned int get_skybox_max_miplevel() { return m_cubemap_max_mip_level; }
+	__forceinline ID3D11ShaderResourceView* get_brdf_srv() { return m_brdf_srv; }
+	__forceinline ID3D11Resource** get_brdf_texture() { return m_brdf_texture; }
+
 
 private:
 	friend class Engine;
@@ -69,6 +73,10 @@ private:
 	JobSystem m_job_system;
 	ID3D11ShaderResourceView* m_skybox_srv = nullptr;
 	ID3D11Resource** m_skybox_texture = nullptr;
+	unsigned int m_cubemap_max_mip_level;
+
+	ID3D11ShaderResourceView* m_brdf_srv = nullptr;
+	ID3D11Resource** m_brdf_texture = nullptr;
 
 	std::mutex m_mutex_textures;
 	std::mutex m_mutex_textures_to_load;

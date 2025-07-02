@@ -138,6 +138,8 @@ private:
 	bool m_bloom_active = true;
 
 	int m_buffer_index = 0;
+	std::string m_pixel_shader_model;
+	std::string m_vertex_shader_model;
 
 	float m_skybox_vertices[36 * 3] = {
 		// positions          
