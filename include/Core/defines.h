@@ -73,8 +73,10 @@ struct ShaderFiles {
 
 	// Light pass
 	ID3D11VertexShader* VS_deferred_common = nullptr;
-	ID3D11PixelShader* PS_deferred_directional = nullptr;
 	ID3D11PixelShader* PS_deferred_passthrough = nullptr;
+	ID3D11PixelShader* PS_deferred_directional = nullptr;
+	ID3D11PixelShader* PS_deferred_point = nullptr;
+	ID3D11PixelShader* PS_deferred_spot = nullptr;
 
 	// Deferred post process
 	ID3D11PixelShader* PS_deferred_emissive = nullptr;
@@ -93,6 +95,8 @@ enum class ShaderType {
 	PointLight,
 	GeometryPass,
 	DeferredDirectional,
+	DeferredPoint,
+	DeferredSpot,
 	DeferredPointLight,
 	DeferredSpotLight,
 	DeferredPassThrough,

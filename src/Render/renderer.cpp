@@ -139,6 +139,18 @@ bool Renderer::init_pipeline(Window* win){
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_directional);
 
+	// Light pass pixel shader point light
+	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_point.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	m_isInitialized = CheckShaderError(hr, error_msg);
+	if (!m_isInitialized)return m_isInitialized;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_point);
+
+	// Light pass pixel shader spot light
+	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_spot.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	m_isInitialized = CheckShaderError(hr, error_msg);
+	if (!m_isInitialized)return m_isInitialized;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_spot);
+
 	// Light pass pixel shader Passthrough
 	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_passthrough.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
@@ -459,6 +471,16 @@ void Renderer::active_shader(ShaderType type){
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_directional, nullptr, 0);
 		break;
+	
+	case ShaderType::DeferredPoint:
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_point, nullptr, 0);
+		break;
+	
+	case ShaderType::DeferredSpot:
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_spot, nullptr, 0);
+		break;
 
 	case ShaderType::DeferredPassThrough:
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
@@ -673,7 +695,6 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	float clear_color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	props->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.postprocess_render_target_view, clear_color);
 
-	active_shader(ShaderType::DeferredDirectional);
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(1, 1, &m_pVBufferDeferredConstantCamera);
 
@@ -713,7 +734,8 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
 
 
-
+	
+	active_shader(ShaderType::DeferredDirectional);
 	for (auto [entity, light] : directional_light.each()) {
 		light.update();
 		light.upload_data();
@@ -726,8 +748,8 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 	}
 
 	
+	active_shader(ShaderType::DeferredPoint);
 	
-	/*
 	for (auto [entity, light] : point_light.each()) {
 		light.update();
 		light.upload_data();
@@ -735,9 +757,12 @@ void Renderer::render_deferred(EntityComponentSystem& ecs){
 		props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
 		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		props->inmediateDeviceContext->Draw(3, 0);
+		add_draw_call();
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 	}
+	/*
 	
+	active_shader(ShaderType::DeferredSpot);
 	for (auto [entity, light] : spot_light.each()) {
 		light.update();
 		light.upload_data();

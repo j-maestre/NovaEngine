@@ -70,7 +70,7 @@ void ResourceManager::load_cube_map(std::string path){
 		texture->Release();
 	}
 	// Load pre calculed brdf
-	Texture* t = load_texture("data/textures/BRDF_lut.png");
+	Texture* t = load_texture_with_flip("data/textures/BRDF_lut.png", 0u);
 	m_brdf_srv = t->m_data.texture_view;
 
 
@@ -162,6 +162,78 @@ Texture* ResourceManager::load_texture(std::string path){
 	m_textures.insert(std::pair(hash, texture_class));
 	return &(m_textures.find(texture_class.get_id())->second);
 	
+}
+
+Texture* ResourceManager::load_texture_with_flip(std::string path, unsigned int flip){
+
+	unsigned int hash = (unsigned int)std::hash<std::string>{}(path);
+
+	if (m_textures.contains(hash)) {
+		return &(m_textures.find(hash)->second);
+	}
+
+	Texture texture_class(hash);
+	ImageData* data = texture_class.get_data();
+
+	stbi_set_flip_vertically_on_load_thread(flip);
+	//stbi_set_flip_vertically_on_load(true);
+	unsigned char* pixels = stbi_load(path.c_str(), &data->width, &data->height, &data->channels, 4);
+
+	if (!pixels) {
+		printf("*** Error loading image %s ***\n", path.c_str());
+		return nullptr;
+	}
+
+	ImguiManager::get_instance()->add_resource_loaded({ "Loading texture " + path });
+
+	D3D11_TEXTURE2D_DESC texture_desc{};
+	texture_desc.Width = data->width;
+	texture_desc.Height = data->height;
+	texture_desc.MipLevels = 0;				// Generate all mips
+	texture_desc.ArraySize = 1;
+	texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	texture_desc.SampleDesc.Count = 1;
+	texture_desc.Usage = D3D11_USAGE_DEFAULT;
+	texture_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	texture_desc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
+
+	D3D11_SUBRESOURCE_DATA init_data{};
+	init_data.pSysMem = pixels;
+	init_data.SysMemPitch = data->width * 4;
+
+
+
+	HRESULT hr = m_engine->get_engine_props()->deviceInterface->CreateTexture2D(&texture_desc, nullptr, &data->texture);
+	if (FAILED(hr)) {
+		stbi_image_free(pixels);
+		return nullptr;
+	}
+
+	m_engine->get_engine_props()->inmediateDeviceContext->UpdateSubresource(data->texture, 0, nullptr, pixels, data->width * 4, 0);
+
+
+	data->texture_view = nullptr;
+	D3D11_SHADER_RESOURCE_VIEW_DESC view_desc = {
+		.Format = texture_desc.Format,
+		.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D
+	};
+	view_desc.Texture2D.MostDetailedMip = 0;
+	view_desc.Texture2D.MipLevels = -1;
+
+
+	hr = m_engine->get_engine_props()->deviceInterface->CreateShaderResourceView(data->texture, &view_desc, &data->texture_view);
+	//texture->Release();
+	if (FAILED(hr)) {
+		stbi_image_free(pixels);
+		return nullptr;
+	}
+
+	m_engine->get_engine_props()->inmediateDeviceContext->GenerateMips(data->texture_view);
+
+	stbi_image_free(pixels);
+
+	m_textures.insert(std::pair(hash, texture_class));
+	return &(m_textures.find(texture_class.get_id())->second);
 }
 
 Texture* ResourceManager::load_texture(std::string path, bool async){

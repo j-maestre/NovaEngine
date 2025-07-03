@@ -39,7 +39,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Entity directional_light = scene.m_ecs.create_entity("Directional Light");
 	auto& light = scene.m_ecs.add_component<DirectionalLight>(directional_light);
 	light.set_color({ 1.0f, 1.0f, 1.0f });
-	light.set_direction({ 0.5f,-1.0f, 1.0f });
+	light.set_direction({ -0.5f,-1.0f, -1.0f });
 	light.set_enabled(true);
 
 	Entity point_light = scene.m_ecs.create_entity("Point Light");

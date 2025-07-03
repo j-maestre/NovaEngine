@@ -42,6 +42,7 @@ public:
 	void load_cube_map(std::string path = "");
 
 	Texture* load_texture(std::string path);
+	Texture* load_texture_with_flip(std::string path, unsigned int flip = 1);
 	Texture* get_texture(unsigned int id);
 
 	Model* load_mesh(std::string path);
