@@ -43,9 +43,9 @@ Entities:
       - {Texture: "data/materials/titanium/normal.png", Type: "Normal"}
       - {Texture: "data/materials/titanium/metallic.png", Type: "Metallic"}
       - {Texture: "data/materials/titanium/roughness.png", Type: "Roughness"}
-  Cube:
+  CubeGold:
     Transform:
-      Position: [-6.0, 3.0, 0.0]
+      Position: [-9.0, 3.0, 0.0]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.0, 1.0, 1.0]
     MeshComponent: "data/models/basics/cube.fbx"
