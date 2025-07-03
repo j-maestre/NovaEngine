@@ -161,7 +161,9 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     // Environment mapping
     float3 reflected = reflect(-view_dir, normalize(texture_normal.rgb));
     float mip_level = (texture_roughness)  * cubemap_max_mip_level;
-    float3 reflect_color = skybox_tex.Sample(mySampler, reflected, mip_level).rgb;
+    //float3 reflect_color = skybox_tex.Sample(mySampler, reflected, mip_level).rgb;
+    float3 reflect_color = skybox_tex.SampleLevel(mySampler, reflected, mip_level);
+    
     
     float NdotV = max(dot(N, V), 0.0f);
     float2 envBRDF = brdf_tex.Sample(mySampler, float2(NdotV, texture_roughness)).rg;
@@ -170,9 +172,12 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
 
     // scale light by NdotL
     float NdotL = max(dot(N, L), 0.0);
+   
+    specular += specularIBL;
     
+
     // add to outgoing radiance Lo
-    float3 Lo = (kD * texture_color.rgb / PI + specular + specularIBL) * radiance * NdotL;
+    float3 Lo = (kD * texture_color.rgb / PI + specular) * radiance * NdotL;
     //Lo += specularIBL;
 
     //float3 ambient_tmp_reflection = (kD * (texture_color.rgb * 0.01) + specularIBL) * texture_ao;
@@ -181,8 +186,8 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     float3 ambient = float3(0.01f, 0.01f, 0.01f) * texture_color.rgb * texture_ao;
     ambient *= (1.0 - texture_metallic); // prevent albedo on full metallic parts
     
-    //float3 color = Lo + ambient;
-    float3 color = Lo;// + ambient_tmp_reflection;
+    float3 color = Lo + ambient;
+    //float3 color = Lo;// + ambient_tmp_reflection;
     
     
     // Calculate brightness before HDR
