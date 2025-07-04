@@ -1,6 +1,7 @@
 # Nova Engine
 
 Game engine using DIRECTX11 & C++
+![NovaEngine_Showcase](data/assets/nova.gif)
 
 ## ⚙️ Setup
 
@@ -23,7 +24,6 @@ Open vs solution and compile for debug or release
 
 Simply open Nova Engine VS solution and compile
 
-![NovaEngine_Showcase](data/assets/nova.gif)
 
 
 # Features
