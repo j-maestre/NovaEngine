@@ -623,7 +623,9 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 
 }
 
-void Renderer::render_deferred(EntityComponentSystem& ecs){
+void Renderer::render_deferred(EntityComponentSystem& ecs_old){
+
+	EntityComponentSystem& ecs = Engine::get_instance()->get_scene()->m_ecs;
 
 
 #ifdef ENABLE_IMGUI

@@ -28,17 +28,7 @@ ResourceManager::ResourceManager(ResourceManager&&)
 }
 
 ResourceManager::~ResourceManager(){
-	for (auto t : m_textures) {
-		t.second.get_data()->texture_view->Release();
-		t.second.get_data()->texture->Release();
-	}
-
-	for (auto model : m_models) {
-		for (Mesh m : model.second.meshes) {
-			m.index_buffer->Release();
-			m.buffer->Release();
-		}
-	}
+	release();
 }
 
 void ResourceManager::load_cube_map(std::string path){
@@ -930,5 +920,19 @@ void ResourceManager::check_textures_to_load(){
 		}
 
 		m_texture_to_load.clear();
+	}
+}
+
+void ResourceManager::release(){
+	for (auto t : m_textures) {
+		t.second.get_data()->texture_view->Release();
+		t.second.get_data()->texture->Release();
+	}
+
+	for (auto model : m_models) {
+		for (Mesh m : model.second.meshes) {
+			m.index_buffer->Release();
+			m.buffer->Release();
+		}
 	}
 }

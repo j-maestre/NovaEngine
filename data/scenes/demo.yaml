@@ -21,28 +21,6 @@ Entities:
       - {Texture: "data/materials/rounded_metal/metallic.png", Type: "Metallic"}
       - {Texture: "data/materials/rounded_metal/roughness.png", Type: "Roughness"}
       - {Texture: "data/materials/rounded_metal/ao.png", Type: "AO"}
-  SphereTitanium:
-    Transform:
-      Position: [-4.0, 3.0, 0.0]
-      Rotation: [0.0, 0.0, 0.0]
-      Scale: [1.0, 1.0, 1.0]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
-    Material:
-      - {Texture: "data/materials/titanium/albedo.png", Type: "Albedo"}
-      - {Texture: "data/materials/titanium/normal.png", Type: "Normal"}
-      - {Texture: "data/materials/titanium/metallic.png", Type: "Metallic"}
-      - {Texture: "data/materials/titanium/roughness.png", Type: "Roughness"}
-  CubeTitanium:
-    Transform:
-      Position: [-6.0, 3.0, 0.0]
-      Rotation: [0.0, 0.0, 0.0]
-      Scale: [1.0, 1.0, 1.0]
-    MeshComponent: "data/models/basics/cube.fbx"
-    Material:
-      - {Texture: "data/materials/titanium/albedo.png", Type: "Albedo"}
-      - {Texture: "data/materials/titanium/normal.png", Type: "Normal"}
-      - {Texture: "data/materials/titanium/metallic.png", Type: "Metallic"}
-      - {Texture: "data/materials/titanium/roughness.png", Type: "Roughness"}
   CubeGold:
     Transform:
       Position: [-9.0, 3.0, 0.0]
@@ -91,10 +69,5 @@ Entities:
       - {Texture: "data/models/helmet/Default_AO.jpg", Type: "AO"}
       - {Texture: "data/models/helmet/emissive.jpg", Type: "Emissive"}
 
-  Sponza:
-    Transform:
-      Position: [0.0, 0.0, 0.0]
-      Rotation: [0.0, 0.0, 0.0]
-      Scale: [1.0, 1.0, 1.0]
-    MeshComponent: "data/models/Sponza/Sponza_new.fbx"
+
 

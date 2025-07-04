@@ -54,6 +54,7 @@ public:
 	__forceinline ID3D11ShaderResourceView* get_brdf_srv() { return m_brdf_srv; }
 	__forceinline ID3D11Resource** get_brdf_texture() { return m_brdf_texture; }
 
+	void release();
 
 private:
 	friend class Engine;
@@ -66,6 +67,7 @@ private:
 
 	void check_models_to_load();
 	void check_textures_to_load();
+
 
 	std::vector<ModelToLoad> m_mesh_component_to_load;
 	std::vector<std::shared_ptr<Model>> m_model_to_load;

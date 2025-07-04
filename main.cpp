@@ -34,10 +34,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	float scale = 1.0f;
-	Scene scene("scene0.yaml");
+	Scene* scene = engine->create_scene("scene0.yaml");
+	engine->set_scene(scene);
 	
-	Entity directional_light = scene.m_ecs.create_entity("Directional Light");
-	auto& light = scene.m_ecs.add_component<DirectionalLight>(directional_light);
+	Entity directional_light = scene->m_ecs.create_entity("Directional Light");
+	auto& light = scene->m_ecs.add_component<DirectionalLight>(directional_light);
 	light.set_color({ 1.0f, 1.0f, 1.0f });
 	light.set_direction({ -0.5f,-1.0f, -1.0f });
 	light.set_enabled(true);
@@ -51,8 +52,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	point.set_distance(10.0f);
 	*/
 
-	Entity spot_light = scene.m_ecs.create_entity("Spot Light");
-	auto& spot = scene.m_ecs.add_component<SpotLight>(spot_light);
+	Entity spot_light = scene->m_ecs.create_entity("Spot Light");
+	auto& spot = scene->m_ecs.add_component<SpotLight>(spot_light);
 	spot.set_color({1.0f, 1.0f, 1.0f});
 	spot.set_position({0.0f, 4.0f, -7.0f});
 	spot.set_direction({0.0f, 0.0f, 1.0f});
@@ -78,9 +79,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		cam.update();
 
 		
-		scene.update();
+		scene->update();
 		//render.render_forward(scene.m_ecs);
-		render.render_deferred(scene.m_ecs);
+		render.render_deferred(scene->m_ecs);
 
 		win.end_frame();
 		

@@ -10,6 +10,7 @@
 #include "components/Lights/SpotLight.h"
 #include "components/Lights/PointLight.h"
 #include "render/imgui/imgui_manager.h"
+#include "Core/Scene.h"
 
 struct EngineProps;
 
@@ -34,6 +35,10 @@ public:
 	void release();
 
 	void open_console();
+
+	Scene* create_scene(std::string path);
+	void set_scene(Scene *s);
+	Scene* get_scene();
 
 
 	float get_delta_time();
@@ -104,6 +109,9 @@ private:
 	Model* m_sphere_high_model;
 
 	Material m_default_material;
+
+	Scene* m_current_scene;
+	std::vector<Scene*> m_all_scenes;
 
 	std::chrono::high_resolution_clock::time_point m_last_time;
 	float m_delta_time;

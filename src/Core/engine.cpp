@@ -199,6 +199,10 @@ void Engine::release(){
 	m_props->deviceInterface->Release();
 	m_props->inmediateDeviceContext->Release();
 
+	for (Scene* scene : m_all_scenes) {
+		if (scene != nullptr) delete scene;
+	}
+
 }
 
 void Engine::open_console(){
@@ -209,6 +213,22 @@ void Engine::open_console(){
 	freopen_s(&file, "CONOUT$", "w", stderr); // Redirige stderr a la consola
 	freopen_s(&file, "CONIN$", "r", stdin);   // Redirige stdin a la consola
 	printf("\n*** Console opened succesfully ***\n");
+}
+
+Scene* Engine::get_scene(){
+
+	return m_current_scene;
+}
+
+Scene* Engine::create_scene(std::string path){
+	Scene* new_scene = new Scene(path.c_str());
+	m_all_scenes.push_back(new_scene);
+
+	return new_scene;
+}
+
+void Engine::set_scene(Scene* s){
+	m_current_scene = s;
 }
 
 float Engine::get_delta_time(){

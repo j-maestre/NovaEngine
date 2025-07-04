@@ -1,6 +1,6 @@
 #include "render/imgui/imgui_manager.h"
 #include "Core/engine.h"
-
+#include <filesystem>
 
 
 ImguiManager::ImguiManager() : m_viewport(nullptr){
@@ -173,12 +173,29 @@ void ImguiManager::main_menu(){
 	// Menu buttons
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(6.0f, 6.0f));
 	if (ImGui::BeginMenuBar()) {
-		if(ImGui::MenuItem("Scene", "shortcut")){
-			
+		if (ImGui::BeginMenu("File")) {
+			// Ruta que quieres explorar
+			const std::string path = "data/scenes";
+
+			// Iteramos los archivos .yaml en esa ruta
+			for (const auto& entry : std::filesystem::directory_iterator(path)) {
+				if (entry.is_regular_file() && entry.path().extension() == ".yaml") {
+					std::string filename = entry.path().filename().string();
+
+					if (ImGui::MenuItem(filename.c_str())) {
+						
+						printf("Opening scene: %s\n", filename.c_str());
+						Engine::get_instance()->m_resource.release();
+						Scene* s = Engine::get_instance()->create_scene(filename);
+						Engine::get_instance()->set_scene(s);
+						//std::cout << "Archivo YAML seleccionado: " << entry.path() << std::endl;
+					}
+				}
+			}
+
+			ImGui::EndMenu();
 		}
-		
-		
-		
+
 		ImGui::EndMenuBar();
 	}
 	ImGui::PopStyleVar();
