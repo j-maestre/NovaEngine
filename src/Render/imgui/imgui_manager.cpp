@@ -234,6 +234,22 @@ void ImguiManager::system_info(){
 	ImGui::Text("FPS: %.0f", m_last_fps);
 	ImGui::PopStyleColor();
 
+#ifdef DEPTH_PREPASS
+	ImGui::Text("Depth PrePass ");
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+	ImGui::SameLine();
+	ImGui::Text("Enabled");
+	ImGui::PopStyleColor();
+#endif // DEPTH_PREPASS
+#ifndef DEPTH_PREPASS
+	ImGui::Text("Depth PrePass ");
+	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+	ImGui::SameLine();
+	ImGui::Text("Disabled");
+	ImGui::PopStyleColor();
+#endif
+
+
 #ifdef MEASURE_TIME
 	ImGui::Text("Delta Time: %f", dt);
 	ImGui::Text("Draw Time: %f", m_draw_time);
