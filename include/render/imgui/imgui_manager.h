@@ -97,6 +97,9 @@ private:
 	float m_window_end_frame_time = 0.0f;
 
 	bool m_bloom = true;
+	DrawMode m_current_draw_mode;
+
+	std::vector<const char*> m_draw_modes;
 
 	std::mutex resources_lock;
 	ImGuiViewport* m_viewport;

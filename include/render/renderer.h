@@ -34,9 +34,11 @@ public:
 	void render_forward(EntityComponentSystem& ecs);
 	void render_deferred(EntityComponentSystem& ecs);
 
+	void set_draw_mode(DrawMode mode);
 	void set_cull_mode();
-
 	void set_camera(CameraComponent* cam);
+
+	DrawMode get_current_draw_mode();
 
 	void release();
 private:
@@ -73,6 +75,7 @@ private:
 	Engine* m_engine_ptr;
 	Window* m_window;
 
+	ID3D11RasterizerState* m_current_raster;
 
 	ID3D11BlendState* m_blend_state_overwrite;
 	ID3D11BlendState* m_blend_state_additive;
@@ -150,6 +153,8 @@ private:
 	int m_buffer_index = 0;
 	std::string m_pixel_shader_model;
 	std::string m_vertex_shader_model;
+
+	DrawMode m_current_draw_mode;
 
 	float m_skybox_vertices[36 * 3] = {
 		// positions          

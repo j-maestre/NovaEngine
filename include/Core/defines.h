@@ -5,7 +5,7 @@
 #define DIRECTX11
 #define ENABLE_IMGUI
 #define MEASURE_TIME
-//#define DEPTH_PREPASS
+#define DEPTH_PREPASS
 
 
 constexpr unsigned int SCREEN_WIDTH = 1920;
@@ -109,6 +109,11 @@ enum class ShaderType {
 	Skybox,
 	Depth,
 
+};
+
+enum class DrawMode {
+	Solid = 0,
+	Wireframe,
 };
 
 enum class ErrorCode {

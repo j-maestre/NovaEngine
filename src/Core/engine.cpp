@@ -126,10 +126,22 @@ void Engine::init(Window* window){
 	
 	hr = m_props->deviceInterface->CreateRasterizerState(&m_raster, &m_raster_state);
 	assert(!FAILED(hr));
-	m_props->inmediateDeviceContext->RSSetState(m_raster_state);
+	//m_props->inmediateDeviceContext->RSSetState(m_raster_state);
 
-	
-	
+	// Raster Wireframe
+	D3D11_RASTERIZER_DESC raster_wireframe_desc;
+	ZeroMemory(&raster_wireframe_desc, sizeof(D3D11_RASTERIZER_DESC));
+	raster_wireframe_desc.CullMode = D3D11_CULL_BACK;
+	raster_wireframe_desc.FillMode = D3D11_FILL_WIREFRAME;
+	raster_wireframe_desc.FrontCounterClockwise = FALSE; // La orientacion de las caras frontales no cambia
+	raster_wireframe_desc.DepthBias = 0;
+	raster_wireframe_desc.SlopeScaledDepthBias = 0.0f;
+	raster_wireframe_desc.DepthBiasClamp = 0.0f;
+	raster_wireframe_desc.ScissorEnable = FALSE;
+	raster_wireframe_desc.MultisampleEnable = FALSE;   
+	raster_wireframe_desc.AntialiasedLineEnable = FALSE;
+	hr = m_props->deviceInterface->CreateRasterizerState(&raster_wireframe_desc, &m_raster_state_wireframe);
+
 
 	// Setting rasterizer for skybox
 	ZeroMemory(&m_raster_skybox, sizeof(D3D11_RASTERIZER_DESC));

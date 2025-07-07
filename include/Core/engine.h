@@ -91,6 +91,7 @@ private:
 	D3D11_VIEWPORT m_viewport;
 	D3D11_RASTERIZER_DESC m_raster;
 	ID3D11RasterizerState* m_raster_state;
+	ID3D11RasterizerState* m_raster_state_wireframe;
 
 	D3D11_RASTERIZER_DESC m_raster_skybox;
 	ID3D11RasterizerState* m_raster_state_skybox;

@@ -483,6 +483,8 @@ bool Renderer::init_pipeline(Window* win){
 	m_sampler_state_emissive = nullptr;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateSamplerState(&emissive_sampler_desc, &m_sampler_state_emissive);
 
+	set_draw_mode(DrawMode::Solid);
+
 	win->m_renderer = this;
 	clear_depth();
 
@@ -702,7 +704,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetDepthStencilState(m_depth_stencil_state, 1);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->RSSetState(m_engine_ptr->m_raster_state);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->RSSetState(m_current_raster);
 
 	// Geometry pass
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
@@ -752,7 +754,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 		m_deferred_resources.postprocess_render_target_view, // Final color
 		m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[0]	// first mipmap level
 	};
-	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(light_pass_rtvs), light_pass_rtvs, nullptr); // no m_depth_stencil_view, is a full screen triangle 
+	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(light_pass_rtvs), light_pass_rtvs, m_depth_stencil_view); // no m_depth_stencil_view, is a full screen triangle 
 	//props->inmediateDeviceContext->OMSetRenderTargets(1, &m_quad_RTV, m_depth_stencil_view);
 	props->inmediateDeviceContext->IASetInputLayout(m_pLayout_deferred);
 
@@ -887,6 +889,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	ImguiManager::get_instance()->scene_info(ecs);
 	ImguiManager::get_instance()->show_cam(m_cam, 0xfff);
 	m_bloom_active = ImguiManager::get_instance()->m_bloom;
+	set_draw_mode(ImguiManager::get_instance()->m_current_draw_mode);
 	auto end_imgui = std::chrono::high_resolution_clock::now();
 	auto elapsed_imgui = end_imgui - start_imgui;
 	ImguiManager::get_instance()->m_draw_imgui_time = std::chrono::duration<float>(elapsed_imgui).count();
@@ -894,6 +897,17 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 #endif
 
 
+}
+
+void Renderer::set_draw_mode(DrawMode mode){
+
+	switch (mode) {
+		case DrawMode::Solid: m_current_raster = m_engine_ptr->m_raster_state; break;
+		case DrawMode::Wireframe: m_current_raster = m_engine_ptr->m_raster_state_wireframe; break;
+	}
+
+	m_current_draw_mode = mode;
+	ImguiManager::get_instance()->m_current_draw_mode = mode;
 }
 
 void Renderer::set_cull_mode(){
@@ -904,6 +918,11 @@ void Renderer::set_camera(CameraComponent* cam){
 	assert(cam != nullptr);
 
 	m_cam = cam;
+}
+
+DrawMode Renderer::get_current_draw_mode(){
+
+	return m_current_draw_mode;
 }
 
 void Renderer::release(){
@@ -1204,7 +1223,7 @@ void Renderer::depth_pass(EntityComponentSystem& ecs){
 	auto props = m_engine_ptr->get_engine_props();
 	props->inmediateDeviceContext->OMSetRenderTargets(0, nullptr, m_depth_stencil_view);
 	props->inmediateDeviceContext->OMSetDepthStencilState(m_depth_only_state, 1);
-	props->inmediateDeviceContext->RSSetState(m_engine_ptr->m_raster_state);
+	props->inmediateDeviceContext->RSSetState(m_current_raster);
 
 	props->inmediateDeviceContext->IASetInputLayout(m_pLayout_depth);
 	props->inmediateDeviceContext->VSSetConstantBuffers(0, 1, &m_pVBuffer_constant_camera_depth_only);

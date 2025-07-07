@@ -11,6 +11,9 @@ ImguiManager::ImguiManager() : m_viewport(nullptr){
 	m_dt_history_size = 128;
 	m_dt_history.resize(m_dt_history_size);
 	m_dt_history_index = 0;
+
+	m_draw_modes.push_back("Solid");
+	m_draw_modes.push_back("Wireframe");
 }
 
 ImguiManager::ImguiManager(const ImguiManager&){
@@ -265,6 +268,14 @@ void ImguiManager::system_info(){
 #endif
 
 	ImGui::Checkbox("Show Bloom", &m_bloom);
+	int draw_index = static_cast<int>(m_current_draw_mode);
+	//int draw_index = 0;
+	if (ImGui::Combo("Draw Mode", &draw_index, m_draw_modes.data(), static_cast<int>(m_draw_modes.size()))) {
+		m_current_draw_mode = static_cast<DrawMode>(draw_index);
+
+	}
+
+
 
 	ImGui::Text("Mouse (%d, %d)", mouse_x, mouse_y);
 	ImGui::Text("Delta (%.0f, %.0f)", m_mouse_delta_x, m_mouse_delta_y);
