@@ -61,6 +61,7 @@ bool Renderer::init_pipeline(Window* win){
 	ID3DBlob* VS = nullptr;
 	ID3DBlob* VS_deferred = nullptr;
 	ID3DBlob* VS_skybox = nullptr;
+	ID3DBlob* VS_depth = nullptr;
 	ID3DBlob* PS = nullptr;
 	ID3DBlob* error_msg = nullptr;
 	
@@ -115,6 +116,7 @@ bool Renderer::init_pipeline(Window* win){
 
 	// Deferred rendering shaders
 
+	
 	// Vertex shader geometry pass
 	hr = D3DCompileFromFile(L"data/shaders/deferred/vs_deferred.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
@@ -182,8 +184,15 @@ bool Renderer::init_pipeline(Window* win){
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_skybox);
-	
 
+	// Depth prepass VS
+	hr = D3DCompileFromFile(L"data/shaders/vs_depth_prepass.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS_depth, &error_msg);
+	m_isInitialized = CheckShaderError(hr, error_msg);
+	if (!m_isInitialized)return m_isInitialized;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS_depth->GetBufferPointer(), VS_depth->GetBufferSize(), NULL, &m_shader_files.VS_depth_prepass);
+
+	
+	
 	
 
 	/**** Buffers creation ****/
@@ -213,6 +222,14 @@ bool Renderer::init_pipeline(Window* win){
 	m_cam_constant_buffer.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	m_cam_constant_buffer.CPUAccessFlags = 0;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&m_cam_constant_buffer,NULL, &m_pVBufferConstantCamera);
+	
+	/**** Camera depth only buffer creation ****/
+	ZeroMemory(&m_cam_depth_only_constant_buffer, sizeof(m_cam_depth_only_constant_buffer));
+	m_cam_depth_only_constant_buffer.Usage = D3D11_USAGE_DEFAULT;
+	m_cam_depth_only_constant_buffer.ByteWidth = sizeof(CameraDepthPrePass);
+	m_cam_depth_only_constant_buffer.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	m_cam_depth_only_constant_buffer.CPUAccessFlags = 0;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&m_cam_depth_only_constant_buffer,NULL, &m_pVBuffer_constant_camera_depth_only);
 
 	// Camera deferred constant buffer creation
 	ZeroMemory(&m_cam_deferred_constant_buffer, sizeof(m_cam_deferred_constant_buffer));
@@ -279,7 +296,12 @@ bool Renderer::init_pipeline(Window* win){
 
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc{
 		.DepthEnable = true,
+#ifdef DEPTH_PREPASS
+		.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO,
+#endif
+#ifndef DEPTH_PREPASS
 		.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL,
+#endif
 		.DepthFunc = D3D11_COMPARISON_LESS_EQUAL,		// For multiple lights
 		//.DepthFunc = D3D11_COMPARISON_LESS,			// For one light only	
 	};
@@ -301,6 +323,14 @@ bool Renderer::init_pipeline(Window* win){
 	};
 	m_depth_stencil_state_skybox = nullptr;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilState(&depth_stencil_desc_skybox, &m_depth_stencil_state_skybox);
+
+	D3D11_DEPTH_STENCIL_DESC depth_desc_prepass = {
+		.DepthEnable = true,
+		.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL,
+		.DepthFunc = D3D11_COMPARISON_LESS_EQUAL,
+		.StencilEnable = false,
+	};
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilState(&depth_desc_prepass, &m_depth_only_state);
 	
 	
 
@@ -422,6 +452,7 @@ bool Renderer::init_pipeline(Window* win){
 
 	};
 	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateInputLayout(ied_skybox, 1, VS_skybox->GetBufferPointer(), VS_skybox->GetBufferSize(), &m_pLayout_skybox);
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateInputLayout(ied_skybox, 1, VS_depth->GetBufferPointer(), VS_depth->GetBufferSize(), &m_pLayout_depth);
 	CheckShaderError(hr);
 	//m_sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	m_sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
@@ -510,8 +541,18 @@ void Renderer::active_shader(ShaderType type){
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_skybox, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_skybox, nullptr, 0);
 		break;
+	case ShaderType::Depth:
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_depth_prepass, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(nullptr, nullptr, 0);
+		break;
+
 	default:break;
 	}
+}
+
+void Renderer::enable_depth_prepass(bool enabled){
+
+	m_depth_prepass = enabled;
 }
 
 void Renderer::render_forward(EntityComponentSystem& ecs){
@@ -633,6 +674,14 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 #endif
 
 	clear_render_target();
+	clear_depth();
+
+#ifdef DEPTH_PREPASS
+	depth_pass(ecs);
+#endif // DEPTH_PREPASS
+
+	active_shader(ShaderType::GeometryPass);
+
 	ID3D11RenderTargetView* gbuffer_rtv[] = {
 		m_deferred_resources.gbuffer_albedo_render_target_view,
 		m_deferred_resources.gbuffer_position_render_target_view,
@@ -656,7 +705,6 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->RSSetState(m_engine_ptr->m_raster_state);
 
 	// Geometry pass
-	clear_depth();
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetConstantBuffers(0, 1, &m_pVBufferConstantCamera);
 
@@ -667,7 +715,6 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(gbuffer_rtv), gbuffer_rtv, m_depth_stencil_view);
 
 
-	active_shader(ShaderType::GeometryPass);
 
 	auto transforms = ecs.viewComponents<TransformComponent, MeshComponent>();
 	auto directional_light = ecs.viewComponents<DirectionalLight>();
@@ -892,6 +939,26 @@ void Renderer::render_mesh_internal(CameraConstantBuffer* camera_buffer, Transfo
 
 	// Draw
 	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetInputLayout(m_pLayout);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m.index_buffer, DXGI_FORMAT_R32_UINT, 0);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->DrawIndexed(m.num_indices, 0, 0);
+	add_draw_call();
+}
+
+void Renderer::render_mesh_depth_only(CameraDepthPrePass* camera_buffer, TransformComponent& trans, Mesh& m){
+	// Set camera values to constant buffer
+	camera_buffer->model = DirectX::XMMatrixTranspose(trans.get_transform());
+
+	// Buffer de la camara con la model del objeto
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_constant_camera_depth_only, 0, nullptr, camera_buffer, 0, 0);
+
+
+	// Set Vertex buffer
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m.buffer, &stride, &offset);
+
+	// Draw
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetIndexBuffer(m.index_buffer, DXGI_FORMAT_R32_UINT, 0);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->DrawIndexed(m.num_indices, 0, 0);
@@ -1125,6 +1192,31 @@ void Renderer::draw_emissive_downsample(){
 	}
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->RSSetViewports(1, &m_engine_ptr->m_viewport);
+}
+
+void Renderer::depth_pass(EntityComponentSystem& ecs){
+	auto props = m_engine_ptr->get_engine_props();
+	props->inmediateDeviceContext->OMSetRenderTargets(0, nullptr, m_depth_stencil_view);
+	props->inmediateDeviceContext->OMSetDepthStencilState(m_depth_only_state, 1);
+	props->inmediateDeviceContext->RSSetState(m_engine_ptr->m_raster_state);
+
+	props->inmediateDeviceContext->IASetInputLayout(m_pLayout_depth);
+	props->inmediateDeviceContext->VSSetConstantBuffers(0, 1, &m_pVBuffer_constant_camera_depth_only);
+	active_shader(ShaderType::Depth);
+	const Mat4* view = m_cam->get_view();
+	const Mat4* proj = m_cam->get_projection();
+
+	CameraDepthPrePass cam_buffer;
+	cam_buffer.view = DirectX::XMMatrixTranspose(*view);
+	cam_buffer.projection = DirectX::XMMatrixTranspose(*proj);
+
+	auto transforms = ecs.viewComponents<TransformComponent, MeshComponent>();
+	for (auto [entity, trans, mesh] : transforms.each()) {
+		for (Mesh& m : mesh.get_model()->meshes) {
+			render_mesh_depth_only(&cam_buffer, trans, m); // versión simplificada sin materiales
+		}
+	}
+
 }
 
 void Renderer::draw_skybox(){

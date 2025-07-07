@@ -43,14 +43,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	light.set_direction({ -0.5f,-1.0f, -1.0f });
 	light.set_enabled(true);
 
-	/*
-	Entity point_light = scene.m_ecs.create_entity("Point Light");
-	auto& point = scene.m_ecs.add_component<PointLight>(point_light);
-	point.set_color({1.0f, 1.0f, 1.0f});
-	point.set_position({0.0f, 5.0f, 0.0f});
-	point.set_enabled(false);
-	point.set_distance(10.0f);
-	*/
+	//for (int i = -5; i < 5; i++) {
+
+		Entity point_light = scene->m_ecs.create_entity("Point Light");
+		auto& point = scene->m_ecs.add_component<PointLight>(point_light);
+		point.set_color({1.0f, 0.1f, 1.0f});
+		point.set_position({23.0f, 5.0f, 0.0f});
+		point.set_enabled(false);
+		point.set_distance(12.0f);
+	//}
+	
 
 	Entity spot_light = scene->m_ecs.create_entity("Spot Light");
 	auto& spot = scene->m_ecs.add_component<SpotLight>(spot_light);

@@ -5,6 +5,7 @@
 #define DIRECTX11
 #define ENABLE_IMGUI
 #define MEASURE_TIME
+#define DEPTH_PREPASS
 
 
 constexpr unsigned int SCREEN_WIDTH = 1920;
@@ -87,6 +88,9 @@ struct ShaderFiles {
 	// Skybox
 	ID3D11VertexShader* VS_deferred_skybox = nullptr;
 	ID3D11PixelShader* PS_deferred_skybox = nullptr;
+
+	// Depth Pre pass
+	ID3D11VertexShader* VS_depth_prepass = nullptr;
 };
 
 enum class ShaderType {
@@ -103,6 +107,7 @@ enum class ShaderType {
 	DeferredEmissive,
 	BloomDownsample,
 	Skybox,
+	Depth,
 
 };
 
@@ -155,6 +160,12 @@ struct CameraDeferredConstantBuffer {
 	Mat4 inv_view_proj;
 	Vec3 camera_position;
 	float cubemap_max_mip_level;
+};
+
+struct CameraDepthPrePass {
+	Mat4 view;
+	Mat4 projection;
+	Mat4 model;
 };
 
 struct EmissiveConstantBuffer {

@@ -29,6 +29,8 @@ public:
 	bool init_pipeline(Window* win);
 	void active_shader(ShaderType type);
 
+	void enable_depth_prepass(bool enabled);
+
 	void render_forward(EntityComponentSystem& ecs);
 	void render_deferred(EntityComponentSystem& ecs);
 
@@ -44,10 +46,12 @@ private:
 	__forceinline void clear_render_target();
 	__forceinline void clear_full_quad();
 	__forceinline void render_mesh_internal(CameraConstantBuffer* camera_buffer, TransformComponent& trans, Mesh& m);
+	__forceinline void render_mesh_depth_only(CameraDepthPrePass* camera_buffer, TransformComponent& trans, Mesh& m);
 	__forceinline void render_deferred_internal();
 	__forceinline void draw_emissive();
 	__forceinline void draw_emissive_downsample();
 
+	void depth_pass(EntityComponentSystem& ecs);
 	void draw_skybox();
 
 	void clear_shader_reources(int size = 5);
@@ -102,6 +106,9 @@ private:
 	D3D11_BUFFER_DESC m_cam_constant_buffer;
 	ID3D11Buffer* m_pVBufferConstantCamera;
 
+	D3D11_BUFFER_DESC m_cam_depth_only_constant_buffer;
+	ID3D11Buffer* m_pVBuffer_constant_camera_depth_only;
+
 	D3D11_BUFFER_DESC m_cam_deferred_constant_buffer;
 	ID3D11Buffer* m_pVBufferDeferredConstantCamera;
 
@@ -119,6 +126,7 @@ private:
 	ID3D11InputLayout* m_pLayout;
 	ID3D11InputLayout* m_pLayout_deferred;
 	ID3D11InputLayout* m_pLayout_skybox;
+	ID3D11InputLayout* m_pLayout_depth;
 	
 	ID3D11SamplerState* m_sampler_state_emissive;
 	ID3D11SamplerState* m_sampler_state;
@@ -129,6 +137,7 @@ private:
 	ID3D11DepthStencilState* m_depth_stencil_state;
 
 	ID3D11DepthStencilState* m_depth_stencil_state_skybox;
+	ID3D11DepthStencilState* m_depth_only_state;
 
 	CameraComponent* m_cam;
 
@@ -136,6 +145,7 @@ private:
 	D3D11_BUFFER_DESC m_buffer_description_full_triangle;
 	bool m_isInitialized;
 	bool m_bloom_active = true;
+	bool m_depth_prepass = true;
 
 	int m_buffer_index = 0;
 	std::string m_pixel_shader_model;
