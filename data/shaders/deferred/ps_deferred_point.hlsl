@@ -222,8 +222,8 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     float3 ambient = float3(0.01f, 0.01f, 0.01f) * texture_color.rgb * texture_ao;
     ambient *= (1.0 - texture_metallic); // prevent albedo on full metallic parts
     
-    float3 color = Lo + ambient;
-    //float3 color = Lo;
+    //float3 color = Lo + ambient;
+    float3 color = Lo;
 
     // Emissive texture color
     out_color.out_emissive = float4(texture_emissive);
