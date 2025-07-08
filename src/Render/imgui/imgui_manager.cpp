@@ -298,6 +298,90 @@ void ImguiManager::system_info(){
 	ImGui::End();
 }
 
+void ImguiManager::show_vec(Vec3& vector, int entity_id, std::string label, std::vector<std::string>& axes_label){
+
+	//std::string label = "Position";
+	//ImGui::SeparatorText(label.c_str());
+
+	// Etiqueta única para PushID
+	ImGui::PushID(entity_id);
+
+	// Preparar información visual
+	const char* axes[3] = { axes_label[0].c_str(), axes_label[1].c_str(), axes_label[2].c_str() };
+	ImVec4 colors[3] = {
+		ImVec4(0.8f, 0.1f, 0.15f, 1.0f),
+		ImVec4(0.2f, 0.7f, 0.2f, 1.0f),
+		ImVec4(0.1f, 0.25f, 0.8f, 1.0f)
+	};
+
+	float* components[3] = { &vector.x, &vector.y, &vector.z };
+
+	// Calcular ancho para etiqueta
+	float max_label_width = ImGui::CalcTextSize(label.c_str()).x + 10.0f;
+
+	// Texto "Position"
+	ImGui::AlignTextToFramePadding();
+	ImGui::BeginGroup();
+	ImGui::TextUnformatted(label.c_str());
+	ImGui::SameLine();
+	ImGui::Dummy(ImVec2(max_label_width - ImGui::CalcTextSize(label.c_str()).x, 0));
+	ImGui::SameLine();
+
+	// Medidas
+	float button_width = 18.0f;
+	float button_height = 18.0f;
+	float spacing = ImGui::GetStyle().ItemSpacing.x;
+	float text_height = ImGui::GetTextLineHeight();
+	float vertical_offset = (text_height - button_height) * 0.5f;
+
+	float total_button_area = (button_width + spacing + 2.0f) * 3;
+	float total_available = ImGui::GetContentRegionAvail().x;
+	float slider_width = (total_available - total_button_area) / 3.0f;
+
+	float line_start_y = ImGui::GetCursorPosY();
+
+	for (int i = 0; i < 3; ++i) {
+		ImGui::SetCursorPosY(line_start_y - vertical_offset);
+
+		// Botón de reset
+		std::string button_id = std::string("##btn_") + axes[i] + "_" + std::to_string(entity_id);
+		ImGui::PushStyleColor(ImGuiCol_Button, colors[i]);
+		ImGui::Button(button_id.c_str(), ImVec2(button_width, button_height));
+		ImGui::PopStyleColor();
+
+		if (ImGui::IsItemHovered()) {
+			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+		}
+
+		// Texto encima del botón
+		ImVec2 btn_min = ImGui::GetItemRectMin();
+		ImVec2 btn_size = ImGui::GetItemRectSize();
+		ImVec2 text_size = ImGui::CalcTextSize(axes[i]);
+		ImVec2 text_pos = {
+			btn_min.x + (btn_size.x - text_size.x) * 0.5f,
+			btn_min.y + (btn_size.y - text_size.y) * 0.5f
+		};
+		ImGui::GetWindowDrawList()->AddText(text_pos, ImGui::GetColorU32(ImGuiCol_Text), axes[i]);
+
+		if (ImGui::IsItemClicked()) {
+			*components[i] = 0.0f;
+		}
+
+		ImGui::SameLine(0.0f, 2.0f);
+
+		// Slider
+		std::string drag_id = std::string("##drag_") + axes[i] + "_" + std::to_string(entity_id);
+		ImGui::SetNextItemWidth(slider_width);
+		ImGui::DragFloat(drag_id.c_str(), components[i], 0.1f);
+
+		if (i < 2)
+			ImGui::SameLine();
+	}
+
+	ImGui::EndGroup();
+	ImGui::PopID();
+}
+
 void ImguiManager::show_transform(TransformComponent* trans, int entity_id){
 
 	ImGui::SeparatorText("Transform");
@@ -330,10 +414,9 @@ void ImguiManager::show_transform(TransformComponent* trans, int entity_id){
 
 		// 2. Mover el cursor hacia la derecha, al final del espacio reservado
 		ImGui::SameLine();
-		ImGui::Dummy(ImVec2(max_label_width - ImGui::CalcTextSize(label).x, 0)); // espacio vacío para que la siguiente línea empiece bien alineada
+		ImGui::Dummy(ImVec2(max_label_width - ImGui::CalcTextSize(label).x, 0));
 		ImGui::SameLine();
 
-		// Ahora el cursor está justo donde queremos empezar los controles (botones y sliders)
 
 		const char* axes[3] = { "X", "Y", "Z" };
 		ImVec4 colors[3] = {
@@ -359,7 +442,7 @@ void ImguiManager::show_transform(TransformComponent* trans, int entity_id){
 		for (int i = 0; i < 3; ++i) {
 			ImGui::SetCursorPosY(line_start_y - vertical_offset);
 
-			// Botón coloreado
+			// Boton coloreado
 			std::string button_id = std::string("##") + label + "_btn_" + axes[i] + "_" + std::to_string(entity_id);
 			ImGui::PushStyleColor(ImGuiCol_Button, colors[i]);
 			ImGui::Button(button_id.c_str(), ImVec2(button_width, button_height));
@@ -369,7 +452,7 @@ void ImguiManager::show_transform(TransformComponent* trans, int entity_id){
 				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 			}
 
-			// Centrar texto en el botón
+			// Centrar texto en el boton
 			ImVec2 btn_min = ImGui::GetItemRectMin();
 			ImVec2 btn_size = ImGui::GetItemRectSize();
 			ImVec2 text_size = ImGui::CalcTextSize(axes[i]);
@@ -385,7 +468,7 @@ void ImguiManager::show_transform(TransformComponent* trans, int entity_id){
 
 			ImGui::SameLine(0.0f, 2.0f);
 
-			// Slider dinámico
+			// Slider dinamico
 			std::string drag_id = std::string("##") + label + "_drag_" + axes[i] + "_" + std::to_string(entity_id);
 			ImGui::SetNextItemWidth(slider_width);
 			ImGui::DragFloat(drag_id.c_str(), components[i], 0.1f);
@@ -417,8 +500,8 @@ void ImguiManager::show_light(PointLight* light, int entity_id){
 	ImGui::SeparatorText("Point Light");
 
 	Vec3 position = light->get_position();
-	float pos_tmp[3] = { position.x, position.y, position.z };
-
+	std::vector<std::string> axes = {"X", "Y", "Z"};
+	show_vec(position, entity_id, "Position", axes);
 
 	bool enabled = light->get_enabled();
 
@@ -443,20 +526,27 @@ void ImguiManager::show_light(PointLight* light, int entity_id){
 	float fall_start = light->get_fall_start();
 
 
-	std::string label = "Position##" + std::to_string(entity_id);
-	ImGui::DragFloat3(label.c_str(), pos_tmp, 0.1f);
-
-	label = "Enabled##" + std::to_string(entity_id);
+	std::string label = "Enabled##" + std::to_string(entity_id);
 	ImGui::Checkbox(label.c_str(), &enabled);
 
+	ImGuiColorEditFlags flags = ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoOptions;
 	label = "Color##" + std::to_string(entity_id);
-	ImGui::DragFloat3(label.c_str(), color_tmp, 0.005f, 0.0f, 1.0f);
+	ImGui::ColorEdit3(label.c_str(), color_tmp, flags);
+
+	label = "Distance##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &distance, 0.1f, 0.0f, 20000.0f);
+
+	label = "Intensity##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &intensity, 0.1f, 0.0f, 10000.0f);
+
+
+	ImGui::SeparatorText("Other options");
 
 	label = "Specular Strenght##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &specular_strenght, 0.001f, 0.0f, 1.0f);
 
 	label = "Specular Color##" + std::to_string(entity_id);
-	ImGui::DragFloat3(label.c_str(), spec_color_tmp, 0.005f, -1.0f, 1.0f);
+	ImGui::ColorEdit3(label.c_str(), spec_color_tmp, flags);
 
 	label = "Specular Shininess##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &specular_shininess);
@@ -473,14 +563,8 @@ void ImguiManager::show_light(PointLight* light, int entity_id){
 	label = "Cuadratic atenuattion##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &cuadratic_att, 0.0001f, 0.0f);
 
-	label = "Intensity##" + std::to_string(entity_id);
-	ImGui::DragFloat(label.c_str(), &intensity, 0.1f, 0.0f, 10000.0f);
-
 	label = "Expossure##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &expossure, 0.1f, 0.0f, 200.0f);
-
-	label = "Distance##" + std::to_string(entity_id);
-	ImGui::DragFloat(label.c_str(), &distance, 0.1f, 0.0f, 20000.0f);
 
 	label = "Fall off##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &fall_off, 0.1f, 0.0f, 10000.0f);
@@ -488,7 +572,8 @@ void ImguiManager::show_light(PointLight* light, int entity_id){
 	label = "Fall start##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &fall_start, 0.01f, 0.0f, 1.0f);
 
-	light->set_position({pos_tmp[0], pos_tmp[1], pos_tmp[2] });
+	//light->set_position({pos_tmp[0], pos_tmp[1], pos_tmp[2] });
+	light->set_position(position);
 	light->set_enabled(enabled);
 	light->set_color({ color_tmp[0], color_tmp[1], color_tmp[2] });
 	light->set_specular_strenght(specular_strenght);
@@ -544,20 +629,28 @@ void ImguiManager::show_light(SpotLight* light, int entity_id){
 	label = "Enabled##" + std::to_string(entity_id);
 	ImGui::Checkbox(label.c_str(), &enabled);
 
+	ImGuiColorEditFlags flags = ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoOptions;
+	label = "Color##" + std::to_string(entity_id);
+	ImGui::ColorEdit3(label.c_str(), color_tmp, flags);
+	
+	label = "Distance##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &distance, 0.1f, 0.0f, 2000.0f);
+	
+	label = "Intensity##" + std::to_string(entity_id);
+	ImGui::DragFloat(label.c_str(), &intensity, 0.1f, 0.0f, 10000.0f);
+
+	ImGui::SeparatorText("Other options");
 	label = "Inner circle##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &cut_off, 0.01f, 0.0f);
 
 	label = "Outside circle##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &outer_cut_off, 0.01f, 0.0f);
 
-	label = "Color##" + std::to_string(entity_id);
-	ImGui::DragFloat3(label.c_str(), color_tmp, 0.005f, 0.0f, 1.0f);
-
 	label = "Specular Strenght##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &specular_strenght, 0.001f, 0.0f, 1.0f);
 
 	label = "Specular Color##" + std::to_string(entity_id);
-	ImGui::DragFloat3(label.c_str(), spec_color_tmp, 0.005f, -1.0f, 1.0f);
+	ImGui::ColorEdit3(label.c_str(), spec_color_tmp, flags);
 
 	label = "Specular Shininess##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &specular_shininess);
@@ -574,11 +667,7 @@ void ImguiManager::show_light(SpotLight* light, int entity_id){
 	label = "Expossure##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &expossure, 0.1f, 0.0f, 200.0f);
 
-	label = "Distance##" + std::to_string(entity_id);
-	ImGui::DragFloat(label.c_str(), &distance, 0.1f, 0.0f, 2000.0f);
 
-	label = "Intensity##" + std::to_string(entity_id);
-	ImGui::DragFloat(label.c_str(), &intensity, 0.1f, 0.0f, 10000.0f);
 
 	light->set_position({ pos_tmp[0], pos_tmp[1], pos_tmp[2] });
 	light->set_direction({ dir_tmp[0], dir_tmp[1], dir_tmp[2] });
@@ -668,27 +757,27 @@ void ImguiManager::show_light(DirectionalLight* light, int entity_id){
 	std::string label = "Direction##" + std::to_string(entity_id);
 	ImGui::DragFloat3(label.c_str(), dir_tmp, 0.005f, -1.0f, 1.0f);
 
+	ImGuiColorEditFlags flags = ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoOptions;
+	label = "Color##" + std::to_string(entity_id);
+	ImGui::ColorEdit3(label.c_str(), color_tmp, flags);
+
 	label = "Intensity##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &intensity, 0.01f, 0.0f);
 
 	label = "Enabled##" + std::to_string(entity_id);
 	ImGui::Checkbox(label.c_str(), &enabled);
 
-	label = "Color##" + std::to_string(entity_id);
-	ImGui::DragFloat3(label.c_str(), color_tmp, 0.005f, 0.0f, 1.0f);
+	ImGui::SeparatorText("Other options");
 
 	label = "Specular Strenght##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &specular_strenght, 0.001f, 0.0f, 1.0f);
 
 	label = "Specular Color##" + std::to_string(entity_id);
-	ImGui::DragFloat3(label.c_str(), spec_color_tmp, 0.005f, -1.0f, 1.0f);
+	ImGui::ColorEdit3(label.c_str(), spec_color_tmp, flags);
 
 	label = "Specular Shininess##" + std::to_string(entity_id);
 	ImGui::DragFloat(label.c_str(), &specular_shininess);
 
-	if (dir_tmp[0] != 0.5f) {
-		printf("diablo");
-	}
 	light->set_direction({ dir_tmp[0], dir_tmp[1], dir_tmp[2] });
 	light->set_enabled(enabled);
 	light->set_color({color_tmp[0], color_tmp[1], color_tmp[2] });

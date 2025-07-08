@@ -66,6 +66,7 @@ private:
 	void main_menu();
 	void system_info();
 
+	void show_vec(Vec3& vector, int entity_id, std::string label, std::vector<std::string>& axes_label);
 	void show_transform(TransformComponent* trans, int entity_id);
 	void show_light(DirectionalLight* light, int entity_id);
 	void show_light(PointLight* light, int entity_id);
