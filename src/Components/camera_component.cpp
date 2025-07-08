@@ -61,7 +61,7 @@ void CameraComponent::update(){
 #ifdef MEASURE_TIME
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
-	ImguiManager::get_instance()->m_fly_cam_time = std::chrono::duration<float>(elapsed).count();
+	ImguiManager::get_instance()->m_fly_cam_time = std::chrono::duration<float, std::milli>(elapsed).count();
 #endif
 }
 
@@ -191,7 +191,7 @@ void CameraComponent::fly(float dt){
 #ifdef MEASURE_TIME
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
-	ImguiManager::get_instance()->m_fly_cam_time = std::chrono::duration<float>(elapsed).count();
+	ImguiManager::get_instance()->m_fly_cam_time = std::chrono::duration<float, std::milli>(elapsed).count();
 #endif
 }
 

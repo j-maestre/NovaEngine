@@ -51,7 +51,7 @@ void Scene::update(){
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
 
-	ImguiManager::get_instance()->m_update_transform_time = std::chrono::duration<float>(elapsed).count();
+	ImguiManager::get_instance()->m_update_transform_time = std::chrono::duration<float, std::milli>(elapsed).count();
 #endif
 }
 

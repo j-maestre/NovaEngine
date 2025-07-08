@@ -241,7 +241,7 @@ void Window::begin_frame(){
 #ifdef MEASURE_TIME
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
-	m_imgui->m_window_begin_frame_time = std::chrono::duration<float>(elapsed).count();
+	m_imgui->m_window_begin_frame_time = std::chrono::duration<float, std::milli>(elapsed).count();
 #endif
 }
 
@@ -266,7 +266,7 @@ void Window::end_frame(){
 #ifdef MEASURE_TIME
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
-	m_imgui->m_window_end_frame_time = std::chrono::duration<float>(elapsed).count();
+	m_imgui->m_window_end_frame_time = std::chrono::duration<float, std::milli>(elapsed).count();
 #endif
 
 }

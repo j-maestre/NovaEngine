@@ -201,7 +201,7 @@ void Engine::update(){
 #ifdef MEASURE_TIME
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
-	ImguiManager::get_instance()->m_engine_update_time = std::chrono::duration<float>(elapsed).count();
+	ImguiManager::get_instance()->m_engine_update_time = std::chrono::duration<float, std::milli>(elapsed).count();
 #endif
 }
 
@@ -351,7 +351,7 @@ void Engine::init_geometries(){
 
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
-	float load_meshes_time = std::chrono::duration<float>(elapsed).count();
+	float load_meshes_time = std::chrono::duration<float, std::milli>(elapsed).count();
 	printf("Load default meshes time multithread %f\n", load_meshes_time);
 
 #endif
@@ -368,7 +368,7 @@ void Engine::init_geometries(){
 #ifndef MULTI_THREAD
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
-	float load_meshes_time = std::chrono::duration<float>(elapsed).count();
+	float load_meshes_time = std::chrono::duration<float, std::milli>(elapsed).count();
 	printf("Load default meshes time single thread %f\n", load_meshes_time);
 #endif
 

@@ -651,7 +651,7 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 #ifdef ENABLE_IMGUI
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
-	ImguiManager::get_instance()->m_draw_time = std::chrono::duration<float>(elapsed).count();
+	ImguiManager::get_instance()->m_draw_time = std::chrono::duration<float, std::milli>(elapsed).count();
 
 
 	auto start_imgui = std::chrono::high_resolution_clock::now();
@@ -660,7 +660,7 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 	ImguiManager::get_instance()->show_cam(m_cam, 0xfff);
 	auto end_imgui = std::chrono::high_resolution_clock::now();
 	auto elapsed_imgui = end_imgui - start_imgui;
-	ImguiManager::get_instance()->m_draw_imgui_time = std::chrono::duration<float>(elapsed_imgui).count();
+	ImguiManager::get_instance()->m_draw_imgui_time = std::chrono::duration<float, std::milli>(elapsed_imgui).count();
 
 #endif
 
@@ -881,7 +881,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 #ifdef ENABLE_IMGUI
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
-	ImguiManager::get_instance()->m_draw_time = std::chrono::duration<float>(elapsed).count();
+	ImguiManager::get_instance()->m_draw_time = std::chrono::duration<float, std::milli>(elapsed).count();
 
 
 	auto start_imgui = std::chrono::high_resolution_clock::now();
@@ -892,7 +892,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	set_draw_mode(ImguiManager::get_instance()->m_current_draw_mode);
 	auto end_imgui = std::chrono::high_resolution_clock::now();
 	auto elapsed_imgui = end_imgui - start_imgui;
-	ImguiManager::get_instance()->m_draw_imgui_time = std::chrono::duration<float>(elapsed_imgui).count();
+	ImguiManager::get_instance()->m_draw_imgui_time = std::chrono::duration<float, std::milli>(elapsed_imgui).count();
 
 #endif
 
