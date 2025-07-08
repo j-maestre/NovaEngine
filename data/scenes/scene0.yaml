@@ -58,13 +58,14 @@ Entities:
       Position: [6.0, 3.0, 0.0]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.0, 1.0, 1.0]
+      Parent: "CubeGold"
     MeshComponent: "data/models/basics/cube.fbx"
     Material:
       - {Albedo: [1.0, 1.0, 1.0] }
       - {Metallic: 0.0}
       - {Roughness: 1.0}
-      - {EmissiveColor: [0.0, 1.0, 0.0]}
-      - {EmissiveIntensity: 5.0}
+      - {EmissiveColor: [1.0, 1.0, 1.0]}
+      - {EmissiveIntensity: 2.0}
   Lava:
     Transform:
       Position: [0.0, 6.0, 0.0]

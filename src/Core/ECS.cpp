@@ -32,3 +32,14 @@ Entity EntityComponentSystem::create_entity(std::string name){
 	m_entities.push_back(e);
 	return e;
 }
+
+Entity EntityComponentSystem::get_entity_by_name(std::string name){
+	for (auto& e : m_entities) {
+		if (e.get_name() == name) {
+			return e;
+		}
+	}
+
+	return Entity(-1, "bad entity");
+	 
+}

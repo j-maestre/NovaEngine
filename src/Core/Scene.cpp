@@ -137,6 +137,15 @@ bool load_transform_component(const ryml::NodeRef& entity_node, Entity& entity, 
        t.set_position(position);
        t.set_rotation(rotation);
        t.set_scale(scale);
+
+       if (transform.has_child("Parent")) {
+           std::string model_name(transform["Parent"].val().data(), transform["Parent"].val().size());
+           Entity e = ecs.get_entity_by_name(model_name);
+           if (e.get_id() != -1) {
+               TransformComponent* trans = ecs.get_component<TransformComponent>(e);
+               t.set_parent(trans);
+           }
+       }
     }
 
     return true;

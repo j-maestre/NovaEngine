@@ -43,6 +43,8 @@ public:
 		return m_entities;
 	}
 
+	Entity get_entity_by_name(std::string name);
+
 
 private:
 

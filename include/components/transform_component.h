@@ -28,6 +28,7 @@ public:
 	void set_scale(const Vec3& scale);
 	void set_rotation(const Vec3& rotation);
 
+	void set_parent(TransformComponent* parent);
 
 	Vec3& get_position();
 	Vec3& get_rotation();
@@ -50,6 +51,8 @@ private:
 	Vec3 m_position;
 	Vec3 m_rotation;
 	Vec3 m_scale;
+
+	TransformComponent* m_parent = nullptr;
 
 	bool m_is_calculated;
 };

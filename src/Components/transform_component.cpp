@@ -33,7 +33,12 @@ TransformComponent::~TransformComponent(){
 
 void TransformComponent::update(){
 
-	if (m_is_calculated) return;
+	bool parent_calculated = true;
+	if (m_parent) {
+		parent_calculated = m_parent->m_is_calculated;
+	}
+
+	if (m_is_calculated && parent_calculated ) return;
 
 	Mat4 scale = DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
 
@@ -46,10 +51,15 @@ void TransformComponent::update(){
 	
 	// Model construction
 	m_transform = scale * rotation * translation;
-	
+
+	// arenting
+	if (m_parent) {
+		m_parent->update();
+		m_transform *= m_parent->get_transform();
+	}
+
 	// Inverse model
 	m_inverse_transform = DirectX::XMMatrixInverse(nullptr, m_transform);
-
 
 	m_is_calculated = true;
 }
@@ -103,6 +113,10 @@ void TransformComponent::set_scale(const Vec3& scale){
 void TransformComponent::set_rotation(const Vec3& rotation){
 	m_rotation = rotation;
 	m_is_calculated = false;
+}
+
+void TransformComponent::set_parent(TransformComponent* parent){
+	m_parent = parent;
 }
 
 Vec3& TransformComponent::get_position(){
