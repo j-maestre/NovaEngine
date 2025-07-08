@@ -208,6 +208,18 @@ bool load_material_component(const ryml::NodeRef& entity_node, Entity& entity, E
                     Vec3 c = vec3FromYAML(r);
                     material.set_color_value({ c.x, c.y, c.z, 1.0f });
                 }
+                
+                if (t.has_child("EmissiveIntensity")) {
+                    auto e = t["EmissiveIntensity"];
+                    float value = std::stof(std::string(e.val().data(), e.val().size()));
+                    material.set_emissive_intensity(value);
+                }
+
+                if (t.has_child("EmissiveColor")) {
+                    auto r = t["EmissiveColor"];
+                    Vec3 c = vec3FromYAML(r);
+                    material.set_emissive_value({ c.x, c.y, c.z });
+                }
             }
 
 
