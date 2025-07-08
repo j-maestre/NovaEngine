@@ -537,7 +537,7 @@ void ImguiManager::show_light(PointLight* light, int entity_id){
 	ImGui::DragFloat(label.c_str(), &distance, 0.1f, 0.0f, 20000.0f);
 
 	label = "Intensity##" + std::to_string(entity_id);
-	ImGui::DragFloat(label.c_str(), &intensity, 0.1f, 0.0f, 10000.0f);
+	ImGui::DragFloat(label.c_str(), &intensity, 0.1f, 0.0f, 100000.0f);
 
 
 	ImGui::SeparatorText("Other options");
@@ -637,7 +637,7 @@ void ImguiManager::show_light(SpotLight* light, int entity_id){
 	ImGui::DragFloat(label.c_str(), &distance, 0.1f, 0.0f, 2000.0f);
 	
 	label = "Intensity##" + std::to_string(entity_id);
-	ImGui::DragFloat(label.c_str(), &intensity, 0.1f, 0.0f, 10000.0f);
+	ImGui::DragFloat(label.c_str(), &intensity, 0.1f, 0.0f, 100000.0f);
 
 	ImGui::SeparatorText("Other options");
 	label = "Inner circle##" + std::to_string(entity_id);
@@ -762,7 +762,7 @@ void ImguiManager::show_light(DirectionalLight* light, int entity_id){
 	ImGui::ColorEdit3(label.c_str(), color_tmp, flags);
 
 	label = "Intensity##" + std::to_string(entity_id);
-	ImGui::DragFloat(label.c_str(), &intensity, 0.01f, 0.0f);
+	ImGui::DragFloat(label.c_str(), &intensity, 0.01f, 0.0f, 100000.0f);
 
 	label = "Enabled##" + std::to_string(entity_id);
 	ImGui::Checkbox(label.c_str(), &enabled);

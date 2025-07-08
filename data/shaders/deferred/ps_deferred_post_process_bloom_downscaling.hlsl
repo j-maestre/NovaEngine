@@ -47,9 +47,9 @@ float4 PShader(PS_INPUT input) : SV_TARGET
         for (int i = 0; i < 3; i++){
 
             float2 offset_uv = input.uv + float2(offsets[i + 3].x * texel_size.x, 0);
-            float3 sample = finalTexture.Sample(samp, offset_uv).rgb;
+            float3 sample_color = finalTexture.Sample(samp, offset_uv).rgb;
             float weight = kernel[i + 3];
-            color_sum += sample * weight;
+            color_sum += sample_color * weight;
             weight_sum += weight;
         }
 
@@ -64,9 +64,9 @@ float4 PShader(PS_INPUT input) : SV_TARGET
         for (int i = 0; i < 3; i++){
 
             float2 offset_uv = input.uv + float2(0, offsets[3 * i + 1].y * texel_size.y);
-            float3 sample = finalTexture.Sample(samp, offset_uv).rgb;
+            float3 sample_color = finalTexture.Sample(samp, offset_uv).rgb;
             float weight = kernel[3 * i + 1];
-            color_sum += sample * weight;
+            color_sum += sample_color * weight;
             weight_sum += weight;
         }
 

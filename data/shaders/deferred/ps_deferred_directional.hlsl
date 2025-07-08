@@ -200,7 +200,8 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     float brightness = dot(color + ambient_tmp, float3(0.2126, 0.7152, 0.0722));
     if (brightness > 1.0){
         // If the emissive is because of his brightness, just add the albedo
-        out_color.out_emissive = float4(color + (color * out_color.out_emissive.rgb), 1.0); // * texture_emissive.a; // bloom intensity, 1.0f by default
+        float brightness_attenuation = (1.0, texture_metallic, 0.3);
+        out_color.out_emissive = float4((color + (color * out_color.out_emissive.rgb)) * intensity * brightness_attenuation, 1.0); // * texture_emissive.a; // bloom intensity, 1.0f by default
     }
 
 
@@ -208,10 +209,11 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     //color = color / (color + float3(1.0, 1.0, 1.0));
     
     //float3 bloom = float3(texture_color.rgb);
-    color += texture_emissive.rgb;
     
     // HDR tonemapping with exposure
     color = float3(1.0, 1.0, 1.0) - exp(-color * intensity);
+ 
+    color += texture_emissive.rgb;
     
     // gamma correct
     float tmp = 1.0 / 2.2;
