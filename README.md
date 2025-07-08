@@ -37,7 +37,6 @@ Simply open Nova Engine VS solution and compile
 - Cubemap reflections
 - Render Solid & Wireframe
 - Depth Prepass
-
 - Directional light
 - Point light
 - Spot Light
@@ -52,3 +51,4 @@ Simply open Nova Engine VS solution and compile
 - GUI for entities
 - Input System
 - Material creation
+- Parenting
