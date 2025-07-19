@@ -9,6 +9,8 @@ public:
 	Entity(Entity&&);
 	~Entity();
 
+	Entity& operator=(const Entity&);
+
 	unsigned int get_id();
 	std::string get_name();
 private:

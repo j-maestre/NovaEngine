@@ -52,11 +52,16 @@ void TransformComponent::update(){
 	// Model construction
 	m_transform = scale * rotation * translation;
 
-	// arenting
+	// Parenting
 	if (m_parent) {
 		m_parent->update();
 		m_transform *= m_parent->get_transform();
 	}
+
+	// Raw transform
+	//Mat4 raw = DirectX::XMMatrixTranspose(m_transform);
+	DirectX::XMStoreFloat4x4(&m_transform_float, m_transform);
+	m_transform_raw = reinterpret_cast<float*>(&m_transform_float);
 
 	// Inverse model
 	m_inverse_transform = DirectX::XMMatrixInverse(nullptr, m_transform);
@@ -157,4 +162,10 @@ const Mat4 TransformComponent::get_transform() {
 const Mat4 TransformComponent::get_inverse_transform() {
 	update();
 	return m_inverse_transform;
+}
+
+float* TransformComponent::get_transform_raw(){
+
+	update();
+	return m_transform_raw;
 }

@@ -12,14 +12,16 @@ public:
 	~Scene();
 
 	void update();
+	Entity get_selected_entity();
+	void select_entity(Entity e);
 
 	EntityComponentSystem m_ecs;
 
 private:
 
 	bool load_scene(std::string path);
-
-
+	
+	Entity m_selected_entity;
 	std::string m_full_path;
 
 };

@@ -17,19 +17,19 @@ bool load_mesh_component(const ryml::NodeRef& entity_node, Entity& entity, Entit
 bool load_material_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
 
 
-Scene::Scene(const std::string& path_scene) : m_ecs() {
+Scene::Scene(const std::string& path_scene) : m_ecs(), m_selected_entity(0,"") {
 
     m_full_path = "data/scenes/";
     load_scene( { m_full_path + path_scene } );
 
 }
 
-Scene::Scene(const Scene&)
-{
+Scene::Scene(const Scene&) : m_selected_entity(0,"") {
+    
 }
 
-Scene::Scene(Scene&&)
-{
+Scene::Scene(Scene&&) : m_selected_entity(0, ""){
+
 }
 
 Scene::~Scene()
@@ -53,6 +53,16 @@ void Scene::update(){
 
 	ImguiManager::get_instance()->m_update_transform_time = std::chrono::duration<float, std::milli>(elapsed).count();
 #endif
+}
+
+Entity Scene::get_selected_entity(){
+
+    return m_selected_entity;
+}
+
+void Scene::select_entity(Entity e){
+
+    m_selected_entity = e;
 }
 
 bool Scene::load_scene(std::string path){

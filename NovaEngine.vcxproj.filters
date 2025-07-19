@@ -153,6 +153,9 @@
     <ClCompile Include="src\Core\JobSystem.cpp">
       <Filter>Archivos de recursos\src\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\ImGuizmo.cpp">
+      <Filter>Archivos de recursos\src\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\render\window.h">
@@ -225,6 +228,9 @@
       <Filter>Archivos de encabezado\include\Render\imgui</Filter>
     </ClInclude>
     <ClInclude Include="include\Core\JobSystem.h">
+      <Filter>Archivos de encabezado\include\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\ImGuizmo.h">
       <Filter>Archivos de encabezado\include\Core</Filter>
     </ClInclude>
   </ItemGroup>

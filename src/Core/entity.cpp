@@ -22,6 +22,16 @@ Entity::~Entity(){
 
 }
 
+Entity& Entity::operator=(const Entity& other){
+
+	if (this != &other) {
+		m_id = other.m_id;
+		m_name = other.m_name;
+	}
+
+	return *this;
+}
+
 unsigned int Entity::get_id(){
 
 	return m_id;

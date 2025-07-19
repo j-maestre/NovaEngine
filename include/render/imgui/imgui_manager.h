@@ -9,6 +9,8 @@
 #include "imgui.h"
 #include "backends/imgui_impl_dx11.h"
 #include "backends/imgui_impl_win32.h"
+
+
 #include "Core/engine.h"
 #include "Core/ECS.h"
 #include "Core/Scene.h"
@@ -44,12 +46,13 @@ public:
 	void render();
 
 	void resize(HWND hwnd, unsigned int width, unsigned int height);
-	void scene_info(EntityComponentSystem& ecs);
+	void scene_info(Scene* scene);
 
 	void apply_nova_style();
 	void show_demo_window();
 
 	void show_cam(CameraComponent* cam, int entity_id);
+	void render_guizmo(CameraComponent* cam, ImVec2 pos, ImVec2 size);
 
 	void add_resource_loaded(std::string text);
 
@@ -62,6 +65,7 @@ private:
 	friend class Scene;
 
 	void init(HWND handle);
+
 
 	void main_menu();
 	void system_info();

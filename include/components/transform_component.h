@@ -42,6 +42,8 @@ public:
 	const Mat4 get_transform();
 	const Mat4 get_inverse_transform();
 
+	float* get_transform_raw();
+
 private:
 
 	// Model matrix
@@ -51,6 +53,9 @@ private:
 	Vec3 m_position;
 	Vec3 m_rotation;
 	Vec3 m_scale;
+
+	DirectX::XMFLOAT4X4 m_transform_float;
+	float* m_transform_raw;
 
 	TransformComponent* m_parent = nullptr;
 

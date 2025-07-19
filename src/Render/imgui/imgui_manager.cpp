@@ -1,4 +1,5 @@
 #include "render/imgui/imgui_manager.h"
+#include "Core/ImGuizmo.h"
 #include "Core/engine.h"
 #include <filesystem>
 
@@ -74,8 +75,6 @@ void ImguiManager::render() {
 	*/
 
 	system_info();
-	
-
 
 	// DEMO
 	//static bool show = true;
@@ -149,6 +148,36 @@ void ImguiManager::init(HWND handle){
 	ImGui_ImplDX11_Init(Engine::get_instance()->get_engine_props()->deviceInterface, Engine::get_instance()->get_engine_props()->inmediateDeviceContext);
 
 	apply_nova_style();
+}
+
+void ImguiManager::render_guizmo(CameraComponent* cam, ImVec2 pos, ImVec2 size){
+
+	//ImGui::Begin("Guizmo");
+
+	
+	ImGuizmo::SetOrthographic(false);
+	ImGuizmo::SetDrawlist();
+
+	ImGuiIO& io = ImGui::GetIO();
+	//ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, io.DisplaySize.x, io.DisplaySize.y);
+	ImGuizmo::SetRect(pos.x, pos.y, size.x, size.y);
+
+	float* view_matrix = cam->get_view_raw();
+	float* projection_matrix = cam->get_projection_raw(); // tu matriz de proyección
+
+	// Matriz del objeto a manipular
+	Entity e = Engine::get_instance()->m_current_scene->get_selected_entity();
+	TransformComponent* t = Engine::get_instance()->m_current_scene->m_ecs.get_component<TransformComponent>(e);
+	float* object_matrix = t->get_transform_raw();
+
+	// Operaciones: TRANSLATE, ROTATE, SCALE
+	ImGuizmo::Manipulate(view_matrix, projection_matrix,
+		ImGuizmo::TRANSLATE, // o ROTATE o SCALE
+		ImGuizmo::WORLD,     // o LOCAL
+		object_matrix);
+
+	//ImGui::End();
+		
 }
 
 void ImguiManager::main_menu(){
@@ -847,12 +876,13 @@ void ImguiManager::add_resource_loaded(std::string text){
 	m_resources_loaded.push_back(text);
 }
 
-void ImguiManager::scene_info(EntityComponentSystem& ecs){
+void ImguiManager::scene_info(Scene* scene){
 
-	std::vector<Entity>& entities = ecs.get_entities();
+	EntityComponentSystem& ecs = scene->m_ecs;
+	std::vector<Entity>& entities = scene->m_ecs.get_entities();
 
 	ImGui::Begin("Scene");
-	for (auto e : entities) {
+	for (Entity& e : entities) {
 
 		//ImGui::SeparatorText(name.c_str());
 		std::string name = e.get_name() + "## " + std::to_string(e.get_id());
@@ -860,6 +890,13 @@ void ImguiManager::scene_info(EntityComponentSystem& ecs){
 
 			std::string id_text = "ID: " + std::to_string(e.get_id());
 			ImGui::Text(id_text.c_str());
+
+			std::string select_btn = "Select entity##" + std::to_string(e.get_id());
+			if (ImGui::Button(select_btn.c_str())) {
+				scene->select_entity(e);
+				printf("Selected entity: %s\n", name.c_str());
+			}
+
 			TransformComponent* trans = ecs.get_component<TransformComponent>(e);
 			if (trans) {
 				show_transform(trans, e.get_id());

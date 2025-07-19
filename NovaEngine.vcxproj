@@ -172,6 +172,7 @@
     <ClCompile Include="src\Core\engine.cpp" />
     <ClCompile Include="src\Core\entity.cpp" />
     <ClCompile Include="src\Core\game_object.cpp" />
+    <ClCompile Include="src\Core\ImGuizmo.cpp" />
     <ClCompile Include="src\Core\input.cpp" />
     <ClCompile Include="src\Core\JobSystem.cpp" />
     <ClCompile Include="src\Core\mesh.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="include\Core\engine.h" />
     <ClInclude Include="include\Core\entity.h" />
     <ClInclude Include="include\Core\game_object.h" />
+    <ClInclude Include="include\Core\ImGuizmo.h" />
     <ClInclude Include="include\Core\input.h" />
     <ClInclude Include="include\Core\JobSystem.h" />
     <ClInclude Include="include\Core\keys.h" />

@@ -40,7 +40,8 @@ public:
 	const Mat4* get_projection() noexcept { return &m_projection; }
 	const Mat4* get_view_projection() noexcept { return &m_view_projection; }
 	
-
+	float* get_view_raw();
+	float* get_projection_raw();
 
 
 private:
@@ -58,6 +59,12 @@ private:
 	Mat4 m_view;
 	Mat4 m_projection;
 	Mat4 m_view_projection;	// View * projection combinated
+
+	DirectX::XMFLOAT4X4 m_view_float;
+	float* m_view_raw;
+	
+	DirectX::XMFLOAT4X4 m_projection_float;
+	float* m_projection_raw;
 
 	FVector m_direction;
 	Vec3 m_up;

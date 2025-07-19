@@ -656,7 +656,7 @@ void Renderer::render_forward(EntityComponentSystem& ecs){
 
 	auto start_imgui = std::chrono::high_resolution_clock::now();
 	ImguiManager::get_instance()->render();
-	ImguiManager::get_instance()->scene_info(ecs);
+	ImguiManager::get_instance()->scene_info(Engine::get_instance()->m_current_scene);
 	ImguiManager::get_instance()->show_cam(m_cam, 0xfff);
 	auto end_imgui = std::chrono::high_resolution_clock::now();
 	auto elapsed_imgui = end_imgui - start_imgui;
@@ -885,9 +885,30 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 
 
 	auto start_imgui = std::chrono::high_resolution_clock::now();
+
 	ImguiManager::get_instance()->render();
-	ImguiManager::get_instance()->scene_info(ecs);
+	ImguiManager::get_instance()->scene_info(Engine::get_instance()->m_current_scene);
 	ImguiManager::get_instance()->show_cam(m_cam, 0xfff);
+
+	//ImGui::Begin("Scene");
+
+	//ImVec2 image_size = ImGui::GetContentRegionAvail();
+	//ImTextureID texture_id = (ImTextureID)m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[0];
+	//ImGui::Image(texture_id, image_size);
+
+	// POSICIÓN Y TAMAÑO DEL ÚLTIMO ITEM (la imagen)
+	//ImVec2 img_pos = ImGui::GetItemRectMin();
+	//ImVec2 img_size = ImGui::GetItemRectSize();
+
+	ImVec2 scene_pos = ImGui::GetWindowPos(); // posición ventana renderizado
+	ImVec2 scene_size = ImGui::GetWindowSize();
+
+	// Llamar al gizmo justo encima de la imagen
+	ImguiManager::get_instance()->render_guizmo(m_cam, scene_pos, scene_size);
+
+	//ImGui::End();
+
+
 	m_bloom_active = ImguiManager::get_instance()->m_bloom;
 	set_draw_mode(ImguiManager::get_instance()->m_current_draw_mode);
 	auto end_imgui = std::chrono::high_resolution_clock::now();
