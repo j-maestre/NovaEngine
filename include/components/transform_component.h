@@ -23,10 +23,14 @@ public:
 
 	void rotateXYZ(float x, float y, float z);
 	void rotateXYZ(const Vec3& rotation);
+	void rotateXYZ(const float rotation[3]);
 
 	void set_position(const Vec3& position);
+	void set_position(const float position[3]);
 	void set_scale(const Vec3& scale);
+	void set_scale(const float scale[3]);
 	void set_rotation(const Vec3& rotation);
+	void set_rotation(const float rotation[3]);
 
 	void set_parent(TransformComponent* parent);
 

@@ -1,5 +1,4 @@
 #include "render/imgui/imgui_manager.h"
-#include "Core/ImGuizmo.h"
 #include "Core/engine.h"
 #include <filesystem>
 
@@ -76,6 +75,11 @@ void ImguiManager::render() {
 
 	system_info();
 
+	Input& input = Engine::get_instance()->m_input;
+	if (input.is_key_down(Key::Keyboard::W)) m_current_operation = ImGuizmo::TRANSLATE;
+	if (input.is_key_down(Key::Keyboard::E)) m_current_operation = ImGuizmo::SCALE;
+	if (input.is_key_down(Key::Keyboard::R)) m_current_operation = ImGuizmo::ROTATE;
+
 	// DEMO
 	//static bool show = true;
 	//ImGui::ShowStyleEditor();
@@ -148,19 +152,24 @@ void ImguiManager::init(HWND handle){
 	ImGui_ImplDX11_Init(Engine::get_instance()->get_engine_props()->deviceInterface, Engine::get_instance()->get_engine_props()->inmediateDeviceContext);
 
 	apply_nova_style();
+
+	m_current_operation = ImGuizmo::TRANSLATE;
+	m_window_handle = handle;
 }
 
-void ImguiManager::render_guizmo(CameraComponent* cam, ImVec2 pos, ImVec2 size){
-
-	//ImGui::Begin("Guizmo");
-
-	
-	ImGuizmo::SetOrthographic(false);
-	ImGuizmo::SetDrawlist();
+void ImguiManager::render_guizmo(CameraComponent* cam/*, ImVec2 pos, ImVec2 size*/) {
 
 	ImGuiIO& io = ImGui::GetIO();
-	//ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, io.DisplaySize.x, io.DisplaySize.y);
-	ImGuizmo::SetRect(pos.x, pos.y, size.x, size.y);
+	
+	ImGuizmo::BeginFrame();
+	ImGuizmo::SetOrthographic(false);
+
+	const ImGuiViewport* HUD_viewport_ = ImGui::GetMainViewport();
+	ImGuizmo::SetRect(HUD_viewport_->Pos.x, HUD_viewport_->Pos.y, HUD_viewport_->Size.x, HUD_viewport_->Size.y);
+	//if (HUD_viewport_) {
+	//}else {
+		//ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+	//}
 
 	float* view_matrix = cam->get_view_raw();
 	float* projection_matrix = cam->get_projection_raw(); // tu matriz de proyección
@@ -172,12 +181,26 @@ void ImguiManager::render_guizmo(CameraComponent* cam, ImVec2 pos, ImVec2 size){
 
 	// Operaciones: TRANSLATE, ROTATE, SCALE
 	ImGuizmo::Manipulate(view_matrix, projection_matrix,
-		ImGuizmo::TRANSLATE, // o ROTATE o SCALE
+		m_current_operation, // o ROTATE o SCALE
 		ImGuizmo::WORLD,     // o LOCAL
 		object_matrix);
 
-	//ImGui::End();
-		
+	// For physics in future
+	//if(ImGuizmo::IsOver())
+
+	if (ImGuizmo::IsUsing()) {
+		float position[3], rotation[3], scale[3];
+
+		// angles in degrees
+		ImGuizmo::DecomposeMatrixToComponents(object_matrix, position, rotation, scale);
+
+		//rotation[0] = degToRad(rotation[0]);
+		//rotation[1] = degToRad(rotation[1]);
+		//rotation[2] = degToRad(rotation[2]);
+		t->set_position(position);
+		t->set_rotation(rotation);
+		t->set_scale(scale);
+	}
 }
 
 void ImguiManager::main_menu(){

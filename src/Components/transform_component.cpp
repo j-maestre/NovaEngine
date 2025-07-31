@@ -103,9 +103,23 @@ void TransformComponent::rotateXYZ(const Vec3& rotation){
 	m_is_calculated = false;
 }
 
+void TransformComponent::rotateXYZ(const float rotation[3]){
+	m_rotation.x += rotation[0];
+	m_rotation.y += rotation[1];
+	m_rotation.z += rotation[2];
+	m_is_calculated = false;
+}
+
 void TransformComponent::set_position(const Vec3& position){
 
 	m_position = position;
+	m_is_calculated = false;
+}
+
+void TransformComponent::set_position(const float position[3]){
+	m_position.x = position[0];
+	m_position.y = position[1];
+	m_position.z = position[2];
 	m_is_calculated = false;
 }
 
@@ -115,8 +129,22 @@ void TransformComponent::set_scale(const Vec3& scale){
 	m_is_calculated = false;
 }
 
+void TransformComponent::set_scale(const float scale[3]){
+	m_scale.x = scale[0];
+	m_scale.y = scale[1];
+	m_scale.z = scale[2];
+	m_is_calculated = false;
+}
+
 void TransformComponent::set_rotation(const Vec3& rotation){
 	m_rotation = rotation;
+	m_is_calculated = false;
+}
+
+void TransformComponent::set_rotation(const float rotation[3]){
+	m_rotation.x = rotation[0];
+	m_rotation.y = rotation[1];
+	m_rotation.z = rotation[2];
 	m_is_calculated = false;
 }
 
