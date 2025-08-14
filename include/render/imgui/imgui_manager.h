@@ -52,6 +52,8 @@ public:
 	void apply_nova_style();
 	void show_demo_window();
 
+	void show_render_parameters(RenderInfo* info);
+
 	void show_cam(CameraComponent* cam, int entity_id);
 	void render_guizmo(CameraComponent* cam/*, ImVec2 pos, ImVec2 size*/);
 

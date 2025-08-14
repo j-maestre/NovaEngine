@@ -26,7 +26,7 @@ static inline float radToDeg(const float radians) {
 	return radians * kfRadToDeg;
 }
 
-constexpr unsigned int ssao_kernel = 64;
+constexpr unsigned int ssao_kernel = 16;
 constexpr unsigned int ssao_noise = 16;
 constexpr unsigned int ssao_noise_dim = 4;
 
@@ -270,6 +270,12 @@ struct DeferredResources {
 	ID3D11RenderTargetView* ssao_render_target_view;
 	ID3D11Texture2D* ssao_texture;
 	ID3D11ShaderResourceView* ssao_shader_resource_view;
+};
+
+struct RenderInfo {
+	bool ssao_active = true;
+	bool bloom_active = true;
+	DrawMode draw_mode = DrawMode::Solid;
 };
 
 struct WindowProperties {

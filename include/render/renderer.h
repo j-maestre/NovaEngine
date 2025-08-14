@@ -162,6 +162,8 @@ private:
 
 	VertexQuad m_fs_quad[3];
 	D3D11_BUFFER_DESC m_buffer_description_full_triangle;
+
+	RenderInfo m_render_info_parameters;
 	bool m_isInitialized;
 	bool m_bloom_active = true;
 	bool m_depth_prepass = true;

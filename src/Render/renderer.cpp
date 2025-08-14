@@ -811,7 +811,9 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	// SSAO Pass
 
 	//Mat4 tmp = DirectX::XMMatrixMultiply(cam_buffer.view, cam_buffer.projection);
-	draw_ssao(&cam_buffer.projection, &cam_buffer.view);
+	if (m_render_info_parameters.ssao_active) {
+		draw_ssao(&cam_buffer.projection, &cam_buffer.view);
+	}
 
 
 	// Light Pass
@@ -926,7 +928,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->backbuffer, m_depth_stencil_view);
 
 	// Setear textura resultado (SRV)
-	if (m_bloom_active) {
+	if (m_render_info_parameters.bloom_active) {
 		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[0]);
 	}else {
 		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &(m_deferred_resources.postprocess_resource_view));
@@ -967,14 +969,9 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	ImguiManager::get_instance()->show_cam(m_cam, 0xfff);
 	ImguiManager::get_instance()->render_guizmo(m_cam/*, scene_pos, scene_size*/);
 	ImguiManager::get_instance()->gbuffer_info(&m_deferred_resources);
+	ImguiManager::get_instance()->show_render_parameters(&m_render_info_parameters);
 
-
-
-	//ImGui::End();
-
-
-	m_bloom_active = ImguiManager::get_instance()->m_bloom;
-	set_draw_mode(ImguiManager::get_instance()->m_current_draw_mode);
+	set_draw_mode(m_render_info_parameters.draw_mode);
 	auto end_imgui = std::chrono::high_resolution_clock::now();
 	auto elapsed_imgui = end_imgui - start_imgui;
 	ImguiManager::get_instance()->m_draw_imgui_time = std::chrono::duration<float, std::milli>(elapsed_imgui).count();
@@ -1082,7 +1079,7 @@ void Renderer::render_deferred_internal(){
 
 void Renderer::draw_emissive(){
 
-	if (m_bloom_active) {
+	if (m_render_info_parameters.bloom_active) {
 
 		UINT stride = sizeof(VertexQuad);
 		UINT offset = 0;
@@ -1627,7 +1624,7 @@ void Renderer::init_ssao(){
 	for (unsigned int i = 0; i < ssao_kernel; i++) {
 
 
-		FVector random({ (dist(mt) * 2.0f) - 1.0f, (dist(mt) * 2.0f) - 1.0f, 0.0f }); // Tangent space z positive to rotate around z
+		FVector random({ /*(*/dist(mt)/* * 2.0f) - 1.0f*/, /*(*/dist(mt)/* * 2.0f) - 1.0f*/, 0.0f}); // Tangent space z positive to rotate around z
 		random = DirectX::XMVector3Normalize(random);
 		float random_magnitude = dist(mt);
 		random = DirectX::XMVectorScale(random, random_magnitude);	// Scale to a random magnitude in a hemisfere

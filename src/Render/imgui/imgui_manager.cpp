@@ -138,6 +138,22 @@ void ImguiManager::show_demo_window(){
 	
 }
 
+void ImguiManager::show_render_parameters(RenderInfo* info){
+
+	ImGui::Begin("Render Options");
+
+	ImGui::Checkbox("Show Bloom", &(info->bloom_active));
+	ImGui::Checkbox("SSAO", &(info->ssao_active));
+
+	int draw_index = static_cast<int>(info->draw_mode);
+	//int draw_index = 0;
+	if (ImGui::Combo("Draw Mode", &draw_index, m_draw_modes.data(), static_cast<int>(m_draw_modes.size()))) {
+		info->draw_mode = static_cast<DrawMode>(draw_index);
+	}
+
+	ImGui::End();
+}
+
 void ImguiManager::init(HWND handle){
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -323,13 +339,7 @@ void ImguiManager::system_info(){
 	ImGui::PlotLines("Delta time", m_dt_history.data(), m_dt_history_size, m_dt_history_index, nullptr, FLT_MAX, FLT_MAX, ImVec2(0, 70));
 #endif
 
-	ImGui::Checkbox("Show Bloom", &m_bloom);
-	int draw_index = static_cast<int>(m_current_draw_mode);
-	//int draw_index = 0;
-	if (ImGui::Combo("Draw Mode", &draw_index, m_draw_modes.data(), static_cast<int>(m_draw_modes.size()))) {
-		m_current_draw_mode = static_cast<DrawMode>(draw_index);
-
-	}
+	
 
 
 
@@ -980,15 +990,15 @@ void ImguiManager::gbuffer_info(DeferredResources* gbuffer){
 		ImVec2(256,256)
 	);
 
-	ImGui::Text("SSAO");
-	ImGui::Image(
-		(ImTextureID) gbuffer->ssao_shader_resource_view,
-		ImVec2(256,256)
-	);
-
 	ImGui::Text("Emissive");
 	ImGui::Image(
 		(ImTextureID) gbuffer->emissive_dowscaling_shader_resource_view[0],
+		ImVec2(256,256)
+	);
+	
+	ImGui::Text("SSAO");
+	ImGui::Image(
+		(ImTextureID) gbuffer->ssao_shader_resource_view,
 		ImVec2(256,256)
 	);
 
