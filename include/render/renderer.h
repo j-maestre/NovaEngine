@@ -50,8 +50,12 @@ private:
 	__forceinline void render_mesh_internal(CameraConstantBuffer* camera_buffer, TransformComponent& trans, Mesh& m);
 	__forceinline void render_mesh_depth_only(CameraDepthPrePass* camera_buffer, TransformComponent& trans, Mesh& m);
 	__forceinline void render_deferred_internal();
+
+	/*** Post process techniques ***/
 	__forceinline void draw_emissive();
 	__forceinline void draw_emissive_downsample();
+	__forceinline void draw_ssao(Mat4* projection, Mat4* view);
+	/*******************************/
 
 	void depth_pass(EntityComponentSystem& ecs);
 	void draw_skybox();
@@ -66,6 +70,8 @@ private:
 	void create_backbuffers();
 	void create_deferred_resources(unsigned int width, unsigned int height);
 	void release_deferred_resources();
+
+	void init_ssao();
 
 	__forceinline void add_draw_call();
 
@@ -121,6 +127,10 @@ private:
 	D3D11_BUFFER_DESC m_skybox_constant_buffer_desc;
 	ID3D11Buffer* m_pVBuffer_skybox_buffer;
 
+	D3D11_BUFFER_DESC m_ssao_constant_buffer_desc;
+	ID3D11Buffer* m_pVBuffer_ssao;
+	SSAOConstantBuffer m_constant_buffer_ssao;
+
 	ID3D11Buffer* m_pVBufferLight;
 
 	ID3D11Buffer* m_pVBuffer;
@@ -133,11 +143,13 @@ private:
 	
 	ID3D11SamplerState* m_sampler_state_emissive;
 	ID3D11SamplerState* m_sampler_state;
+	ID3D11SamplerState* m_sampler_state_noise_ssao;
 	D3D11_SAMPLER_DESC m_sampler_desc;
 
 	ID3D11Texture2D* m_depth_buffer;
 	ID3D11DepthStencilView* m_depth_stencil_view;
 	ID3D11DepthStencilState* m_depth_stencil_state;
+	ID3D11ShaderResourceView* m_depth_srv;
 
 	ID3D11DepthStencilState* m_depth_stencil_state_skybox;
 	ID3D11DepthStencilState* m_depth_only_state;
@@ -149,12 +161,18 @@ private:
 	bool m_isInitialized;
 	bool m_bloom_active = true;
 	bool m_depth_prepass = true;
+	bool m_ssao_active = true;
 
 	int m_buffer_index = 0;
 	std::string m_pixel_shader_model;
 	std::string m_vertex_shader_model;
 
 	DrawMode m_current_draw_mode;
+
+	ID3D11Texture2D* m_noise_texture = nullptr;
+	ID3D11ShaderResourceView* m_noise_srv = nullptr;
+	std::vector<Vec3> m_ssao_kernel_random;
+	std::vector<float> m_ssao_noise_random;
 
 	float m_skybox_vertices[36 * 3] = {
 		// positions          

@@ -34,7 +34,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	float scale = 1.0f;
-	Scene* scene = engine->create_scene("scene0.yaml");
+	Scene* scene = engine->create_scene("scene_ssao.yaml");
 	engine->set_scene(scene);
 	
 	Entity directional_light = scene->m_ecs.create_entity("Directional Light");

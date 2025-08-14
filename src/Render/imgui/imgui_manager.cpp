@@ -179,26 +179,30 @@ void ImguiManager::render_guizmo(CameraComponent* cam/*, ImVec2 pos, ImVec2 size
 	TransformComponent* t = Engine::get_instance()->m_current_scene->m_ecs.get_component<TransformComponent>(e);
 	float* object_matrix = t->get_transform_raw();
 
-	// Operaciones: TRANSLATE, ROTATE, SCALE
-	ImGuizmo::Manipulate(view_matrix, projection_matrix,
-		m_current_operation, // o ROTATE o SCALE
-		ImGuizmo::WORLD,     // o LOCAL
-		object_matrix);
+	ImGuizmo::Manipulate(
+		view_matrix, 
+		projection_matrix,
+		m_current_operation,
+		ImGuizmo::WORLD,
+		object_matrix
+	);
 
-	// For physics in future
+	// For physics in future (picking)
 	//if(ImGuizmo::IsOver())
 
 	if (ImGuizmo::IsUsing()) {
-		float position[3], rotation[3], scale[3];
 
+		float position[3], rotation[3], scale[3];
 		// angles in degrees
 		ImGuizmo::DecomposeMatrixToComponents(object_matrix, position, rotation, scale);
+		rotation[0] = degToRad(rotation[0]);
+		rotation[1] = degToRad(rotation[1]);
+		rotation[2] = degToRad(rotation[2]);
 
-		//rotation[0] = degToRad(rotation[0]);
-		//rotation[1] = degToRad(rotation[1]);
-		//rotation[2] = degToRad(rotation[2]);
+
+		//printf("Rotation x %f y %f z %f\n", rotation[0], rotation[1], rotation[2]);
 		t->set_position(position);
-		t->set_rotation(rotation);
+		//t->set_rotation(rotation); // TODO: Fix rotation bug
 		t->set_scale(scale);
 	}
 }

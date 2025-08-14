@@ -26,9 +26,9 @@ static inline float radToDeg(const float radians) {
 	return radians * kfRadToDeg;
 }
 
-
-
-
+constexpr unsigned int ssao_kernel = 64;
+constexpr unsigned int ssao_noise = 16;
+constexpr unsigned int ssao_noise_dim = 4;
 
 
 #ifdef DIRECTX11
@@ -91,6 +91,9 @@ struct ShaderFiles {
 
 	// Depth Pre pass
 	ID3D11VertexShader* VS_depth_prepass = nullptr;
+
+	// SSAO
+	ID3D11PixelShader* PS_SSAO = nullptr;
 };
 
 enum class ShaderType {
@@ -108,7 +111,7 @@ enum class ShaderType {
 	BloomDownsample,
 	Skybox,
 	Depth,
-
+	SSAO,
 };
 
 enum class DrawMode {
@@ -181,6 +184,15 @@ struct EmissiveConstantBuffer {
 	Vec3 padding;
 };
 
+struct SSAOConstantBuffer {
+	Mat4 projection;
+	Mat4 view;
+	Vec4 kernel_samples[ssao_kernel];
+	float width;
+	float height;
+	Vec2 padding;
+};
+
 
 
 struct Color {
@@ -249,12 +261,15 @@ struct DeferredResources {
 	ID3D11Texture2D* postprocess_texture;
 	ID3D11ShaderResourceView* postprocess_resource_view;
 
-
-
 	// Light
 	ID3D11RenderTargetView* light_render_target_view;
 	ID3D11Texture2D* light_texture;
 	ID3D11ShaderResourceView* light_shader_resource_view;
+	
+	// SSAO
+	ID3D11RenderTargetView* ssao_render_target_view;
+	ID3D11Texture2D* ssao_texture;
+	ID3D11ShaderResourceView* ssao_shader_resource_view;
 };
 
 struct WindowProperties {

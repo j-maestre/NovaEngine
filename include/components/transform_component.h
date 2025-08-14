@@ -17,6 +17,8 @@ public:
 	void update();
 	void force_update();
 
+
+	// Rotation is in Radians
 	void rotateX(float angle);
 	void rotateY(float angle);
 	void rotateZ(float angle);
@@ -27,8 +29,10 @@ public:
 
 	void set_position(const Vec3& position);
 	void set_position(const float position[3]);
+
 	void set_scale(const Vec3& scale);
 	void set_scale(const float scale[3]);
+	
 	void set_rotation(const Vec3& rotation);
 	void set_rotation(const float rotation[3]);
 
