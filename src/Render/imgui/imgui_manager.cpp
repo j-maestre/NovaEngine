@@ -959,5 +959,44 @@ void ImguiManager::scene_info(Scene* scene){
 	ImGui::End();
 }
 
+void ImguiManager::gbuffer_info(DeferredResources* gbuffer){
+
+	ImGui::Begin("G-Buffer");
+	ImGui::Text("Albedo");
+	ImGui::Image(
+		(ImTextureID) gbuffer->gbuffer_albedo_shader_resource_view,
+		ImVec2(256,256)
+	);
+
+	ImGui::Text("Position");
+	ImGui::Image(
+		(ImTextureID) gbuffer->gbuffer_position_shader_resource_view,
+		ImVec2(256,256)
+	);
+	
+	ImGui::Text("Normals");
+	ImGui::Image(
+		(ImTextureID) gbuffer->gbuffer_normals_shader_resource_view,
+		ImVec2(256,256)
+	);
+
+	ImGui::Text("SSAO");
+	ImGui::Image(
+		(ImTextureID) gbuffer->ssao_shader_resource_view,
+		ImVec2(256,256)
+	);
+
+	ImGui::Text("Emissive");
+	ImGui::Image(
+		(ImTextureID) gbuffer->emissive_dowscaling_shader_resource_view[0],
+		ImVec2(256,256)
+	);
+
+
+
+
+	ImGui::End();
+}
+
 
 
