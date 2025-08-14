@@ -57,7 +57,7 @@ float4 PShader(VS_OUT input) : SV_TARGET {
     
     float occlusion = 0.0;
     int kernel_size = 64;
-    float radius = 0.1;
+    float radius = 0.5;
     float bias = 0.025;
     
     
@@ -102,9 +102,10 @@ float4 PShader(VS_OUT input) : SV_TARGET {
         */
     };
     
-    //occlusion = 1.0 - (occlusion / kernel_size);
+    occlusion = 1.0 - (occlusion / kernel_size);
     //occlusion += 0.5;
-    occlusion = position_view.z;
-    
+    //occlusion = abs(position_view.z);
+    //occlusion = 1.0;
+    //return float4(1.0, 0.0, 0.0, 1.0);
     return float4(occlusion, occlusion, occlusion, 1.0);
 }

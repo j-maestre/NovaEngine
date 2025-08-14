@@ -368,6 +368,17 @@ bool Renderer::init_pipeline(Window* win){
 	};
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilState(&depth_desc_prepass, &m_depth_only_state);
 	
+	// Depth Stencil for SSAO
+	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc_ssao = {
+	  .DepthEnable = false,
+	  .DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO,
+	  .DepthFunc = D3D11_COMPARISON_ALWAYS,
+	  .StencilEnable = false,
+	  .StencilReadMask = 0,
+	  .StencilWriteMask = 0,
+	};
+	m_depth_stencil_ssao = nullptr;
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilState(&depth_stencil_desc_ssao, &m_depth_stencil_ssao);
 	
 
 	// Blend states
@@ -754,7 +765,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	clear_shader_reources();
 
 	// Clear render targets
-	for (int i = 0; i < ARRAYSIZE(gbuffer_rtv); ++i) props->inmediateDeviceContext->ClearRenderTargetView(gbuffer_rtv[i], m_clear_emissive_color);
+	//for (int i = 0; i < ARRAYSIZE(gbuffer_rtv); ++i) props->inmediateDeviceContext->ClearRenderTargetView(gbuffer_rtv[i], m_clear_emissive_color);
 
 	
 
@@ -804,8 +815,8 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 
 
 	// Light Pass
-	float clear_color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-	props->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.postprocess_render_target_view, clear_color);
+	//float clear_color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	//props->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.postprocess_render_target_view, clear_color);
 
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(1, 1, &m_pVBufferDeferredConstantCamera);
@@ -955,6 +966,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	ImguiManager::get_instance()->scene_info(Engine::get_instance()->m_current_scene);
 	ImguiManager::get_instance()->show_cam(m_cam, 0xfff);
 	ImguiManager::get_instance()->render_guizmo(m_cam/*, scene_pos, scene_size*/);
+	ImguiManager::get_instance()->gbuffer_info(&m_deferred_resources);
 
 
 
@@ -1200,7 +1212,6 @@ void Renderer::draw_emissive_downsample(){
 		set_viewport(desc.Width, desc.Height);
 
 		// Vertical blur
-		// Horizontal blur
 		EmissiveConstantBuffer emissive_buffer2{};
 		emissive_buffer2.texel_size = { 1.0f / desc.Width, 1.0f / desc.Height };
 		emissive_buffer2.bloom_intensity = 1.0f;
@@ -1260,7 +1271,6 @@ void Renderer::draw_emissive_downsample(){
 		set_viewport(desc.Width, desc.Height);
 
 		// Vertical blur
-		// Horizontal blur
 		EmissiveConstantBuffer emissive_buffer2{};
 		emissive_buffer2.texel_size = { 1.0f / desc.Width, 1.0f / desc.Height };
 		emissive_buffer2.bloom_intensity = 1.0f;
@@ -1299,9 +1309,14 @@ void Renderer::draw_ssao(Mat4* projection, Mat4* view){
 
 	active_shader(ShaderType::SSAO);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->RSSetState(m_engine_ptr->m_raster_state);
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetDepthStencilState(m_depth_stencil_state, 1);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetDepthStencilState(m_depth_stencil_ssao, 0);
+	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetDepthStencilState(m_depth_stencil_state, 1);
+	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetDepthStencilState(nullptr, 0);
 	props->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
 
+	clear_rtv(5);
+	clear_srv(5);
+	props->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.ssao_render_target_view, m_clear_emissive_color);
 	props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.ssao_render_target_view, nullptr);
 
 	// Position, Normals, SSAO Noise
@@ -1309,7 +1324,7 @@ void Renderer::draw_ssao(Mat4* projection, Mat4* view){
 		m_deferred_resources.gbuffer_position_shader_resource_view,
 		m_deferred_resources.gbuffer_normals_shader_resource_view,
 		m_noise_srv,
-		m_depth_srv,
+		//m_depth_srv,
 	};
 
 	props->inmediateDeviceContext->PSSetShaderResources(0,ARRAYSIZE(gbuffer_srv), gbuffer_srv);
@@ -1323,13 +1338,20 @@ void Renderer::draw_ssao(Mat4* projection, Mat4* view){
 
 	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
 	props->inmediateDeviceContext->PSSetSamplers(1, 1, &m_sampler_state_noise_ssao);
+
+	UINT stride = sizeof(VertexQuad);
+	UINT offset = 0;
+
 	props->inmediateDeviceContext->IASetInputLayout(m_pLayout_deferred);
+	props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
 
 
 	props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	props->inmediateDeviceContext->Draw(3, 0);
 	add_draw_call();
 
+	clear_rtv(1);
+	clear_srv(4);
 }
 
 void Renderer::depth_pass(EntityComponentSystem& ecs){
@@ -1559,7 +1581,7 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 	);
 
 	// SSAO
-	create_render_target(DXGI_FORMAT_R16G16B16A16_FLOAT,
+	create_render_target(DXGI_FORMAT_R8G8B8A8_UNORM,
 		&m_deferred_resources.ssao_texture,
 		&m_deferred_resources.ssao_render_target_view,
 		&m_deferred_resources.ssao_shader_resource_view
@@ -1711,6 +1733,7 @@ void Renderer::clear_render_target(){
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_albedo_render_target_view, m_clear_emissive_color);
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_quad_RTV, m_clear_emissive_color);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.ssao_render_target_view, m_clear_emissive_color);
 
 	for (int i = 0; i < NUM_MIPMAPS_EMISSIVE; i++) {
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[i], m_clear_emissive_color);

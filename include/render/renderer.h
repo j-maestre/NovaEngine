@@ -154,6 +154,10 @@ private:
 	ID3D11DepthStencilState* m_depth_stencil_state_skybox;
 	ID3D11DepthStencilState* m_depth_only_state;
 
+	ID3D11DepthStencilState* m_depth_stencil_ssao;
+
+
+
 	CameraComponent* m_cam;
 
 	VertexQuad m_fs_quad[3];
