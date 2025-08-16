@@ -143,14 +143,24 @@ void ImguiManager::show_render_parameters(RenderInfo* info){
 	ImGui::Begin("Render Options");
 
 	ImGui::Checkbox("Show Bloom", &(info->bloom_active));
+	hover_item();
 	ImGui::Checkbox("SSAO", &(info->ssao_active));
+	hover_item();
+	ImGui::SliderInt("SSAO Samples", &(info->ssao_samples), 1, 32);
+	hover_item();
+
+	ImGui::SliderFloat("SSAO radius", &(info->ssao_base_radius), 0.1f, 1.0f);
+	hover_item();
+	
+	ImGui::SliderFloat("SSAO blend intensity", &(info->ssao_blend_intensity), 0.1f, 3.0f);
+	hover_item();
 
 	int draw_index = static_cast<int>(info->draw_mode);
 	//int draw_index = 0;
 	if (ImGui::Combo("Draw Mode", &draw_index, m_draw_modes.data(), static_cast<int>(m_draw_modes.size()))) {
 		info->draw_mode = static_cast<DrawMode>(draw_index);
 	}
-
+	hover_item();
 	ImGui::End();
 }
 
@@ -175,51 +185,69 @@ void ImguiManager::init(HWND handle){
 
 void ImguiManager::render_guizmo(CameraComponent* cam/*, ImVec2 pos, ImVec2 size*/) {
 
-	ImGuiIO& io = ImGui::GetIO();
-	
-	ImGuizmo::BeginFrame();
-	ImGuizmo::SetOrthographic(false);
-
-	const ImGuiViewport* HUD_viewport_ = ImGui::GetMainViewport();
-	ImGuizmo::SetRect(HUD_viewport_->Pos.x, HUD_viewport_->Pos.y, HUD_viewport_->Size.x, HUD_viewport_->Size.y);
-	//if (HUD_viewport_) {
-	//}else {
-		//ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-	//}
-
-	float* view_matrix = cam->get_view_raw();
-	float* projection_matrix = cam->get_projection_raw(); // tu matriz de proyección
-
-	// Matriz del objeto a manipular
 	Entity e = Engine::get_instance()->m_current_scene->get_selected_entity();
-	TransformComponent* t = Engine::get_instance()->m_current_scene->m_ecs.get_component<TransformComponent>(e);
-	float* object_matrix = t->get_transform_raw();
+	if (e.get_id() != 0) {
 
-	ImGuizmo::Manipulate(
-		view_matrix, 
-		projection_matrix,
-		m_current_operation,
-		ImGuizmo::WORLD,
-		object_matrix
-	);
+		ImGuiIO& io = ImGui::GetIO();
+	
+		ImGuizmo::BeginFrame();
+		ImGuizmo::SetOrthographic(false);
 
-	// For physics in future (picking)
-	//if(ImGuizmo::IsOver())
+		const ImGuiViewport* HUD_viewport_ = ImGui::GetMainViewport();
+		ImGuizmo::SetRect(HUD_viewport_->Pos.x, HUD_viewport_->Pos.y, HUD_viewport_->Size.x, HUD_viewport_->Size.y);
+	
 
-	if (ImGuizmo::IsUsing()) {
+		float* view_matrix = cam->get_view_raw();
+		float* projection_matrix = cam->get_projection_raw(); // tu matriz de proyección
 
-		float position[3], rotation[3], scale[3];
-		// angles in degrees
-		ImGuizmo::DecomposeMatrixToComponents(object_matrix, position, rotation, scale);
-		rotation[0] = degToRad(rotation[0]);
-		rotation[1] = degToRad(rotation[1]);
-		rotation[2] = degToRad(rotation[2]);
+		// Matriz del objeto a manipular
+		float* object_matrix = nullptr;
+		PointLight* p = Engine::get_instance()->m_current_scene->m_ecs.get_component<PointLight>(e);
+		DirectX::XMFLOAT4X4 tmp_4x4;
+		if (p) {
+			Vec3 position = p->get_position();
+			Mat4 tmp = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+			DirectX::XMStoreFloat4x4(&tmp_4x4, tmp);
+			object_matrix = &tmp_4x4.m[0][0];
+		}
+		TransformComponent* t = Engine::get_instance()->m_current_scene->m_ecs.get_component<TransformComponent>(e);
+		if (t) {
+			object_matrix = t->get_transform_raw();
+		}
+
+		ImGuizmo::Manipulate(
+			view_matrix, 
+			projection_matrix,
+			m_current_operation,
+			ImGuizmo::WORLD,
+			object_matrix
+		);
+
+		// For physics in future (picking)
+		//if(ImGuizmo::IsOver())
+
+		if (ImGuizmo::IsUsing()) {
+
+			float position[3], rotation[3], scale[3];
+			// angles in degrees
+			ImGuizmo::DecomposeMatrixToComponents(object_matrix, position, rotation, scale);
+			rotation[0] = degToRad(rotation[0]);
+			rotation[1] = degToRad(rotation[1]);
+			rotation[2] = degToRad(rotation[2]);
 
 
-		//printf("Rotation x %f y %f z %f\n", rotation[0], rotation[1], rotation[2]);
-		t->set_position(position);
-		//t->set_rotation(rotation); // TODO: Fix rotation bug
-		t->set_scale(scale);
+			//printf("Rotation x %f y %f z %f\n", rotation[0], rotation[1], rotation[2]);
+			if (t) {
+				t->set_position(position);
+				//t->set_rotation(rotation); // TODO: Fix rotation bug
+				t->set_scale(scale);
+			}
+
+			if (p) {
+				Vec3 pos_tmp(position);
+				p->set_position(pos_tmp);
+			}
+		}
 	}
 }
 
@@ -415,9 +443,7 @@ void ImguiManager::show_vec(Vec3& vector, int entity_id, std::string label, std:
 		ImGui::Button(button_id.c_str(), ImVec2(button_width, button_height));
 		ImGui::PopStyleColor();
 
-		if (ImGui::IsItemHovered()) {
-			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-		}
+		hover_item();
 
 		// Texto encima del botón
 		ImVec2 btn_min = ImGui::GetItemRectMin();
@@ -514,9 +540,7 @@ void ImguiManager::show_transform(TransformComponent* trans, int entity_id){
 			ImGui::Button(button_id.c_str(), ImVec2(button_width, button_height));
 			ImGui::PopStyleColor();
 
-			if (ImGui::IsItemHovered()) {
-				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-			}
+			hover_item();
 
 			// Centrar texto en el boton
 			ImVec2 btn_min = ImGui::GetItemRectMin();
@@ -799,6 +823,12 @@ void ImguiManager::show_mesh_comp(MeshComponent* mesh_comp, int entity_id){
 	
 }
 
+void ImguiManager::hover_item(){
+	if (ImGui::IsItemHovered()) {
+		ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+	}
+}
+
 void ImguiManager::show_light(DirectionalLight* light, int entity_id){
 	
 	ImGui::SeparatorText("Directional Light");
@@ -933,6 +963,7 @@ void ImguiManager::scene_info(Scene* scene){
 				scene->select_entity(e);
 				printf("Selected entity: %s\n", name.c_str());
 			}
+			hover_item();
 
 			TransformComponent* trans = ecs.get_component<TransformComponent>(e);
 			if (trans) {
@@ -962,9 +993,7 @@ void ImguiManager::scene_info(Scene* scene){
 			
 		}
 
-		if (ImGui::IsItemHovered()) {
-			ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
-		}
+		hover_item();
 	}
 	ImGui::End();
 }

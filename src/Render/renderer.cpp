@@ -45,6 +45,7 @@ Renderer::~Renderer(){
 	m_pVBufferConstantCamera->Release();
 	m_pVBufferDeferredConstantCamera->Release();
 	m_pVBuffer_ssao->Release();
+	m_pVBuffer_blend_ssao->Release();
 	m_pVBuffer->Release();
 	m_pVBuffer_full_triangle->Release();
 
@@ -192,6 +193,18 @@ bool Renderer::init_pipeline(Window* win){
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_SSAO);
 
+	// SSAO Blur
+	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_ssao_blur.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	m_isInitialized = CheckShaderError(hr, error_msg);
+	if (!m_isInitialized)return m_isInitialized;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_SSAO_Blur_blend);
+
+	// SSAO Mix with albedo
+	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_ssao_blend.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	m_isInitialized = CheckShaderError(hr, error_msg);
+	if (!m_isInitialized)return m_isInitialized;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_SSAO_Mix);
+
 	// Depth prepass VS
 	hr = D3DCompileFromFile(L"data/shaders/vs_depth_prepass.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS_depth, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
@@ -261,6 +274,14 @@ bool Renderer::init_pipeline(Window* win){
 	m_ssao_constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	m_ssao_constant_buffer_desc.CPUAccessFlags = 0;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&m_ssao_constant_buffer_desc,NULL, &m_pVBuffer_ssao);
+
+	// SSAO Blend constant buffer creation
+	ZeroMemory(&m_ssao_constant_buffer_desc, sizeof(m_ssao_constant_buffer_desc));
+	m_ssao_constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+	m_ssao_constant_buffer_desc.ByteWidth = sizeof(SSAOBlendConstantBuffer);
+	m_ssao_constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	m_ssao_constant_buffer_desc.CPUAccessFlags = 0;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&m_ssao_constant_buffer_desc,NULL, &m_pVBuffer_blend_ssao);
 
 
 	/**** Depth stencil and texture creation ****/
@@ -501,8 +522,8 @@ bool Renderer::init_pipeline(Window* win){
 	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateInputLayout(ied_skybox, 1, VS_skybox->GetBufferPointer(), VS_skybox->GetBufferSize(), &m_pLayout_skybox);
 	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateInputLayout(ied_skybox, 1, VS_depth->GetBufferPointer(), VS_depth->GetBufferSize(), &m_pLayout_depth);
 	CheckShaderError(hr);
-	//m_sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	m_sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
+	m_sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	//m_sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
 	m_sampler_desc.MaxAnisotropy = 2;
 
 	m_sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -533,7 +554,7 @@ bool Renderer::init_pipeline(Window* win){
 	m_sampler_state_noise_ssao = nullptr;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateSamplerState(&sampler_ssao_desc, &m_sampler_state_noise_ssao);
 
-
+	
 	D3D11_SAMPLER_DESC emissive_sampler_desc = {};
 	emissive_sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; // Bilinear filtering
 	emissive_sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -562,22 +583,18 @@ void Renderer::active_shader(ShaderType type){
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred, nullptr, 0);
 		break;
-	
 	case ShaderType::DeferredDirectional:
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_directional, nullptr, 0);
 		break;
-	
 	case ShaderType::DeferredPoint:
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_point, nullptr, 0);
 		break;
-	
 	case ShaderType::DeferredSpot:
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_spot, nullptr, 0);
 		break;
-
 	case ShaderType::DeferredPassThrough:
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_passthrough, nullptr, 0);
@@ -613,6 +630,14 @@ void Renderer::active_shader(ShaderType type){
 	case ShaderType::SSAO:
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_SSAO, nullptr, 0);
+		break;
+	case ShaderType::BlurSSAO:
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_SSAO_Blur_blend, nullptr, 0);
+		break;
+	case ShaderType::SSAO_Mix:
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_SSAO_Mix, nullptr, 0);
 		break;
 
 	default:break;
@@ -809,8 +834,6 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	clear_shader_reources();
 
 	// SSAO Pass
-
-	//Mat4 tmp = DirectX::XMMatrixMultiply(cam_buffer.view, cam_buffer.projection);
 	if (m_render_info_parameters.ssao_active) {
 		draw_ssao(&cam_buffer.projection, &cam_buffer.view);
 	}
@@ -1155,14 +1178,8 @@ void Renderer::draw_emissive(){
 
 void Renderer::draw_emissive_downsample(){
 
-	// TODO: Crear Texturas temporales para cada mipmap level, no puedo escribir el blur horizontal siempre en gbuffer_emissive_out porque es del tamaño del original, tiene que ser del tamaño del nuevo mip
 
 	auto props = m_engine_ptr->get_engine_props();
-
-	//clear_render_target();
-	//clear_shader_reources();
-	//m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.emissive_dowscaling_render_target_view[i - 1], m_clear_emissive_color);
-	
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
 
@@ -1331,6 +1348,9 @@ void Renderer::draw_ssao(Mat4* projection, Mat4* view){
 	// SSAO kernel constant buffer initialized one time only, not need to update every frame, just projection matrix
 	m_constant_buffer_ssao.projection = *projection;
 	m_constant_buffer_ssao.view = *view;
+	m_constant_buffer_ssao.samples = m_render_info_parameters.ssao_samples;
+	m_constant_buffer_ssao.samples_float = static_cast<float>(m_render_info_parameters.ssao_samples);
+	m_constant_buffer_ssao.ssao_base_radius = m_render_info_parameters.ssao_base_radius;
 	props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_ssao, 0, nullptr, &m_constant_buffer_ssao, 0, 0);
 
 	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
@@ -1347,8 +1367,188 @@ void Renderer::draw_ssao(Mat4* projection, Mat4* view){
 	props->inmediateDeviceContext->Draw(3, 0);
 	add_draw_call();
 
+	clear_rtv(5);
+	clear_srv(5);
+
+	draw_ssao_blur();
+
+	// Blend with albedo
+
+	// Draw gbuffer_ssao_mipmap_render_target_view[0] into albedo gbuffer
+	active_shader(ShaderType::SSAO_Mix);
+
+	clear_rtv(5);
+	clear_srv(5);
+
+	props->inmediateDeviceContext->RSSetState(m_engine_ptr->m_raster_state);
+	props->inmediateDeviceContext->OMSetDepthStencilState(m_depth_stencil_ssao, 0);
+	props->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
+
+	props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.postprocess_render_target_view, nullptr);
+
+	// SSAO Blur and Albedo
+	ID3D11ShaderResourceView* gbuffer_srv_blend[] = {
+		m_deferred_resources.gbuffer_ssao_mipmap_shader_resource_view[0],
+		m_deferred_resources.gbuffer_albedo_shader_resource_view,
+	};
+	props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(gbuffer_srv_blend), gbuffer_srv_blend);
+
+
+	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
+	props->inmediateDeviceContext->IASetInputLayout(m_pLayout_deferred);
+	props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
+
+	m_ssao_blend_constant_buffer.blend_intensity = m_render_info_parameters.ssao_blend_intensity;
+	props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_blend_ssao, 0, nullptr, &m_ssao_blend_constant_buffer, 0, 0);
+	props->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_blend_ssao);
+
+	props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	props->inmediateDeviceContext->Draw(3, 0);
+	add_draw_call();
+	clear_srv(2);
 	clear_rtv(1);
-	clear_srv(4);
+
+	// Now albedo and ssao is mixed, draw mixed in albedo
+	active_shader(ShaderType::DeferredPassThrough);
+
+	props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.gbuffer_albedo_render_target_view, nullptr);
+	props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.postprocess_resource_view);
+	props->inmediateDeviceContext->Draw(3, 0);
+	add_draw_call();
+	clear_srv(1);
+	clear_rtv(1);
+		
+}
+
+void Renderer::draw_ssao_blur(){
+	auto props = m_engine_ptr->get_engine_props();
+
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
+
+	// DownScale
+	for (int i = 1; i < NUM_MIPMAPS_SSAO; i++) {
+
+		clear_srv(1);
+		clear_rtv(1);
+		active_shader(ShaderType::BlurSSAO);
+
+
+		D3D11_TEXTURE2D_DESC desc;
+		m_deferred_resources.gbuffer_ssao_mipmap_texture[i - 1]->GetDesc(&desc);
+
+		set_viewport(desc.Width, desc.Height);
+
+
+		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.ssao_shader_resource_view);									// This texture has the emissive texture (and brightness)
+		props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.ssao_dowscaling_render_target_view[i - 1], nullptr);			// Disable dpeth stencil, not needed here
+		props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
+
+		// Horizontal blur
+		EmissiveConstantBuffer emissive_buffer{};
+		emissive_buffer.texel_size = { 1.0f / desc.Width, 1.0f / desc.Height };
+		emissive_buffer.bloom_intensity = 1.0f;
+		emissive_buffer.horizontal = 1;
+		emissive_buffer.blend = 0;
+		props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer, 0, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
+
+		UINT stride = sizeof(VertexQuad);
+		UINT offset = 0;
+
+		props->inmediateDeviceContext->IASetInputLayout(m_pLayout_deferred);
+		props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
+		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		props->inmediateDeviceContext->Draw(3, 0);
+		add_draw_call();
+
+		clear_srv(1);
+		clear_rtv(1);
+
+		m_deferred_resources.gbuffer_ssao_mipmap_texture[i]->GetDesc(&desc);
+		set_viewport(desc.Width, desc.Height);
+
+		// Vertical blur
+		EmissiveConstantBuffer emissive_buffer2{};
+		emissive_buffer2.texel_size = { 1.0f / desc.Width, 1.0f / desc.Height };
+		emissive_buffer2.bloom_intensity = 1.0f;
+		emissive_buffer2.horizontal = 0;
+		emissive_buffer2.blend = 0;
+		props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer2, 0, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
+
+		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.ssao_dowscaling_shader_resource_view[i - 1]);
+		props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.gbuffer_ssao_mipmap_render_target_view[i], nullptr);
+		props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
+
+		props->inmediateDeviceContext->Draw(3, 0);
+		add_draw_call();
+	}
+
+	// UpScale
+	for (int i = (NUM_MIPMAPS_SSAO - 2); i >= 0; i--) {
+
+		clear_srv(2);
+		clear_rtv(2);
+		active_shader(ShaderType::BlurSSAO);
+
+
+		D3D11_TEXTURE2D_DESC desc;
+		m_deferred_resources.gbuffer_ssao_mipmap_texture[i + 1]->GetDesc(&desc);
+
+		set_viewport(desc.Width, desc.Height);
+
+
+		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.gbuffer_ssao_mipmap_shader_resource_view[i + 1]);		// This texture has the emissive texture (and brightness)
+		props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.ssao_dowscaling_render_target_view[i + 1], nullptr);			// Disable dpeth stencil, not needed here
+		props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
+
+		// Horizontal blur
+		EmissiveConstantBuffer emissive_buffer{};
+		emissive_buffer.texel_size = { 1.0f / desc.Width, 1.0f / desc.Height };
+		emissive_buffer.bloom_intensity = 1.0f;
+		emissive_buffer.horizontal = 1;
+		emissive_buffer.blend = 0;
+		props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer, 0, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
+
+		UINT stride = sizeof(VertexQuad);
+		UINT offset = 0;
+
+		props->inmediateDeviceContext->IASetInputLayout(m_pLayout_deferred);
+		props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
+		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		props->inmediateDeviceContext->Draw(3, 0);
+		add_draw_call();
+
+		clear_srv(1);
+		clear_rtv(1);
+
+		m_deferred_resources.gbuffer_ssao_mipmap_texture[i]->GetDesc(&desc);
+		set_viewport(desc.Width, desc.Height);
+
+		// Vertical blur
+		EmissiveConstantBuffer emissive_buffer2{};
+		emissive_buffer2.texel_size = { 1.0f / desc.Width, 1.0f / desc.Height };
+		emissive_buffer2.bloom_intensity = 1.0f;
+		emissive_buffer2.horizontal = 0;
+		emissive_buffer2.blend = 0;
+
+		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.ssao_dowscaling_shader_resource_view[i + 1]);
+		
+
+		props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer2, 0, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_emissive_constant_buffer);
+
+		props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.gbuffer_ssao_mipmap_render_target_view[i], nullptr);
+		props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
+
+		props->inmediateDeviceContext->Draw(3, 0);
+		add_draw_call();
+	}
+
+	clear_srv(5);
+	clear_rtv(5);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->RSSetViewports(1, &m_engine_ptr->m_viewport);
 }
 
 void Renderer::depth_pass(EntityComponentSystem& ecs){
@@ -1563,6 +1763,31 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 
 	}
 
+	// SSAO Mipmaps
+	for (unsigned int i = 0; i < NUM_MIPMAPS_SSAO; i++) {
+
+		unsigned int mip_width = std::max(1u, width >> (i));
+		unsigned int mip_height= std::max(1u, height >> (i));
+
+		create_render_target(DXGI_FORMAT_R16_FLOAT,
+			&m_deferred_resources.gbuffer_ssao_mipmap_texture[i],
+			&m_deferred_resources.gbuffer_ssao_mipmap_render_target_view[i],
+			&m_deferred_resources.gbuffer_ssao_mipmap_shader_resource_view[i],
+			mip_width,
+			mip_height
+		);
+		
+		create_render_target(DXGI_FORMAT_R16_FLOAT,
+			&m_deferred_resources.ssao_dowscaling_texture[i],
+			&m_deferred_resources.ssao_dowscaling_render_target_view[i],
+			&m_deferred_resources.ssao_dowscaling_shader_resource_view[i],
+			mip_width,
+			mip_height
+		);
+
+
+	}
+
 	// Light accumulation buffer (HDR format)
 	create_render_target(DXGI_FORMAT_R16G16B16A16_FLOAT,
 		&m_deferred_resources.light_texture,
@@ -1578,7 +1803,7 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 	);
 
 	// SSAO
-	create_render_target(DXGI_FORMAT_R8G8B8A8_UNORM,
+	create_render_target(DXGI_FORMAT_R16_FLOAT,
 		&m_deferred_resources.ssao_texture,
 		&m_deferred_resources.ssao_render_target_view,
 		&m_deferred_resources.ssao_shader_resource_view
@@ -1607,6 +1832,11 @@ void Renderer::release_deferred_resources(){
 	for (unsigned int i = 0; i < NUM_MIPMAPS_EMISSIVE; i++) {
 		func(&m_deferred_resources.gbuffer_emissive_mipmap_texture[i], &m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[i], &m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[i]);
 		func(&m_deferred_resources.emissive_dowscaling_texture[i], &m_deferred_resources.emissive_dowscaling_render_target_view[i], &m_deferred_resources.emissive_dowscaling_shader_resource_view[i]);
+	}
+
+	for (unsigned int i = 0; i < NUM_MIPMAPS_SSAO; i++) {
+		func(&m_deferred_resources.gbuffer_ssao_mipmap_texture[i], &m_deferred_resources.gbuffer_ssao_mipmap_render_target_view[i], &m_deferred_resources.gbuffer_ssao_mipmap_shader_resource_view[i]);
+		func(&m_deferred_resources.ssao_dowscaling_texture[i], &m_deferred_resources.ssao_dowscaling_render_target_view[i], &m_deferred_resources.ssao_dowscaling_shader_resource_view[i]);
 	}
 	
 	func(&m_deferred_resources.light_texture, &m_deferred_resources.light_render_target_view,&m_deferred_resources.light_shader_resource_view);
@@ -1693,13 +1923,14 @@ void Renderer::init_ssao(){
 	// Copy kernel samples into constant buffer
 	ZeroMemory(&m_constant_buffer_ssao, sizeof(m_constant_buffer_ssao));
 	
-	
+	/*
 	for (unsigned int i = 0; i < m_ssao_kernel_random.size(); i++) {
 		m_constant_buffer_ssao.kernel_samples[i].x = m_ssao_kernel_random[i].x;
 		m_constant_buffer_ssao.kernel_samples[i].y = m_ssao_kernel_random[i].y;
 		m_constant_buffer_ssao.kernel_samples[i].z = m_ssao_kernel_random[i].z;
 		m_constant_buffer_ssao.kernel_samples[i].w = 0.0;
 	};
+	*/
 
 	m_constant_buffer_ssao.width = static_cast<float>(m_window->get_window_properties()->width);
 	m_constant_buffer_ssao.height = static_cast<float>(m_window->get_window_properties()->height);
@@ -1734,6 +1965,10 @@ void Renderer::clear_render_target(){
 
 	for (int i = 0; i < NUM_MIPMAPS_EMISSIVE; i++) {
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[i], m_clear_emissive_color);
+	}
+	
+	for (int i = 0; i < NUM_MIPMAPS_SSAO; i++) {
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_ssao_mipmap_render_target_view[i], m_clear_emissive_color);
 	}
 }
 

@@ -55,6 +55,7 @@ private:
 	__forceinline void draw_emissive();
 	__forceinline void draw_emissive_downsample();
 	__forceinline void draw_ssao(Mat4* projection, Mat4* view);
+	__forceinline void draw_ssao_blur();
 	/*******************************/
 
 	void depth_pass(EntityComponentSystem& ecs);
@@ -129,7 +130,9 @@ private:
 
 	D3D11_BUFFER_DESC m_ssao_constant_buffer_desc;
 	ID3D11Buffer* m_pVBuffer_ssao;
+	ID3D11Buffer* m_pVBuffer_blend_ssao;
 	SSAOConstantBuffer m_constant_buffer_ssao;
+	SSAOBlendConstantBuffer m_ssao_blend_constant_buffer;
 
 	ID3D11Buffer* m_pVBufferLight;
 

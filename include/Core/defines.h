@@ -94,6 +94,8 @@ struct ShaderFiles {
 
 	// SSAO
 	ID3D11PixelShader* PS_SSAO = nullptr;
+	ID3D11PixelShader* PS_SSAO_Blur_blend = nullptr;
+	ID3D11PixelShader* PS_SSAO_Mix = nullptr;
 };
 
 enum class ShaderType {
@@ -107,11 +109,14 @@ enum class ShaderType {
 	DeferredPointLight,
 	DeferredSpotLight,
 	DeferredPassThrough,
+	DeferredMix,
 	DeferredEmissive,
 	BloomDownsample,
 	Skybox,
 	Depth,
 	SSAO,
+	BlurSSAO,
+	SSAO_Mix,
 };
 
 enum class DrawMode {
@@ -187,13 +192,19 @@ struct EmissiveConstantBuffer {
 struct SSAOConstantBuffer {
 	Mat4 projection;
 	Mat4 view;
-	Vec4 kernel_samples[ssao_kernel];
+	//Vec4 kernel_samples[ssao_kernel];
+	int samples;
+	float ssao_base_radius;
+	float samples_float;
 	float width;
 	float height;
-	Vec2 padding;
+	Vec3 padding;
 };
 
-
+struct SSAOBlendConstantBuffer {
+	float blend_intensity = 1.0f;
+	Vec3 padding;
+};
 
 struct Color {
 	float rgba[4];
@@ -209,6 +220,7 @@ struct WindowInfo {
 };
 
 constexpr unsigned int NUM_MIPMAPS_EMISSIVE = (5 + 1);
+constexpr unsigned int NUM_MIPMAPS_SSAO = 5;
 
 struct DeferredResources {
 	
@@ -270,9 +282,21 @@ struct DeferredResources {
 	ID3D11RenderTargetView* ssao_render_target_view;
 	ID3D11Texture2D* ssao_texture;
 	ID3D11ShaderResourceView* ssao_shader_resource_view;
+
+	// SSAO mipmaps
+	ID3D11RenderTargetView* gbuffer_ssao_mipmap_render_target_view[NUM_MIPMAPS_EMISSIVE];
+	ID3D11Texture2D* gbuffer_ssao_mipmap_texture[NUM_MIPMAPS_EMISSIVE];
+	ID3D11ShaderResourceView* gbuffer_ssao_mipmap_shader_resource_view[NUM_MIPMAPS_EMISSIVE];
+
+	ID3D11RenderTargetView* ssao_dowscaling_render_target_view[NUM_MIPMAPS_EMISSIVE];
+	ID3D11Texture2D* ssao_dowscaling_texture[NUM_MIPMAPS_EMISSIVE];
+	ID3D11ShaderResourceView* ssao_dowscaling_shader_resource_view[NUM_MIPMAPS_EMISSIVE];
 };
 
 struct RenderInfo {
+	int ssao_samples = 4;
+	float ssao_base_radius = 0.5f;
+	float ssao_blend_intensity = 1.5f;
 	bool ssao_active = true;
 	bool bloom_active = true;
 	DrawMode draw_mode = DrawMode::Solid;

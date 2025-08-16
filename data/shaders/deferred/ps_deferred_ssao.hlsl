@@ -8,10 +8,12 @@ cbuffer SSAOConstantBuffer : register(b0)
 {
     float4x4 projection;
     float4x4 view;
-    float4 kernel_samples[16];
+    //float4 kernel_samples[16];
+    int samples;
+    float radius_base;
+    float samples_float;
     float width;
     float height;
-    float2 padding;
 };
 
 Texture2D positionTexture : register(t0);
@@ -33,8 +35,9 @@ float AmbientOcclusionFunction(float2 uv, float3 position, float3 normal){
     float ssao_intensity = 2.0f;
     
     // Get the position vector from the position portion of the G buffer.
-    posVector = positionTexture.Sample(samp, uv);
-
+    float3 position_tex = positionTexture.Sample(samp, uv).rgb;
+    posVector = mul(float4(position_tex, 1.0f), view);
+    
     // Subtract the input position.
     posVector = posVector - position;
 
@@ -50,11 +53,17 @@ float AmbientOcclusionFunction(float2 uv, float3 position, float3 normal){
     return occlusion;
 }
 
+float LinearizeDepth(float z, float near, float far)
+{
+    return near * far / (far - z * (far - near));
+}
 
-float4 PShader(VS_OUT input) : SV_TARGET {
+
+float PShader(VS_OUT input) : SV_TARGET {
     
     // Get data from G-Buffer
     float3 position = positionTexture.Sample(samp, input.uv).rgb;
+    position = mul(float4(position, 1.0), view); // To view spacae
     float3 normal = normalTexture.Sample(samp, input.uv).rgb;
     
     // Expand normals from 0,1 to -1,1
@@ -78,30 +87,48 @@ float4 PShader(VS_OUT input) : SV_TARGET {
     vector_array[3] = float2(0.0f, -1.0f);
     
     // Set the sample radius to take into account the depth of the pixel
-    float radius = 0.5f / position.z; // TODO: parametrize radius into cbuffer
+    float min_radius = 0.1f;
+    float max_radius = 2.0f;
+    float distance_scale = -position.z;
+    float max_distance = 40.0f;
+    
+    //float radius = radius_base / -position.z;
+    float radius = min_radius + (max_radius - min_radius) * saturate(distance_scale / max_distance);
+    radius = clamp(radius * (width / height), min_radius, max_radius);
+
     
     const int count = 4;
     float occlusion = 0.0f;
     float2 tex_coord_1;
     float2 tex_coord_2;
-    
     for (int i = 0; i < count; i++){
         
         tex_coord_1 = reflect(vector_array[i], random_vector) * radius;
         tex_coord_2 = float2(((tex_coord_1.x * 0.75f) - (tex_coord_1.y * 0.75f)), ((tex_coord_1.x * 0.75f) + (tex_coord_1.y * 0.75f)));
         
-        occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_1 * 0.25f), position, normal);
-        occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_2 * 0.5f), position, normal);
-        occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_1 * 0.75f), position, normal);
-        occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_2 * 1.0f), position, normal);
+        float fj = 1.0f;
+        for (int j = 1; j <= samples; j++){
+            float factor = (fj / samples_float);
+            occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_1 * factor), position, normal);
+            occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_2 * factor), position, normal);
+            //occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_1 * 0.75f), position, normal);
+            //occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_2 * 1.0f), position, normal);
+            fj += 1.0f;
+        }
+        /*
+            occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_1 * 0.25f), position, normal);
+            occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_2 * 0.5f), position, normal);
+            occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_1 * 0.75f), position, normal);
+            occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_2 * 1.0f), position, normal);
+        */
         
     }
     
     // Average of the sum based on how many loops
-    occlusion = occlusion / (((float) count) * 4.0f);
+    occlusion = occlusion / (((float) count) * (samples * 2));
     
     // Invert occlusion output
     occlusion = 1.0f - occlusion;
     
-    return float4(occlusion, occlusion, occlusion, 1.0);
+    return occlusion;
 }

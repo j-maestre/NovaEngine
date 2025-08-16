@@ -43,8 +43,9 @@ VOut VShader(VS_IN input){
     output.world_pos = worldPosition.xyz;
 
     // Transform to clip space
-    float4 viewPos = mul(worldPosition, view);
-    output.position = mul(viewPos, projection);
+    float4 viewPos = mul(worldPosition, view);      // View space
+    output.position = mul(viewPos, projection);     // Clip space
+    //output.position = viewPos;  // Clip space
 
     output.normal = normalize(mul(input.normal, (float3x3) model));
     

@@ -80,6 +80,8 @@ private:
 	void show_light(SpotLight* light, int entity_id);
 	void show_mesh_comp(MeshComponent* mesh_comp, int entity_id);
 
+	__forceinline void hover_item();
+
 	std::vector<std::string> m_resources_loaded;
 
 	float m_time;
