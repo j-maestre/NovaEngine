@@ -18,7 +18,7 @@ SamplerState samp : register(s0);
 float4 PShader(VS_OUT input) : SV_TARGET{
     
     //const float ssao_intensity = 1.0f;
-    
+    // TODO: get position.z to dinamice intensity
     float ssao = ssaoTexture.Sample(samp, input.uv).r;
     ssao = lerp(1.0f, ssao, blend_intensity);
     float3 albedo = albedoTexture.Sample(samp, input.uv).rgb;

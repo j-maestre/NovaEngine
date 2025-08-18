@@ -17,18 +17,18 @@ bool load_mesh_component(const ryml::NodeRef& entity_node, Entity& entity, Entit
 bool load_material_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
 
 
-Scene::Scene(const std::string& path_scene) : m_ecs(), m_selected_entity(0,"") {
+Scene::Scene(const std::string& path_scene) : m_ecs(), m_selected_entity(-1,"") {
 
     m_full_path = "data/scenes/";
     load_scene( { m_full_path + path_scene } );
 
 }
 
-Scene::Scene(const Scene&) : m_selected_entity(0,"") {
+Scene::Scene(const Scene&) : m_selected_entity(-1,"") {
     
 }
 
-Scene::Scene(Scene&&) : m_selected_entity(0, ""){
+Scene::Scene(Scene&&) : m_selected_entity(-1, ""){
 
 }
 

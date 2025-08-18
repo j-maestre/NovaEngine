@@ -14,7 +14,7 @@ Entity::Entity(Entity&& other){
 	m_id = other.m_id;
 	m_name = other.m_name;
 
-	other.m_id = 0;
+	other.m_id = -1;
 	other.m_name.clear();
 }
 

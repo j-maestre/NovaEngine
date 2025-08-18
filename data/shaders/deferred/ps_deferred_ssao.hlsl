@@ -53,10 +53,7 @@ float AmbientOcclusionFunction(float2 uv, float3 position, float3 normal){
     return occlusion;
 }
 
-float LinearizeDepth(float z, float near, float far)
-{
-    return near * far / (far - z * (far - near));
-}
+
 
 
 float PShader(VS_OUT input) : SV_TARGET {
@@ -88,11 +85,11 @@ float PShader(VS_OUT input) : SV_TARGET {
     
     // Set the sample radius to take into account the depth of the pixel
     float min_radius = 0.1f;
-    float max_radius = 2.0f;
+    float max_radius = 5.0f;
     float distance_scale = -position.z;
     float max_distance = 40.0f;
     
-    //float radius = radius_base / -position.z;
+    //float radius = radius_base / position.z;
     float radius = min_radius + (max_radius - min_radius) * saturate(distance_scale / max_distance);
     radius = clamp(radius * (width / height), min_radius, max_radius);
 

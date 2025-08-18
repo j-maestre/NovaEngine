@@ -48,9 +48,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		Entity point_light = scene->m_ecs.create_entity("Point Light");
 		auto& point = scene->m_ecs.add_component<PointLight>(point_light);
 		point.set_color({1.0f, 1.0f, 1.0f});
-		point.set_position({0.0f, 5.0f, 0.0f});
-		point.set_enabled(true);
-		point.set_distance(12.0f);
+		point.set_position({0.0f, 13.0f, 0.0f});
+		point.set_enabled(false);
+		point.set_distance(22.5f);
+		point.set_intensity(8.7f);
 	//}
 	
 

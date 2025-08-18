@@ -186,7 +186,7 @@ void ImguiManager::init(HWND handle){
 void ImguiManager::render_guizmo(CameraComponent* cam/*, ImVec2 pos, ImVec2 size*/) {
 
 	Entity e = Engine::get_instance()->m_current_scene->get_selected_entity();
-	if (e.get_id() != 0) {
+	if (e.get_id() != -1) {
 
 		ImGuiIO& io = ImGui::GetIO();
 	

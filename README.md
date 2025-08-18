@@ -35,6 +35,7 @@ Simply open Nova Engine VS solution and compile
 - Physically Based Rendering
 - Emissive Materials
 - Cubemap reflections
+- SSAO
 - Render Solid & Wireframe
 - Depth Prepass
 - Directional light

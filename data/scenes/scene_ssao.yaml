@@ -12,6 +12,18 @@ Entities:
       - {Roughness: 0.9}
       - {EmissiveColor: [0.0, 0.0, 0.0]}
       - {EmissiveIntensity: 0.0}
+  Floor1:
+    Transform:
+      Position: [0.0, 18.0, 0.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [10.0, 1.0, 10.0]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.8, 0.8, 0.8] }
+      - {Metallic: 0.8}
+      - {Roughness: 0.9}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
   Wall0:
     Transform:
       Position: [-11.0, 9.0, 0.0]
@@ -19,7 +31,7 @@ Entities:
       Scale: [1.0, 10.0, 10.0]
     MeshComponent: "data/models/basics/cube.fbx"
     Material:
-      - {Albedo: [1.0, 0.1, 0.1] }
+      - {Albedo: [0.1, 1.0, 0.1] }
       - {Metallic: 0.8}
       - {Roughness: 0.9}
       - {EmissiveColor: [0.0, 0.0, 0.0]}
@@ -31,7 +43,7 @@ Entities:
       Scale: [1.0, 10.0, 10.0]
     MeshComponent: "data/models/basics/cube.fbx"
     Material:
-      - {Albedo: [0.1, 1.0, 0.1] }
+      - {Albedo: [1.0, 0.1, 0.1] }
       - {Metallic: 0.8}
       - {Roughness: 0.9}
       - {EmissiveColor: [0.0, 0.0, 0.0]}

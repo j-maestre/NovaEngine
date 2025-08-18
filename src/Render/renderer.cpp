@@ -1854,7 +1854,7 @@ void Renderer::init_ssao(){
 	for (unsigned int i = 0; i < ssao_kernel; i++) {
 
 
-		FVector random({ /*(*/dist(mt)/* * 2.0f) - 1.0f*/, /*(*/dist(mt)/* * 2.0f) - 1.0f*/, 0.0f}); // Tangent space z positive to rotate around z
+		FVector random({ /*(*/dist(mt)/* * 2.0f) - 1.0f*/, /*(*/dist(mt)/* * 2.0f) - 1.0f*/, 0.0f }); // Tangent space z positive to rotate around z
 		random = DirectX::XMVector3Normalize(random);
 		float random_magnitude = dist(mt);
 		random = DirectX::XMVectorScale(random, random_magnitude);	// Scale to a random magnitude in a hemisfere
@@ -1930,6 +1930,7 @@ void Renderer::init_ssao(){
 		m_constant_buffer_ssao.kernel_samples[i].z = m_ssao_kernel_random[i].z;
 		m_constant_buffer_ssao.kernel_samples[i].w = 0.0;
 	};
+	
 	*/
 
 	m_constant_buffer_ssao.width = static_cast<float>(m_window->get_window_properties()->width);
