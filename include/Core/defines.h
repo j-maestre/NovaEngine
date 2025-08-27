@@ -26,7 +26,7 @@ static inline float radToDeg(const float radians) {
 	return radians * kfRadToDeg;
 }
 
-constexpr unsigned int ssao_kernel = 16;
+constexpr unsigned int ssao_kernel = 64;
 constexpr unsigned int ssao_noise = 16;
 constexpr unsigned int ssao_noise_dim = 4;
 
@@ -91,6 +91,7 @@ struct ShaderFiles {
 
 	// Depth Pre pass
 	ID3D11VertexShader* VS_depth_prepass = nullptr;
+	ID3D11PixelShader* PS_depth_prepass = nullptr;
 
 	// SSAO
 	ID3D11PixelShader* PS_SSAO = nullptr;
@@ -189,10 +190,25 @@ struct EmissiveConstantBuffer {
 	Vec3 padding;
 };
 
+/*
 struct SSAOConstantBuffer {
 	Mat4 projection;
 	Mat4 view;
-	//Vec4 kernel_samples[ssao_kernel];
+	Vec4 kernel_samples[ssao_kernel];
+	int samples;
+	float ssao_base_radius;
+	float samples_float;
+	float width;
+	float height;
+	Vec3 padding;
+};
+*/
+
+struct SSAOConstantBuffer {
+	Mat4 projection;
+	Mat4 view;
+	Mat4 inv_projection;
+	Vec4 kernel_samples[ssao_kernel];
 	int samples;
 	float ssao_base_radius;
 	float samples_float;
@@ -293,10 +309,12 @@ struct DeferredResources {
 	ID3D11ShaderResourceView* ssao_dowscaling_shader_resource_view[NUM_MIPMAPS_EMISSIVE];
 };
 
+
+
 struct RenderInfo {
-	int ssao_samples = 4;
+	int ssao_samples = ssao_kernel;
 	float ssao_base_radius = 0.5f;
-	float ssao_blend_intensity = 1.5f;
+	float ssao_blend_intensity = 1.0f;
 	bool ssao_active = true;
 	bool bloom_active = true;
 	DrawMode draw_mode = DrawMode::Solid;
