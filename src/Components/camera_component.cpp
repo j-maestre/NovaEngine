@@ -194,6 +194,9 @@ void CameraComponent::fly(float dt){
 	DirectX::XMStoreFloat4x4(&m_projection_float, m_projection);
 	m_projection_raw = reinterpret_cast<float*>(&m_projection_float);
 	
+	DirectX::XMStoreFloat4x4(&m_projection_inverse_float, m_projection_inverse);
+	m_projection_inverse_raw = reinterpret_cast<float*>(&m_projection_inverse_float);
+	
 	
 #ifdef MEASURE_TIME
 	auto end = std::chrono::high_resolution_clock::now();
@@ -211,6 +214,7 @@ void CameraComponent::update_projection_matrix(){
 	// Left-Handle more common un DirectX
 	m_aspect_ratio = ((float)m_window_props->width) / ((float)m_window_props->height);
 	m_projection = DirectX::XMMatrixPerspectiveFovLH(degToRad(m_fov), m_aspect_ratio, m_near, m_far);
+	m_projection_inverse = DirectX::XMMatrixInverse(nullptr, m_projection);
 }
 
 float* CameraComponent::get_view_raw(){
@@ -221,6 +225,11 @@ float* CameraComponent::get_view_raw(){
 float* CameraComponent::get_projection_raw(){
 
 	return m_projection_raw;
+}
+
+float* CameraComponent::get_projection_inverse_raw(){
+
+	return m_projection_inverse_raw;
 }
 
 void CameraComponent::update_view_matrix(){
