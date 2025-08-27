@@ -47,7 +47,7 @@ public:
 
 	void resize(HWND hwnd, unsigned int width, unsigned int height);
 	void scene_info(Scene* scene);
-	void gbuffer_info(DeferredResources* gbuffer);
+	void gbuffer_info(DeferredResources* gbuffer, ID3D11ShaderResourceView* depth_srv);
 
 	void apply_nova_style();
 	void show_demo_window();

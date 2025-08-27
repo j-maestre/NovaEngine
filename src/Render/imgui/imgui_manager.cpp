@@ -146,7 +146,7 @@ void ImguiManager::show_render_parameters(RenderInfo* info){
 	hover_item();
 	ImGui::Checkbox("SSAO", &(info->ssao_active));
 	hover_item();
-	ImGui::SliderInt("SSAO Samples", &(info->ssao_samples), 1, 32);
+	ImGui::SliderInt("SSAO Samples", &(info->ssao_samples), 1, ssao_kernel);
 	hover_item();
 
 	ImGui::SliderFloat("SSAO radius", &(info->ssao_base_radius), 0.1f, 1.0f);
@@ -998,7 +998,7 @@ void ImguiManager::scene_info(Scene* scene){
 	ImGui::End();
 }
 
-void ImguiManager::gbuffer_info(DeferredResources* gbuffer){
+void ImguiManager::gbuffer_info(DeferredResources* gbuffer, ID3D11ShaderResourceView* depth_srv){
 
 	ImGui::Begin("G-Buffer");
 	ImGui::Text("Albedo");
@@ -1028,6 +1028,12 @@ void ImguiManager::gbuffer_info(DeferredResources* gbuffer){
 	ImGui::Text("SSAO");
 	ImGui::Image(
 		(ImTextureID) gbuffer->ssao_shader_resource_view,
+		ImVec2(256,256)
+	);
+	
+	ImGui::Text("Depth");
+	ImGui::Image(
+		(ImTextureID) depth_srv,
 		ImVec2(256,256)
 	);
 
