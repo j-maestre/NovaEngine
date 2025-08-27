@@ -205,6 +205,12 @@ bool Renderer::init_pipeline(Window* win){
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_SSAO_Mix);
 
+	// Depth prepass PS (for depth rtv used in ssao)
+	hr = D3DCompileFromFile(L"data/shaders/ps_depth_prepass.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	m_isInitialized = CheckShaderError(hr, error_msg);
+	if (!m_isInitialized)return m_isInitialized;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_depth_prepass);
+
 	// Depth prepass VS
 	hr = D3DCompileFromFile(L"data/shaders/vs_depth_prepass.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS_depth, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
@@ -283,6 +289,8 @@ bool Renderer::init_pipeline(Window* win){
 	m_ssao_constant_buffer_desc.CPUAccessFlags = 0;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&m_ssao_constant_buffer_desc,NULL, &m_pVBuffer_blend_ssao);
 
+	UINT quality_levels_supported = 0;
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CheckMultisampleQualityLevels(DXGI_FORMAT_D24_UNORM_S8_UINT,1, &quality_levels_supported);
 
 	/**** Depth stencil and texture creation ****/
 	D3D11_TEXTURE2D_DESC depth_desc{
@@ -290,10 +298,11 @@ bool Renderer::init_pipeline(Window* win){
 		.Height = win->get_window_properties()->height,
 		.MipLevels = 1,
 		.ArraySize = 1,
-		//.Format = DXGI_FORMAT_D24_UNORM_S8_UINT,
 		.Format = DXGI_FORMAT_R24G8_TYPELESS,
 		.SampleDesc{
-			.Count = 1
+			.Count = 1,
+			//.Quality = quality_levels_supported - 1,
+			.Quality = 0,
 		},
 		.Usage = D3D11_USAGE_DEFAULT,
 		//.BindFlags = D3D11_BIND_DEPTH_STENCIL 
@@ -311,8 +320,8 @@ bool Renderer::init_pipeline(Window* win){
 		},
 	};
 
-	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateTexture2D(&depth_desc, nullptr, &m_depth_buffer);
-	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilView(m_depth_buffer, &dsv_desc, &m_depth_stencil_view);
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateTexture2D(&depth_desc, nullptr, &m_depth_buffer);				// Depth Texture
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilView(m_depth_buffer, &dsv_desc, &m_depth_stencil_view);	// Depth stencil view
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc = {
 		.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS,
@@ -541,10 +550,11 @@ bool Renderer::init_pipeline(Window* win){
 
 	// Sampler noise ssao
 	D3D11_SAMPLER_DESC sampler_ssao_desc = {
-		.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT,
-		.AddressU = D3D11_TEXTURE_ADDRESS_WRAP,
-		.AddressV = D3D11_TEXTURE_ADDRESS_WRAP,
-		.AddressW = D3D11_TEXTURE_ADDRESS_WRAP,
+		//.Filter = D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT,
+		.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT,
+		.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP,
+		.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP,
+		.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP,
 		.MipLODBias = 0.0f,
 		.MaxAnisotropy = 2,
 		.ComparisonFunc = D3D11_COMPARISON_NEVER,
@@ -625,6 +635,7 @@ void Renderer::active_shader(ShaderType type){
 		break;
 	case ShaderType::Depth:
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_depth_prepass, nullptr, 0);
+		//m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_depth_prepass, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(nullptr, nullptr, 0);
 		break;
 	case ShaderType::SSAO:
@@ -817,6 +828,8 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 
 	const Mat4* view = m_cam->get_view();
 	const Mat4* proj = m_cam->get_projection();
+	const Mat4* proj_inverse = m_cam->get_projection_inverse();
+	Mat4 proj_inverse_transposed = DirectX::XMMatrixTranspose(*proj_inverse);
 
 	CameraConstantBuffer cam_buffer;
 	cam_buffer.view = DirectX::XMMatrixTranspose(*view);
@@ -835,7 +848,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 
 	// SSAO Pass
 	if (m_render_info_parameters.ssao_active) {
-		draw_ssao(&cam_buffer.projection, &cam_buffer.view);
+		draw_ssao(&cam_buffer.projection, &cam_buffer.view, &proj_inverse_transposed);
 	}
 
 
@@ -991,7 +1004,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	ImguiManager::get_instance()->scene_info(Engine::get_instance()->m_current_scene);
 	ImguiManager::get_instance()->show_cam(m_cam, 0xfff);
 	ImguiManager::get_instance()->render_guizmo(m_cam/*, scene_pos, scene_size*/);
-	ImguiManager::get_instance()->gbuffer_info(&m_deferred_resources);
+	ImguiManager::get_instance()->gbuffer_info(&m_deferred_resources, m_depth_srv);
 	ImguiManager::get_instance()->show_render_parameters(&m_render_info_parameters);
 
 	set_draw_mode(m_render_info_parameters.draw_mode);
@@ -1317,7 +1330,7 @@ void Renderer::draw_emissive_downsample(){
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->RSSetViewports(1, &m_engine_ptr->m_viewport);
 }
   
-void Renderer::draw_ssao(Mat4* projection, Mat4* view){
+void Renderer::draw_ssao(Mat4* projection, Mat4* view, Mat4* projection_inverse){
 
 	auto props = m_engine_ptr->get_instance()->get_engine_props();
 
@@ -1343,15 +1356,17 @@ void Renderer::draw_ssao(Mat4* projection, Mat4* view){
 
 	props->inmediateDeviceContext->PSSetShaderResources(0,ARRAYSIZE(gbuffer_srv), gbuffer_srv);
 
-	props->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_ssao);
 
 	// SSAO kernel constant buffer initialized one time only, not need to update every frame, just projection matrix
 	m_constant_buffer_ssao.projection = *projection;
 	m_constant_buffer_ssao.view = *view;
+	m_constant_buffer_ssao.inv_projection = *projection_inverse;
+
 	m_constant_buffer_ssao.samples = m_render_info_parameters.ssao_samples;
 	m_constant_buffer_ssao.samples_float = static_cast<float>(m_render_info_parameters.ssao_samples);
 	m_constant_buffer_ssao.ssao_base_radius = m_render_info_parameters.ssao_base_radius;
 	props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_ssao, 0, nullptr, &m_constant_buffer_ssao, 0, 0);
+	props->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_ssao);
 
 	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
 	props->inmediateDeviceContext->PSSetSamplers(1, 1, &m_sampler_state_noise_ssao);
@@ -1553,13 +1568,15 @@ void Renderer::draw_ssao_blur(){
 
 void Renderer::depth_pass(EntityComponentSystem& ecs){
 	auto props = m_engine_ptr->get_engine_props();
+
+	active_shader(ShaderType::Depth);
+	//props->inmediateDeviceContext->OMSetRenderTargets(1, &m_depth_rtv, m_depth_stencil_view);
 	props->inmediateDeviceContext->OMSetRenderTargets(0, nullptr, m_depth_stencil_view);
 	props->inmediateDeviceContext->OMSetDepthStencilState(m_depth_only_state, 1);
 	props->inmediateDeviceContext->RSSetState(m_current_raster);
 
 	props->inmediateDeviceContext->IASetInputLayout(m_pLayout_depth);
 	props->inmediateDeviceContext->VSSetConstantBuffers(0, 1, &m_pVBuffer_constant_camera_depth_only);
-	active_shader(ShaderType::Depth);
 	const Mat4* view = m_cam->get_view();
 	const Mat4* proj = m_cam->get_projection();
 
@@ -1574,6 +1591,7 @@ void Renderer::depth_pass(EntityComponentSystem& ecs){
 		}
 	}
 
+	//clear_rtv(1);
 }
 
 void Renderer::draw_skybox(){
@@ -1854,7 +1872,8 @@ void Renderer::init_ssao(){
 	for (unsigned int i = 0; i < ssao_kernel; i++) {
 
 
-		FVector random({ /*(*/dist(mt)/* * 2.0f) - 1.0f*/, /*(*/dist(mt)/* * 2.0f) - 1.0f*/, 0.0f }); // Tangent space z positive to rotate around z
+		//FVector random({ /*(*/dist(mt)/* * 2.0f) - 1.0f*/, /*(*/dist(mt)/* * 2.0f) - 1.0f*/, 0.0f }); // Tangent space z positive to rotate around z
+		FVector random({ (dist(mt) * 2.0f) - 1.0f, (dist(mt) * 2.0f) - 1.0f, 1.0f }); // Tangent space z positive to rotate around z
 		random = DirectX::XMVector3Normalize(random);
 		float random_magnitude = dist(mt);
 		random = DirectX::XMVectorScale(random, random_magnitude);	// Scale to a random magnitude in a hemisfere
@@ -1901,7 +1920,7 @@ void Renderer::init_ssao(){
 
 	D3D11_SUBRESOURCE_DATA init_data = {
 		.pSysMem = m_ssao_noise_random.data(),
-		.SysMemPitch = sizeof(float) * 3 * ssao_noise_dim,
+		.SysMemPitch = sizeof(float) * 4 * ssao_noise_dim,
 		.SysMemSlicePitch = 0,
 	};
 
@@ -1922,16 +1941,14 @@ void Renderer::init_ssao(){
 
 	// Copy kernel samples into constant buffer
 	ZeroMemory(&m_constant_buffer_ssao, sizeof(m_constant_buffer_ssao));
-	
-	/*
+		
 	for (unsigned int i = 0; i < m_ssao_kernel_random.size(); i++) {
 		m_constant_buffer_ssao.kernel_samples[i].x = m_ssao_kernel_random[i].x;
 		m_constant_buffer_ssao.kernel_samples[i].y = m_ssao_kernel_random[i].y;
 		m_constant_buffer_ssao.kernel_samples[i].z = m_ssao_kernel_random[i].z;
 		m_constant_buffer_ssao.kernel_samples[i].w = 0.0;
 	};
-	
-	*/
+		
 
 	m_constant_buffer_ssao.width = static_cast<float>(m_window->get_window_properties()->width);
 	m_constant_buffer_ssao.height = static_cast<float>(m_window->get_window_properties()->height);
