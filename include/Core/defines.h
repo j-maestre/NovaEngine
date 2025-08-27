@@ -194,7 +194,7 @@ struct EmissiveConstantBuffer {
 struct SSAOConstantBuffer {
 	Mat4 projection;
 	Mat4 view;
-	//Vec4 kernel_samples[ssao_kernel];
+	Vec4 kernel_samples[ssao_kernel];
 	int samples;
 	float ssao_base_radius;
 	float samples_float;
@@ -203,6 +203,9 @@ struct SSAOConstantBuffer {
 	Vec3 padding;
 };
 */
+
+
+
 
 struct SSAOConstantBuffer {
 	Mat4 projection;
@@ -315,6 +318,8 @@ struct DeferredResources {
 	ID3D11Texture2D* depth_texture;
 	ID3D11ShaderResourceView* depth_srv;
 };
+
+
 
 struct RenderInfo {
 	int ssao_samples = ssao_kernel;

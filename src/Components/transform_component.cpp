@@ -50,6 +50,7 @@ void TransformComponent::update(){
 	Mat4 translation = DirectX::XMMatrixTranslation(m_position.x, m_position.y, m_position.z);
 	
 	// Model construction
+	//m_transform = translation * rotation * scale;
 	m_transform = scale * rotation * translation;
 
 	// Parenting

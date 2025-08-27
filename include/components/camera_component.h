@@ -40,7 +40,6 @@ public:
 	const Mat4* get_projection() noexcept { return &m_projection; }
 	const Mat4* get_view_projection() noexcept { return &m_view_projection; }
 	const Mat4* get_projection_inverse() noexcept { return &m_projection_inverse; }
-
 	float* get_view_raw();
 	float* get_projection_raw();
 	float* get_projection_inverse_raw();

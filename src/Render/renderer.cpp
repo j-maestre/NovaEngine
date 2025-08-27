@@ -205,6 +205,12 @@ bool Renderer::init_pipeline(Window* win){
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_SSAO_Mix);
 
+	// Depth prepass PS (for depth rtv used in ssao)
+	hr = D3DCompileFromFile(L"data/shaders/ps_depth_prepass.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	m_isInitialized = CheckShaderError(hr, error_msg);
+	if (!m_isInitialized)return m_isInitialized;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_depth_prepass);
+
 	// Depth prepass VS
 	hr = D3DCompileFromFile(L"data/shaders/vs_depth_prepass.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS_depth, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
@@ -289,6 +295,8 @@ bool Renderer::init_pipeline(Window* win){
 	m_ssao_constant_buffer_desc.CPUAccessFlags = 0;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&m_ssao_constant_buffer_desc,NULL, &m_pVBuffer_blend_ssao);
 
+	UINT quality_levels_supported = 0;
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CheckMultisampleQualityLevels(DXGI_FORMAT_D24_UNORM_S8_UINT,1, &quality_levels_supported);
 
 	/**** Depth stencil and texture creation ****/
 	D3D11_TEXTURE2D_DESC depth_desc{
@@ -296,10 +304,11 @@ bool Renderer::init_pipeline(Window* win){
 		.Height = win->get_window_properties()->height,
 		.MipLevels = 1,
 		.ArraySize = 1,
-		//.Format = DXGI_FORMAT_D24_UNORM_S8_UINT,
 		.Format = DXGI_FORMAT_R24G8_TYPELESS,
 		.SampleDesc{
-			.Count = 1
+			.Count = 1,
+			//.Quality = quality_levels_supported - 1,
+			.Quality = 0,
 		},
 		.Usage = D3D11_USAGE_DEFAULT,
 		//.BindFlags = D3D11_BIND_DEPTH_STENCIL 
@@ -317,8 +326,8 @@ bool Renderer::init_pipeline(Window* win){
 		},
 	};
 
-	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateTexture2D(&depth_desc, nullptr, &m_depth_buffer);
-	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilView(m_depth_buffer, &dsv_desc, &m_depth_stencil_view);
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateTexture2D(&depth_desc, nullptr, &m_depth_buffer);				// Depth Texture
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateDepthStencilView(m_depth_buffer, &dsv_desc, &m_depth_stencil_view);	// Depth stencil view
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc = {
 		.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS,
@@ -1359,16 +1368,18 @@ void Renderer::draw_ssao(Mat4* projection, Mat4* view, Mat4* projection_inverse)
 
 	props->inmediateDeviceContext->PSSetShaderResources(0,ARRAYSIZE(gbuffer_srv), gbuffer_srv);
 
-	props->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_ssao);
 
 	// SSAO kernel constant buffer initialized one time only, not need to update every frame, just projection matrix
 	m_constant_buffer_ssao.projection = *projection;
 	m_constant_buffer_ssao.view = *view;
+	m_constant_buffer_ssao.inv_projection = *projection_inverse;
+
 	m_constant_buffer_ssao.samples = m_render_info_parameters.ssao_samples;
 	m_constant_buffer_ssao.samples_float = static_cast<float>(m_render_info_parameters.ssao_samples);
 	m_constant_buffer_ssao.ssao_base_radius = m_render_info_parameters.ssao_base_radius;
 	m_constant_buffer_ssao.inv_projection = *projection_inverse;
 	props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_ssao, 0, nullptr, &m_constant_buffer_ssao, 0, 0);
+	props->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_ssao);
 
 	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
 	props->inmediateDeviceContext->PSSetSamplers(1, 1, &m_sampler_state_noise_ssao);
@@ -1592,6 +1603,7 @@ void Renderer::depth_pass(EntityComponentSystem& ecs){
 		}
 	}
 
+	//clear_rtv(1);
 }
 
 void Renderer::draw_skybox(){
@@ -1928,7 +1940,7 @@ void Renderer::init_ssao(){
 
 	D3D11_SUBRESOURCE_DATA init_data = {
 		.pSysMem = m_ssao_noise_random.data(),
-		.SysMemPitch = sizeof(float) * 3 * ssao_noise_dim,
+		.SysMemPitch = sizeof(float) * 4 * ssao_noise_dim,
 		.SysMemSlicePitch = 0,
 	};
 
