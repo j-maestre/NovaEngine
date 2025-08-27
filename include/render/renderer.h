@@ -54,7 +54,7 @@ private:
 	/*** Post process techniques ***/
 	__forceinline void draw_emissive();
 	__forceinline void draw_emissive_downsample();
-	__forceinline void draw_ssao(Mat4* projection, Mat4* view);
+	__forceinline void draw_ssao(Mat4* projection, Mat4* view, Mat4* projection_inverse);
 	__forceinline void draw_ssao_blur();
 	/*******************************/
 
@@ -152,7 +152,6 @@ private:
 	ID3D11Texture2D* m_depth_buffer;
 	ID3D11DepthStencilView* m_depth_stencil_view;
 	ID3D11DepthStencilState* m_depth_stencil_state;
-	ID3D11ShaderResourceView* m_depth_srv;
 
 	ID3D11DepthStencilState* m_depth_stencil_state_skybox;
 	ID3D11DepthStencilState* m_depth_only_state;

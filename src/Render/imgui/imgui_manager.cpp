@@ -149,7 +149,7 @@ void ImguiManager::show_render_parameters(RenderInfo* info){
 	ImGui::SliderInt("SSAO Samples", &(info->ssao_samples), 1, 32);
 	hover_item();
 
-	ImGui::SliderFloat("SSAO radius", &(info->ssao_base_radius), 0.1f, 1.0f);
+	ImGui::SliderFloat("SSAO radius", &(info->ssao_base_radius), 0.1f, 5.0f);
 	hover_item();
 	
 	ImGui::SliderFloat("SSAO blend intensity", &(info->ssao_blend_intensity), 0.1f, 3.0f);
@@ -1022,6 +1022,12 @@ void ImguiManager::gbuffer_info(DeferredResources* gbuffer){
 	ImGui::Text("Emissive");
 	ImGui::Image(
 		(ImTextureID) gbuffer->emissive_dowscaling_shader_resource_view[0],
+		ImVec2(256,256)
+	);
+	
+	ImGui::Text("Depth");
+	ImGui::Image(
+		(ImTextureID) gbuffer->depth_srv,
 		ImVec2(256,256)
 	);
 	

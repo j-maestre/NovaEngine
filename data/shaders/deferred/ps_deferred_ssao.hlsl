@@ -8,124 +8,83 @@ cbuffer SSAOConstantBuffer : register(b0)
 {
     float4x4 projection;
     float4x4 view;
-    //float4 kernel_samples[16];
+    float4x4 projection_inverse;
+    
+    float4 kernel_samples[64];
     int samples;
     float radius_base;
     float samples_float;
     float width;
     float height;
+    float3 padding;
 };
 
 Texture2D positionTexture : register(t0);
 Texture2D normalTexture : register(t1);
 Texture2D noiseTexture : register(t2);
-//Texture2D depthTexture : register(t3);
+Texture2D depthTexture : register(t3);
+
 SamplerState samp : register(s0);
-SamplerState samp_noise : register(s1);
+SamplerState samp_clamp : register(s1);
 
-float AmbientOcclusionFunction(float2 uv, float3 position, float3 normal){
-    
-    float3 posVector;
-    float3 vec;
-    float distance;
-    float occlusion;
-
-    float bias = 0.025;
-    float ssao_scale = 1.0f;
-    float ssao_intensity = 2.0f;
-    
-    // Get the position vector from the position portion of the G buffer.
-    float3 position_tex = positionTexture.Sample(samp, uv).rgb;
-    posVector = mul(float4(position_tex, 1.0f), view);
-    
-    // Subtract the input position.
-    posVector = posVector - position;
-
-    // Normalize the result to get the vector between the occluder and the pixel being occluded.
-    vec = normalize(posVector);
-	
-    // Calculate distance of occluder.
-    distance = length(posVector) * ssao_scale;
-
-    // Calculate the ambient occlusion.
-    occlusion = max(0.0, dot(normal, vec) - bias) * (1.0f / (1.0f + distance)) * ssao_intensity;
-
-    return occlusion;
+float3 ViewSpaceFromDepth(float depth, float2 uv)
+{
+    // Back to NDCs
+    uv.y = 1.0f - uv.y; // Invert Y due to UV <--> NDC diff
+    uv = uv * 2.0f - 1.0f;
+    float4 screenPos = float4(uv, depth, 1.0f);
+    // Back to view space
+    float4 viewPos = mul(projection_inverse, screenPos);
+    return viewPos.xyz / viewPos.w;
 }
 
-
-
+float2 UVFromViewSpacePosition(float3 viewSpacePosition)
+{
+    // Apply the projection matrix to the view space position then perspective divide
+    float4 samplePosScreen = mul(projection, float4(viewSpacePosition, 1.0f));
+    samplePosScreen.xyz /= samplePosScreen.w;
+    // Adjust from NDCs to UV coords (flip the Y!)
+    samplePosScreen.xy = samplePosScreen.xy * 0.5f + 0.5f;
+    samplePosScreen.y = 1.0f - samplePosScreen.y;
+    // Return just the UVs
+    return samplePosScreen.xy;
+}
 
 float PShader(VS_OUT input) : SV_TARGET {
     
-    // Get data from G-Buffer
-    float3 position = positionTexture.Sample(samp, input.uv).rgb;
-    position = mul(float4(position, 1.0), view); // To view spacae
-    float3 normal = normalTexture.Sample(samp, input.uv).rgb;
+    float pixel_depth = depthTexture.Sample(samp_clamp, input.uv);
+    if (pixel_depth >= 1.0f) return 1.0f;
     
-    // Expand normals from 0,1 to -1,1
-    normal = normalize((normal * 2.0f) - 1.0f);
+    float3 pixelPositionViewSpace = ViewSpaceFromDepth(pixel_depth, input.uv).rgb;
     
-    // Setup random texture sampling coordinates for the random vector
-    float2 tex_coords = float2(width / 4.0f, height / 4.0f);
-    tex_coords *= input.uv;
+    float2 aspect_ratio = float2(width / 4.0f, height / 4.0f);
+    float3 random_dir = noiseTexture.Sample(samp, input.uv * aspect_ratio).xyz;
     
-    // Move random vector from the noise texture
-    float2 random_vector = noiseTexture.Sample(samp_noise, tex_coords).xy;
+    float3 normal = normalTexture.Sample(samp, input.uv).xyz * 2.0f - 1.0f;
+    normal = normalize(mul((float3x3)view, normal));
     
-    // Move random vector to -1, 1 range
-    random_vector = normalize((random_vector * 2.0f) - 1.0f);
+    // TBN
+    float3 tangent = normalize(random_dir - normal * dot(random_dir, normal));
+    float3 bitangent = cross(tangent, normal);
+    float3x3 TBN = float3x3(tangent, bitangent, normal);
     
-    // Set up 4 vectors
-    float2 vector_array[4];
-    vector_array[0] = float2(1.0f, 0.0f);
-    vector_array[1] = float2(-1.0f, 0.0f);
-    vector_array[2] = float2(0.0f, 1.0f);
-    vector_array[3] = float2(0.0f, -1.0f);
-    
-    // Set the sample radius to take into account the depth of the pixel
-    float min_radius = 0.1f;
-    float max_radius = 5.0f;
-    float distance_scale = -position.z;
-    float max_distance = 40.0f;
-    
-    //float radius = radius_base / position.z;
-    float radius = min_radius + (max_radius - min_radius) * saturate(distance_scale / max_distance);
-    radius = clamp(radius * (width / height), min_radius, max_radius);
-
-    
-    const int count = 4;
     float occlusion = 0.0f;
-    float2 tex_coord_1;
-    float2 tex_coord_2;
-    for (int i = 0; i < count; i++){
+    
+    for (int i = 0; i < samples; i++){
+        float3 samplePosView = pixelPositionViewSpace + mul(kernel_samples[i].xyz, TBN) * radius_base;
         
-        tex_coord_1 = reflect(vector_array[i], random_vector) * radius;
-        tex_coord_2 = float2(((tex_coord_1.x * 0.75f) - (tex_coord_1.y * 0.75f)), ((tex_coord_1.x * 0.75f) + (tex_coord_1.y * 0.75f)));
+        float2 samplePosScreen = UVFromViewSpacePosition(samplePosView);
+
+        float sampleDepth = depthTexture.SampleLevel(samp_clamp, samplePosScreen.xy, 0.0f).r;
+        float sampleZ = ViewSpaceFromDepth(sampleDepth, samplePosScreen.xy).z;
         
-        float fj = 1.0f;
-        for (int j = 1; j <= samples; j++){
-            float factor = (fj / samples_float);
-            occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_1 * factor), position, normal);
-            occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_2 * factor), position, normal);
-            //occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_1 * 0.75f), position, normal);
-            //occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_2 * 1.0f), position, normal);
-            fj += 1.0f;
-        }
-        /*
-            occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_1 * 0.25f), position, normal);
-            occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_2 * 0.5f), position, normal);
-            occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_1 * 0.75f), position, normal);
-            occlusion += AmbientOcclusionFunction(input.uv + (tex_coord_2 * 1.0f), position, normal);
-        */
+        float rangeCheck = smoothstep(0.0f, 1.0f, radius_base / abs(pixelPositionViewSpace.z - sampleZ));
+        occlusion += (sampleZ < samplePosView.z ? rangeCheck : 0.0f);
+        
         
     }
     
-    // Average of the sum based on how many loops
-    occlusion = occlusion / (((float) count) * (samples * 2));
-    
-    // Invert occlusion output
-    occlusion = 1.0f - occlusion;
-    
+    occlusion = 1.0f - occlusion / samples_float;
     return occlusion;
+
 }
