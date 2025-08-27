@@ -95,6 +95,7 @@ struct ShaderFiles {
 
 	// SSAO
 	ID3D11PixelShader* PS_SSAO = nullptr;
+	ID3D11VertexShader* VS_SSAO = nullptr;
 	ID3D11PixelShader* PS_SSAO_Blur_blend = nullptr;
 	ID3D11PixelShader* PS_SSAO_Mix = nullptr;
 };
