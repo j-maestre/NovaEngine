@@ -94,9 +94,12 @@ public:
 private:
 	friend class ResourceManager;
 	friend class Renderer;
+	friend class Engine;
 
 	ImageData* get_data();
 	
 	unsigned int m_id;
 	ImageData m_data;
+	bool m_engine_default = false;
+
 };

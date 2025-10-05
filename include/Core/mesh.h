@@ -31,5 +31,7 @@ private:
 struct Model {
 	std::vector<Mesh> meshes;
 	std::vector<Mesh> meshes_copy;
+
+	bool m_engine_default = false;
 	
 };

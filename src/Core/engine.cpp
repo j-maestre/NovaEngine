@@ -234,7 +234,9 @@ Scene* Engine::get_scene(){
 
 Scene* Engine::create_scene(std::string path){
 	Scene* new_scene = new Scene(path.c_str());
+	m_all_scenes.clear();
 	m_all_scenes.push_back(new_scene);
+	//m_current_scene = new_scene;
 
 	return new_scene;
 }
@@ -269,6 +271,14 @@ void Engine::load_default_textures(){
 	Texture* roughness = m_resource.load_texture("data/textures/default_roughness_new.png");
 	Texture* ao = m_resource.load_texture("data/textures/default_ao.png");
 	Texture* emissive = m_resource.load_texture("data/textures/black.png");
+
+	t->m_engine_default = true;
+	t2->m_engine_default = true;
+	normal->m_engine_default = true;
+	metallic->m_engine_default = true;
+	roughness->m_engine_default = true;
+	ao->m_engine_default = true;
+	emissive->m_engine_default = true;
 
 	m_default_texture_albedo = t->get_id();
 	m_texture_tmp = t2->get_id();
@@ -305,6 +315,7 @@ void Engine::init_geometries(){
 	auto start = std::chrono::high_resolution_clock::now();
 	m_resource.load_mesh("data/models/basics/cube.fbx");
 	m_cube_model = m_resource.load_mesh("data/models/basics/cube.fbx");
+	m_cube_model->m_engine_default = true;
 #ifdef MULTI_THREAD
 
 	std::vector<std::function<void()>> tasks;
@@ -364,6 +375,14 @@ void Engine::init_geometries(){
 	m_sphere_model = m_resource.load_mesh("data/models/basics/sphere.fbx");
 	m_sphere_medium_model = m_resource.load_mesh("data/models/basics/sphere_medium_resolution.fbx");
 	m_sphere_high_model = m_resource.load_mesh("data/models/basics/sphere_high_resolution.fbx");
+
+	m_cylinder_model->m_engine_default = true;
+	m_cylinder_high_model->m_engine_default = true;
+	m_cone_model->m_engine_default = true;
+	m_cone_high_model->m_engine_default = true;
+	m_sphere_model->m_engine_default = true;
+	m_sphere_medium_model->m_engine_default = true;
+	m_sphere_high_model->m_engine_default = true;
 
 #ifndef MULTI_THREAD
 	auto end = std::chrono::high_resolution_clock::now();

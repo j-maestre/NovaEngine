@@ -149,7 +149,7 @@ void ImguiManager::show_render_parameters(RenderInfo* info){
 	ImGui::SliderInt("SSAO Samples", &(info->ssao_samples), 1, ssao_kernel);
 	hover_item();
 
-	ImGui::SliderFloat("SSAO radius", &(info->ssao_base_radius), 0.1f, 1.0f);
+	ImGui::SliderFloat("SSAO radius", &(info->ssao_base_radius), 0.1f, 5.0f);
 	hover_item();
 	
 	ImGui::SliderFloat("SSAO blend intensity", &(info->ssao_blend_intensity), 0.1f, 3.0f);
@@ -288,9 +288,20 @@ void ImguiManager::main_menu(){
 					if (ImGui::MenuItem(filename.c_str())) {
 						
 						printf("Opening scene: %s\n", filename.c_str());
-						Engine::get_instance()->m_resource.release();
+						Engine::get_instance()->m_resource.release_non_default();
+
+						//Engine::get_instance()->init_geometries();
+
 						Scene* s = Engine::get_instance()->create_scene(filename);
 						Engine::get_instance()->set_scene(s);
+
+						Entity directional_light = s->m_ecs.create_entity("Directional Light");
+						auto& light = s->m_ecs.add_component<DirectionalLight>(directional_light);
+						light.set_color({ 1.0f, 1.0f, 1.0f });
+						light.set_direction({ 0.5f,-1.0f, -1.0f });
+						light.set_enabled(true);
+						
+						//Engine::get_instance()->load_default_textures();
 						//std::cout << "Archivo YAML seleccionado: " << entry.path() << std::endl;
 					}
 				}
@@ -998,7 +1009,7 @@ void ImguiManager::scene_info(Scene* scene){
 	ImGui::End();
 }
 
-void ImguiManager::gbuffer_info(DeferredResources* gbuffer, ID3D11ShaderResourceView* depth_srv){
+void ImguiManager::gbuffer_info(DeferredResources* gbuffer){
 
 	ImGui::Begin("G-Buffer");
 	ImGui::Text("Albedo");
@@ -1025,19 +1036,17 @@ void ImguiManager::gbuffer_info(DeferredResources* gbuffer, ID3D11ShaderResource
 		ImVec2(256,256)
 	);
 	
+	ImGui::Text("Depth");
+	ImGui::Image(
+		(ImTextureID) gbuffer->depth_srv,
+		ImVec2(256,256)
+	);
+	
 	ImGui::Text("SSAO");
 	ImGui::Image(
 		(ImTextureID) gbuffer->ssao_shader_resource_view,
 		ImVec2(256,256)
 	);
-	
-	ImGui::Text("Depth");
-	ImGui::Image(
-		(ImTextureID) depth_srv,
-		ImVec2(256,256)
-	);
-
-
 
 
 	ImGui::End();

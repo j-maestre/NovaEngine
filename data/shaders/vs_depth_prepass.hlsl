@@ -6,7 +6,7 @@ struct VS_IN
 struct VS_OUT
 {
     float4 position : SV_POSITION;
-    //float out_depth: TEXCOORD0;
+    float out_depth : TEXCOORD0;
 };
 
 cbuffer CameraDepthPrePass : register(b0){
@@ -20,10 +20,10 @@ VS_OUT VShader(VS_IN input)
     VS_OUT output;
     float4 world_pos = mul(float4(input.position, 1.0), model);
     float4 view_pos = mul(world_pos, view);
-    output.position = mul(view_pos, projection);    // Clip space
+    output.position = mul(view_pos, projection);
     
-    //output.out_depth = output.position.z;// / output.position.w;
-    //output.out_depth = normalized_device_coordinates * 0.5f + 0.5f;
+    output.out_depth = output.position.z / output.position.w;
+    output.out_depth = output.out_depth * 0.5f + 0.5f;
     
     return output;
 }

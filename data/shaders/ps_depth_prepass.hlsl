@@ -1,5 +1,4 @@
 
-
 struct VS_OUT
 {
     float4 position : SV_POSITION;
@@ -10,7 +9,7 @@ struct VS_OUT
 float PShader(VS_OUT input) : SV_TARGET
 {
     
-    float depth = input.depth * 0.5f + 0.5f;
+    //float depth = normalize(input.depth * 0.5f + 0.5f);
     
-    return depth;
+    return input.depth;
 }

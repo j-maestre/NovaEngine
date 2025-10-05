@@ -11,14 +11,17 @@ Texture::Texture(unsigned int id){
 Texture::Texture(const Texture& other){
 	m_id = other.m_id;
 	m_data = other.m_data;
+	m_engine_default = other.m_engine_default;
 }
 
 Texture::Texture(Texture&& other){
 
 	m_id = other.m_id;
 	m_data = other.m_data;
+	m_engine_default = other.m_engine_default;
 	other.m_id = 0;
 	other.m_data.texture_view = nullptr;
+	other.m_engine_default = false;
 }
 
 Texture::~Texture(){
@@ -33,6 +36,8 @@ Texture& Texture::operator=(const Texture& other){
 	if (this != &other) {
 		m_data = other.m_data;
 		m_id = other.m_id;
+		m_engine_default = other.m_engine_default;
+
 	}
 
 	return *this;
@@ -43,7 +48,7 @@ Texture& Texture::operator=(Texture&& other){
 	if (this != &other) {
 		m_data = other.m_data;
 		m_id = other.m_id;
-
+		m_engine_default = other.m_engine_default;
 	}
 
 	return *this;
