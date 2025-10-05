@@ -4,7 +4,7 @@
 #include "render/window.h"
 #include "Core/engine.h"
 
-CameraComponent::CameraComponent(const Input* input, Window* win){
+CameraComponent::CameraComponent(const Input* input, Window* win) {
 	m_aspect_ratio = 16.0f / 9.0f;
 	m_near = 0.1f;
 	m_far = 1000.0f;
@@ -16,7 +16,7 @@ CameraComponent::CameraComponent(const Input* input, Window* win){
 	m_yaw = 267.0f;
 
 	m_input = input;
-	
+
 	m_direction = { 0.0f, 0.0f, -1.0f };
 
 	WindowInfo* info = win->get_window_info();
@@ -25,14 +25,14 @@ CameraComponent::CameraComponent(const Input* input, Window* win){
 	m_center_x = ((float)m_window_props->width) * 0.5f;
 	m_center_y = ((float)m_window_props->height) * 0.5f;
 
-	POINT center_tmp = {LONG(m_center_x), LONG(m_center_y)};
+	POINT center_tmp = { LONG(m_center_x), LONG(m_center_y) };
 	m_window_center = center_tmp;
 
 	m_window_handle = info->window_handle;
 	m_win = win;
 	ClientToScreen(m_window_handle, &m_window_center);
 	SetCursorPos(center_tmp.x, center_tmp.y);
-	
+
 }
 
 CameraComponent::CameraComponent(const CameraComponent&)
@@ -47,7 +47,7 @@ CameraComponent::~CameraComponent()
 {
 }
 
-void CameraComponent::update(){
+void CameraComponent::update() {
 
 #ifdef MEASURE_TIME
 	auto start = std::chrono::high_resolution_clock::now();
@@ -66,12 +66,12 @@ void CameraComponent::update(){
 }
 
 
-void CameraComponent::fly(float dt){
+void CameraComponent::fly(float dt) {
 	//glm::vec3 position = glm::make_vec3(GetPosition());
 
 	//printf("Pitch %f Yaw %f\n", m_pitch, m_yaw);
 	//printf("Direction X%f Y%f Z%f\n", DirectX::XMVectorGetX(m_direction), DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction));
-	
+
 #ifdef MEASURE_TIME
 	auto start = std::chrono::high_resolution_clock::now();
 #endif
@@ -85,13 +85,13 @@ void CameraComponent::fly(float dt){
 	FVector right = DirectX::XMVector3Cross(m_direction, up_vec);
 
 	Vec3 right_float = { DirectX::XMVectorGetX(right),DirectX::XMVectorGetY(right), DirectX::XMVectorGetZ(right) };
-	
+
 	POINT center_tmp = { LONG(m_center_x), LONG(m_center_y) };
 
 	if (m_input->is_key_pressed(Key::Mouse::RBUTTON)) {
 
 		ShowCursor(FALSE);
-		
+
 		m_center_x = ((float)m_window_props->width) * 0.5f;
 		m_center_y = ((float)m_window_props->height) * 0.5f;
 
@@ -101,7 +101,7 @@ void CameraComponent::fly(float dt){
 		const float speed = m_speed * dt;
 
 		if (m_input->is_key_pressed(Key::Keyboard::W)) {
-		
+
 			m_position.x += forward.x * m_movement_speed * dt;
 			m_position.y += forward.y * m_movement_speed * dt;
 			m_position.z += forward.z * m_movement_speed * dt;
@@ -115,7 +115,7 @@ void CameraComponent::fly(float dt){
 			m_position.x -= right_float.x * m_movement_speed * dt;
 			m_position.y -= right_float.y * m_movement_speed * dt;
 			m_position.z -= right_float.z * m_movement_speed * dt;
-		}	
+		}
 		if (m_input->is_key_pressed(Key::Keyboard::A)) {
 			m_position.x += right_float.x * m_movement_speed * dt;
 			m_position.y += right_float.y * m_movement_speed * dt;
@@ -123,9 +123,9 @@ void CameraComponent::fly(float dt){
 		}
 
 
-		POINT mouse_pos = {LONG(MouseX), LONG(MouseY)};
+		POINT mouse_pos = { LONG(MouseX), LONG(MouseY) };
 		ScreenToClient(m_window_handle, &mouse_pos);
-		
+
 		//float OffsetX = MouseX - m_last_mouse_x;
 		//float OffsetY = MouseY - m_last_mouse_y;
 		float OffsetX = static_cast<float>(MouseX - m_center_x);
@@ -156,7 +156,7 @@ void CameraComponent::fly(float dt){
 
 		ClientToScreen(m_window_handle, &center_tmp);
 		SetCursorPos(center_tmp.x, center_tmp.y);
-		
+
 
 
 		// Check wheel
@@ -169,8 +169,9 @@ void CameraComponent::fly(float dt){
 		if (m_input->is_mouse_wheel_up()) {
 			m_movement_speed *= 1.1f;
 		}
-		
-	}else {
+
+	}
+	else {
 		m_last_start_movement = false;
 	}
 
@@ -184,7 +185,7 @@ void CameraComponent::fly(float dt){
 	forward.y = sinf(degToRad(m_pitch));
 	forward.z = sinf(degToRad(m_yaw) * -1.0f) * cosf(degToRad(m_pitch)); // * -1.0f to fix inverted mouse direction
 
-	m_direction = DirectX::XMVector3Normalize(FVector({ forward.x, forward.y, forward.z, 0.0f}));
+	m_direction = DirectX::XMVector3Normalize(FVector({ forward.x, forward.y, forward.z, 0.0f }));
 
 	//Mat4 view_trans = DirectX::XMMatrixTranspose(m_view);
 	DirectX::XMStoreFloat4x4(&m_view_float, m_view);
@@ -193,11 +194,11 @@ void CameraComponent::fly(float dt){
 	//Mat4 proj_trans = DirectX::XMMatrixTranspose(m_projection);
 	DirectX::XMStoreFloat4x4(&m_projection_float, m_projection);
 	m_projection_raw = reinterpret_cast<float*>(&m_projection_float);
-	
+
 	DirectX::XMStoreFloat4x4(&m_projection_inverse_float, m_projection_inverse);
 	m_projection_inverse_raw = reinterpret_cast<float*>(&m_projection_inverse_float);
-	
-	
+
+
 #ifdef MEASURE_TIME
 	auto end = std::chrono::high_resolution_clock::now();
 	auto elapsed = end - start;
@@ -205,11 +206,11 @@ void CameraComponent::fly(float dt){
 #endif
 }
 
-void CameraComponent::set_aspect_ratio(float value){
+void CameraComponent::set_aspect_ratio(float value) {
 	m_aspect_ratio = value;
 }
 
-void CameraComponent::update_projection_matrix(){
+void CameraComponent::update_projection_matrix() {
 
 	// Left-Handle more common un DirectX
 	m_aspect_ratio = ((float)m_window_props->width) / ((float)m_window_props->height);
@@ -217,28 +218,28 @@ void CameraComponent::update_projection_matrix(){
 	m_projection_inverse = DirectX::XMMatrixInverse(nullptr, m_projection);
 }
 
-float* CameraComponent::get_view_raw(){
+float* CameraComponent::get_view_raw() {
 
 	return m_view_raw;
 }
 
-float* CameraComponent::get_projection_raw(){
+float* CameraComponent::get_projection_raw() {
 
 	return m_projection_raw;
 }
 
-float* CameraComponent::get_projection_inverse_raw(){
+float* CameraComponent::get_projection_inverse_raw() {
 
 	return m_projection_inverse_raw;
 }
 
-void CameraComponent::update_view_matrix(){
+void CameraComponent::update_view_matrix() {
 
 
 	//if (m_Data->MustRecalculeView || bForce){
 
 		//m_Data->MustRecalculeView = false;
-		
+
 	/*
 		m_inverseViewMatrix = glm::translate(glm::mat4(1), m_position) * glm::mat4_cast(glm::quat(m_rotation));
 		m_viewMatrix = glm::inverse(m_inverseViewMatrix);
@@ -246,33 +247,33 @@ void CameraComponent::update_view_matrix(){
 		m_up = glm::vec3(m_inverseViewMatrix[1]);
 		m_forward = glm::vec3(-m_inverseViewMatrix[2]);
 	*/
-		
-	 
-		FVector position({ m_position.x, m_position.y, m_position.z, 1.0f });
-		FVector direction({ DirectX::XMVectorGetX(m_direction) * 1.0f, DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction), 0.0f });
-		FVector up({ 0.0f, 1.0f, 0.0f, 0.0f });
 
 
-		FVector cameraRight = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(direction, up));
-		FVector cameraUp = DirectX::XMVector3Cross(cameraRight, direction);
-
-		m_up.x = DirectX::XMVectorGetX(cameraUp);
-		m_up.y = DirectX::XMVectorGetY(cameraUp);
-		m_up.z = DirectX::XMVectorGetZ(cameraUp);
-
-		m_right.x = DirectX::XMVectorGetX(cameraRight);
-		m_right.y = DirectX::XMVectorGetY(cameraRight);
-		m_right.z = DirectX::XMVectorGetZ(cameraRight);
-
-		
-		m_direction = DirectX::XMVector3Normalize(direction);
-		FVector eye = DirectX::XMVectorAdd(position, m_direction);
-		m_view = DirectX::XMMatrixLookAtLH(position, eye, up);
-		
+	FVector position({ m_position.x, m_position.y, m_position.z, 1.0f });
+	FVector direction({ DirectX::XMVectorGetX(m_direction) * 1.0f, DirectX::XMVectorGetY(m_direction), DirectX::XMVectorGetZ(m_direction), 0.0f });
+	FVector up({ 0.0f, 1.0f, 0.0f, 0.0f });
 
 
-		//m_Data->ProjectionViewMatrix = m_Data->ProjectionMatrix * m_Data->ViewMatrix;
-	//}
+	FVector cameraRight = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(direction, up));
+	FVector cameraUp = DirectX::XMVector3Cross(cameraRight, direction);
+
+	m_up.x = DirectX::XMVectorGetX(cameraUp);
+	m_up.y = DirectX::XMVectorGetY(cameraUp);
+	m_up.z = DirectX::XMVectorGetZ(cameraUp);
+
+	m_right.x = DirectX::XMVectorGetX(cameraRight);
+	m_right.y = DirectX::XMVectorGetY(cameraRight);
+	m_right.z = DirectX::XMVectorGetZ(cameraRight);
+
+
+	m_direction = DirectX::XMVector3Normalize(direction);
+	FVector eye = DirectX::XMVectorAdd(position, m_direction);
+	m_view = DirectX::XMMatrixLookAtLH(position, eye, up);
+
+
+
+	//m_Data->ProjectionViewMatrix = m_Data->ProjectionMatrix * m_Data->ViewMatrix;
+//}
 
 }
 

@@ -95,6 +95,7 @@ struct ShaderFiles {
 
 	// SSAO
 	ID3D11PixelShader* PS_SSAO = nullptr;
+	ID3D11VertexShader* VS_SSAO = nullptr;
 	ID3D11PixelShader* PS_SSAO_Blur_blend = nullptr;
 	ID3D11PixelShader* PS_SSAO_Mix = nullptr;
 };
@@ -204,10 +205,14 @@ struct SSAOConstantBuffer {
 };
 */
 
+
+
+
 struct SSAOConstantBuffer {
 	Mat4 projection;
 	Mat4 view;
 	Mat4 inv_projection;
+
 	Vec4 kernel_samples[ssao_kernel];
 	int samples;
 	float ssao_base_radius;
@@ -216,6 +221,7 @@ struct SSAOConstantBuffer {
 	float height;
 	Vec3 padding;
 };
+
 
 struct SSAOBlendConstantBuffer {
 	float blend_intensity = 1.0f;
@@ -307,15 +313,20 @@ struct DeferredResources {
 	ID3D11RenderTargetView* ssao_dowscaling_render_target_view[NUM_MIPMAPS_EMISSIVE];
 	ID3D11Texture2D* ssao_dowscaling_texture[NUM_MIPMAPS_EMISSIVE];
 	ID3D11ShaderResourceView* ssao_dowscaling_shader_resource_view[NUM_MIPMAPS_EMISSIVE];
+
+	// Depth (for ssao)
+	ID3D11RenderTargetView* depth_rtv;
+	ID3D11Texture2D* depth_texture;
+	ID3D11ShaderResourceView* depth_srv;
 };
 
 
 
 struct RenderInfo {
 	int ssao_samples = ssao_kernel;
-	float ssao_base_radius = 0.5f;
+	float ssao_base_radius = 1.0f;
 	float ssao_blend_intensity = 1.0f;
-	bool ssao_active = true;
+	bool ssao_active = false;
 	bool bloom_active = true;
 	DrawMode draw_mode = DrawMode::Solid;
 };

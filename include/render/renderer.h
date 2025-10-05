@@ -153,11 +153,6 @@ private:
 	ID3D11DepthStencilView* m_depth_stencil_view;
 	ID3D11DepthStencilState* m_depth_stencil_state;
 
-	// Depth stuff for ssao
-	ID3D11Texture2D* m_depth_buffer_texture;
-	ID3D11RenderTargetView* m_depth_rtv;
-	ID3D11ShaderResourceView* m_depth_srv;
-
 	ID3D11DepthStencilState* m_depth_stencil_state_skybox;
 	ID3D11DepthStencilState* m_depth_only_state;
 	ID3D11DepthStencilState* m_depth_stencil_ssao;
