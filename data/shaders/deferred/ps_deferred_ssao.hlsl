@@ -55,13 +55,15 @@ float PShader(VS_OUT input) : SV_TARGET {
     float pixel_depth = depthTexture.Sample(samp_clamp, input.uv);
     if (pixel_depth >= 1.0f) return 1.0f;
     
-    float3 pixelPositionViewSpace = ViewSpaceFromDepth(pixel_depth, input.uv).rgb;
+    //float3 pixelPositionViewSpace = ViewSpaceFromDepth(pixel_depth * 2.0f - 1.0f, input.uv).rgb;
+    float3 pixelPositionViewSpace = positionTexture.Sample(samp, input.uv).xyz;
+    pixelPositionViewSpace = mul(float4(pixelPositionViewSpace, 1.0f), view).xyz;
     
     float2 aspect_ratio = float2(width / 4.0f, height / 4.0f);
     float3 random_dir = noiseTexture.Sample(samp, input.uv * aspect_ratio).xyz;
     
     float3 normal = normalTexture.Sample(samp, input.uv).xyz * 2.0f - 1.0f;
-    normal = normalize(mul((float3x3)view, normal));
+    normal = normalize(mul(normal, (float3x3)view));
     
     // TBN
     float3 tangent = normalize(random_dir - normal * dot(random_dir, normal));
@@ -75,12 +77,21 @@ float PShader(VS_OUT input) : SV_TARGET {
         
         float2 samplePosScreen = UVFromViewSpacePosition(samplePosView);
 
+        
         float sampleDepth = depthTexture.SampleLevel(samp_clamp, samplePosScreen.xy, 0.0f).r;
         float sampleZ = ViewSpaceFromDepth(sampleDepth, samplePosScreen.xy).z;
         
         float rangeCheck = smoothstep(0.0f, 1.0f, radius_base / abs(pixelPositionViewSpace.z - sampleZ));
         occlusion += (sampleZ < samplePosView.z ? rangeCheck : 0.0f);
+                
         
+        /*
+        float3 samplePosViewFromTexture = positionTexture.Sample(samp, samplePosScreen.xy).xyz;
+        samplePosViewFromTexture = mul(float4(samplePosViewFromTexture, 1), view).xyz;
+
+        float rangeCheck = smoothstep(0.0f, 1.0f, radius_base / abs(pixelPositionViewSpace.z - samplePosViewFromTexture.z));
+        occlusion += (samplePosViewFromTexture.z < samplePosView.z ? rangeCheck : 0.0f);
+        */        
         
     }
     

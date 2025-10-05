@@ -55,6 +55,7 @@ public:
 	__forceinline ID3D11Resource** get_brdf_texture() { return m_brdf_texture; }
 
 	void release();
+	void release_non_default();
 
 private:
 	friend class Engine;

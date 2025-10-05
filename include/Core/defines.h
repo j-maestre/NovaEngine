@@ -326,7 +326,7 @@ struct RenderInfo {
 	int ssao_samples = ssao_kernel;
 	float ssao_base_radius = 1.0f;
 	float ssao_blend_intensity = 1.0f;
-	bool ssao_active = true;
+	bool ssao_active = false;
 	bool bloom_active = true;
 	DrawMode draw_mode = DrawMode::Solid;
 };

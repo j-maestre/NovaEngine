@@ -923,7 +923,9 @@ void ResourceManager::check_textures_to_load(){
 	}
 }
 
-void ResourceManager::release(){
+void ResourceManager::release() {
+
+
 	for (auto t : m_textures) {
 		t.second.get_data()->texture_view->Release();
 		t.second.get_data()->texture->Release();
@@ -935,4 +937,50 @@ void ResourceManager::release(){
 			m.buffer->Release();
 		}
 	}
+
+	m_textures.clear();
+	m_models.clear();
+}
+
+void ResourceManager::release_non_default(){
+	
+	// TODO: Release only non default textures and models
+	
+	std::vector<int> index_to_erase;
+
+	for (auto t : m_textures) {
+		
+		if (!t.second.m_engine_default) {
+			// Not a engine default, erase it
+
+			t.second.get_data()->texture_view->Release();
+			t.second.get_data()->texture->Release();
+			index_to_erase.push_back(t.first);
+		}
+
+	}
+
+	for (int i : index_to_erase) {
+		m_textures.erase(i);
+	}
+
+	index_to_erase.clear();
+
+
+	for (auto model : m_models) {
+		if (!model.second.m_engine_default) {
+			index_to_erase.push_back(model.first);
+			for (Mesh m : model.second.meshes) {
+				m.index_buffer->Release();
+				m.buffer->Release();
+			}
+		}
+	}
+
+	for (int i : index_to_erase) {
+		m_models.erase(i);
+	}
+
+	//m_textures.clear();
+	//m_models.clear();
 }

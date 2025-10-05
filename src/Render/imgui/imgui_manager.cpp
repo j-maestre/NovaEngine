@@ -288,9 +288,20 @@ void ImguiManager::main_menu(){
 					if (ImGui::MenuItem(filename.c_str())) {
 						
 						printf("Opening scene: %s\n", filename.c_str());
-						Engine::get_instance()->m_resource.release();
+						Engine::get_instance()->m_resource.release_non_default();
+
+						//Engine::get_instance()->init_geometries();
+
 						Scene* s = Engine::get_instance()->create_scene(filename);
 						Engine::get_instance()->set_scene(s);
+
+						Entity directional_light = s->m_ecs.create_entity("Directional Light");
+						auto& light = s->m_ecs.add_component<DirectionalLight>(directional_light);
+						light.set_color({ 1.0f, 1.0f, 1.0f });
+						light.set_direction({ 0.5f,-1.0f, -1.0f });
+						light.set_enabled(true);
+						
+						//Engine::get_instance()->load_default_textures();
 						//std::cout << "Archivo YAML seleccionado: " << entry.path() << std::endl;
 					}
 				}
