@@ -946,19 +946,23 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 			m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 		}
 	}
-	/*
+	
 	
 	active_shader(ShaderType::DeferredSpot);
 	for (auto [entity, light] : spot_light.each()) {
-		light.update();
-		light.upload_data();
+		if (light.get_enabled()) {
+
+			light.update();
+			light.upload_data();
 	
-		props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
-		props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		props->inmediateDeviceContext->Draw(3, 0);
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
+			props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
+			props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			props->inmediateDeviceContext->Draw(3, 0);
+			add_draw_call();
+			m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
+		}
 	}
-	*/
+	
 
 	
 

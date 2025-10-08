@@ -203,6 +203,8 @@ void ImguiManager::render_guizmo(CameraComponent* cam/*, ImVec2 pos, ImVec2 size
 		// Matriz del objeto a manipular
 		float* object_matrix = nullptr;
 		PointLight* p = Engine::get_instance()->m_current_scene->m_ecs.get_component<PointLight>(e);
+		SpotLight* s = Engine::get_instance()->m_current_scene->m_ecs.get_component<SpotLight>(e);
+
 		DirectX::XMFLOAT4X4 tmp_4x4;
 		if (p) {
 			Vec3 position = p->get_position();
@@ -210,6 +212,14 @@ void ImguiManager::render_guizmo(CameraComponent* cam/*, ImVec2 pos, ImVec2 size
 			DirectX::XMStoreFloat4x4(&tmp_4x4, tmp);
 			object_matrix = &tmp_4x4.m[0][0];
 		}
+		
+		if (s) {
+			Vec3 position = s->get_position();
+			Mat4 tmp = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+			DirectX::XMStoreFloat4x4(&tmp_4x4, tmp);
+			object_matrix = &tmp_4x4.m[0][0];
+		}
+
 		TransformComponent* t = Engine::get_instance()->m_current_scene->m_ecs.get_component<TransformComponent>(e);
 		if (t) {
 			object_matrix = t->get_transform_raw();
@@ -246,6 +256,11 @@ void ImguiManager::render_guizmo(CameraComponent* cam/*, ImVec2 pos, ImVec2 size
 			if (p) {
 				Vec3 pos_tmp(position);
 				p->set_position(pos_tmp);
+			}
+			
+			if (s) {
+				Vec3 pos_tmp(position);
+				s->set_position(pos_tmp);
 			}
 		}
 	}

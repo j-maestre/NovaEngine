@@ -23,15 +23,24 @@ Texture2D brdf_tex : register(t6);
 
 SamplerState mySampler : register(s0);
 
-cbuffer DirectionalLightConstantBuffer : register(b0)
+cbuffer SpotLightConstantBuffer : register(b0)
 {
-    float3 direction;
+    float3 light_position;
     float enabled;
-    float3 light_diffuse_color;
-    float specular_strength;
+    float3 direction;
+    float cutt_off;
+    float3 diffuse_color;
+    float outer_cut_off;
     float3 specular_color;
+    float specular_strength;
     float specular_shininess;
+    float constant_att;
+    float linear_att;
+    float quadratic_att;
+    float exposure;
+    
     float intensity;
+    float light_distance;
 }
 
 cbuffer CameraDeferred : register(b1){
@@ -99,6 +108,45 @@ float3 fresnelSchlickRoughness(float cosTheta, float3 F0, float roughness){
 }   
 
 
+float3 CalculeSpotLight(float3 normal, float3 view_dir, float3 color_base, float3 frag_pos){
+    
+    float3 lightDir = normalize(light_position - frag_pos);
+    float cut_off = cos(cutt_off * 3.1415 / 180);
+    float outer_cut_off_calculated = cos(outer_cut_off * 3.1415 / 180);
+
+    float diff = max(dot(normal, lightDir), 0.0);
+    float3 light_diffuse_calculated = diff * diffuse_color * color_base;
+
+    //float3 reflectDir = reflect(-direction, normal);
+    //float spec = pow(max(dot(view_dir, reflectDir), 0.0), specular_shininess);
+    //float3 light_specular_calculated = specular_strength * spec * specular_color * color_base;
+
+    float distance = length(light_position - frag_pos);
+
+    // Atenuaci�n por distancia (constante, lineal, cuadr�tica)
+    float attenuationAmount = 1.0 / (constant_att + linear_att * distance + quadratic_att * (distance * distance));
+
+    // Fade suave basado en light_distance para que la luz se apague cerca del l�mite
+    float fade_start = light_distance * 0.8;
+    float fade = smoothstep(fade_start, light_distance, distance);
+    fade = 1.0 - fade; // invertir para que sea 1 dentro y 0 fuera
+
+    attenuationAmount *= fade;
+
+    light_diffuse_calculated *= attenuationAmount;
+    //light_specular_calculated *= attenuationAmount;
+
+    float theta = dot(lightDir, normalize(-direction));
+    float epsilon = (cut_off - outer_cut_off_calculated);
+    float intensity = clamp((theta - outer_cut_off_calculated) / epsilon, 0.0, 1.0);
+
+    light_diffuse_calculated *= intensity;
+    //light_specular_calculated *= intensity;
+
+    return light_diffuse_calculated; // + light_specular_calculated;
+
+}
+
 
 PS_OUT PShader(PS_INPUT input) : SV_TARGET
 {
@@ -131,18 +179,18 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     
     
 
-    float distance = 0.0;
+    //float distance = 0.0;
     float attenuation = 1.0;
-    float3 radiance = light_diffuse_color * texture_color.rgb; // * intensity;
+    float distance = length(light_position - texture_position.rgb);
+
+    //float3 radiance = light_diffuse_color * texture_color.rgb; // * intensity;
+    float3 radiance = CalculeSpotLight(texture_normal.rgb, view_dir, texture_color.rgb, texture_position.rgb) * intensity;
     
     float3 L = -direction;
     float3 H = normalize(V + L);
     float3 N = texture_normal.rgb;
 
- 
 
-
-    
     // Cook-Torrance BRDF specular
     float NDF = DistributionGGX(N, H, texture_roughness);
     float G = GeometrySmith(N, V, L, texture_roughness);
@@ -170,7 +218,7 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
 
     // scale light by NdotL
     float NdotL = max(dot(N, L), 0.0);
-   
+
     specular += specularIBL;
     
 
@@ -184,8 +232,8 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     float3 ambient = float3(0.01f, 0.01f, 0.01f) * texture_color.rgb * texture_ao;
     ambient *= (1.0 - texture_metallic); // prevent albedo on full metallic parts
     
-    float3 color = Lo + ambient;
-    //float3 color = Lo;// + ambient_tmp_reflection;
+    //float3 color = Lo + ambient;
+    float3 color = Lo;// + ambient_tmp_reflection;
     
     
     // Calculate brightness before HDR
