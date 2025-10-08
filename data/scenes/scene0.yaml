@@ -1,4 +1,29 @@
 Entities:
+  DirectionalLight:
+      Light:
+        Type: "Directional"
+        Direction: [0.5, -1.0, -1.0]
+        Color: [1.0,1.0, 1.0]
+        Enabled: false
+  PointLight:
+    Light:
+      Type: "Point"
+      Position: [0.0, 13.0, 0.0]
+      Color: [1.0, 0.1, 0.1]
+      Distance: 22.5
+      Intensity: 8.7
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: false
+  SpotLight:
+    Light:
+      Type: "Spot"
+      Position: [0.0, 13.0, 0.0]
+      Direction: [0.0, -1.0, 0.0]
+      Color: [1.0, 0.1, 0.1]
+      Distance: 15.0
+      Enabled: true
   Sphere:
     Transform:
       Position: [0.0, 3.0, 0.0]

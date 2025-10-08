@@ -1,4 +1,10 @@
 Entities:
+  DirectionalLight:
+    Light:
+      Type: "Directional"
+      Direction: [0.5, -1.0, -1.0]
+      Color: [1.0,1.0, 1.0]
+      Enabled: true
   Sphere0:
     Transform:
       Position: [1.0, 1.7, 0.0]
@@ -79,6 +85,6 @@ Entities:
       - {Albedo: [0.1, 0.8, 0.1] }
       - {Metallic: 0.5}
       - {Roughness: 0.6}
-  
+
 
   

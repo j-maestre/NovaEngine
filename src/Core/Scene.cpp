@@ -15,6 +15,7 @@
 bool load_transform_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
 bool load_mesh_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
 bool load_material_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
+bool load_light_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
 
 
 Scene::Scene(const std::string& path_scene) : m_ecs(), m_selected_entity(-1,"") {
@@ -95,6 +96,7 @@ bool Scene::load_scene(std::string path){
         succes &= load_transform_component(entity, e, m_ecs);
         succes &= load_mesh_component(entity, e, m_ecs);
         succes &= load_material_component(entity, e, m_ecs);
+        succes &= load_light_component(entity, e, m_ecs);
 
         if (!succes) {
             ImguiManager::get_instance()->add_resource_loaded("Error loading entity " + entity_name);
@@ -128,34 +130,52 @@ Vec3 vec3FromYAML(const ryml::ConstNodeRef& node) {
     return parseVec3(node);
 }
 
+template <typename T>
+T get_value_from_yaml(c4::yml::ConstNodeRef entity_node) {
+    T value = std::stof(std::string(entity_node.val().data(), entity_node.val().size()));
+    return value;
+}
+
+template <>
+bool get_value_from_yaml(c4::yml::ConstNodeRef entity_node) {
+    ryml::csubstr val = entity_node.val();
+    if (val == "true" || val == "True" || val == "1") return true;
+    
+    return false;
+}
+
+
 bool load_transform_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs){
 
-    const auto transform = entity_node["Transform"];
-    if (!transform.invalid()) {
+    if (entity_node.has_child("Transform")) {
 
-        // Extract transform data (position, rotation, scale)
-        Vec3 position = vec3FromYAML(transform["Position"]);
-        Vec3 rotation = vec3FromYAML(transform["Rotation"]);
-        Vec3 scale = vec3FromYAML(transform["Scale"]);
+        const auto transform = entity_node["Transform"];
+        if (!transform.invalid()) {
+
+            // Extract transform data (position, rotation, scale)
+            Vec3 position = vec3FromYAML(transform["Position"]);
+            Vec3 rotation = vec3FromYAML(transform["Rotation"]);
+            Vec3 scale = vec3FromYAML(transform["Scale"]);
 
 
-        rotation.x = degToRad(rotation.x);
-        rotation.y = degToRad(rotation.y);
-        rotation.z = degToRad(rotation.z);
+            rotation.x = degToRad(rotation.x);
+            rotation.y = degToRad(rotation.y);
+            rotation.z = degToRad(rotation.z);
 
-       auto& t = ecs.add_component<TransformComponent>(entity);
-       t.set_position(position);
-       t.set_rotation(rotation);
-       t.set_scale(scale);
+           auto& t = ecs.add_component<TransformComponent>(entity);
+           t.set_position(position);
+           t.set_rotation(rotation);
+           t.set_scale(scale);
 
-       if (transform.has_child("Parent")) {
-           std::string model_name(transform["Parent"].val().data(), transform["Parent"].val().size());
-           Entity e = ecs.get_entity_by_name(model_name);
-           if (e.get_id() != -1) {
-               TransformComponent* trans = ecs.get_component<TransformComponent>(e);
-               t.set_parent(trans);
+           if (transform.has_child("Parent")) {
+               std::string model_name(transform["Parent"].val().data(), transform["Parent"].val().size());
+               Entity e = ecs.get_entity_by_name(model_name);
+               if (e.get_id() != -1) {
+                   TransformComponent* trans = ecs.get_component<TransformComponent>(e);
+                   t.set_parent(trans);
+               }
            }
-       }
+        }
     }
 
     return true;
@@ -251,3 +271,97 @@ bool load_material_component(const ryml::NodeRef& entity_node, Entity& entity, E
 
     return true;
 }
+
+bool load_light_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs) {
+    
+    if (entity_node.has_child("Light")) {
+
+        const auto light_component = entity_node["Light"];
+         
+ 
+
+        std::string light_type(light_component["Type"].val().data(), light_component["Type"].val().size());
+        
+        if (light_type == "Directional") {
+            ecs.add_component<DirectionalLight>(entity);
+            
+            DirectionalLight* light = ecs.get_component<DirectionalLight>(entity);
+
+            Vec3 direction = vec3FromYAML(light_component["Direction"]);
+            Vec3 color = vec3FromYAML(light_component["Color"]);
+            
+            bool enabled = false;
+            if (light_component.has_child("Enabled")) {
+                enabled = get_value_from_yaml<bool>(light_component["Enabled"]);
+            }
+
+            light->set_color(color);
+            light->set_direction(direction);
+            light->set_enabled(enabled);
+
+
+        }
+        
+        
+        if (light_type == "Point") {
+            PointLight& light = ecs.add_component<PointLight>(entity);
+            
+            Vec3 position = vec3FromYAML(light_component["Position"]);
+            Vec3 color = vec3FromYAML(light_component["Color"]);
+
+            float distance = get_value_from_yaml<float>(light_component["Distance"]);
+            float intensity = get_value_from_yaml<float>(light_component["Intensity"]);
+            float attenuation = get_value_from_yaml<float>(light_component["Attenuation"]);
+            float falloff = get_value_from_yaml<float>(light_component["FallOff"]);
+            float fallstart = get_value_from_yaml<float>(light_component["FallStart"]);
+
+            bool enabled = false;
+            if (light_component.has_child("Enabled")) {
+                enabled = get_value_from_yaml<bool>(light_component["Enabled"]);
+            }
+
+            light.set_position(position);
+            light.set_color(color);
+            light.set_distance(distance);
+            light.set_intensity(intensity);
+            light.set_attenuation(attenuation);
+            light.set_fall_off(falloff);
+            light.set_fall_start(fallstart);
+            light.set_enabled(enabled);
+        }
+
+        if (light_type == "Spot") {
+            SpotLight& light = ecs.add_component<SpotLight>(entity);
+
+            Vec3 position = vec3FromYAML(light_component["Position"]);
+            Vec3 direction = vec3FromYAML(light_component["Direction"]);
+            Vec3 color = vec3FromYAML(light_component["Color"]);
+
+            float distance = get_value_from_yaml<float>(light_component["Distance"]);
+            //float intensity = get_value_from_yaml<float>(light_component["Intensity"]);
+            //float attenuation = get_value_from_yaml<float>(light_component["Attenuation"]);
+            //float falloff = get_value_from_yaml<float>(light_component["FallOff"]);
+            //float fallstart = get_value_from_yaml<float>(light_component["FallStart"]);
+
+            bool enabled = false;
+            if (light_component.has_child("Enabled")) {
+                enabled = get_value_from_yaml<bool>(light_component["Enabled"]);
+            }
+
+            light.set_color(color);
+            light.set_position(position);
+            light.set_direction(direction);
+            light.set_enabled(enabled);
+            light.set_distance(distance);
+            //light.set_distance(distance);
+            //light.set_intensity(intensity);
+            //light.set_atte(attenuation);
+            //light.set_fall_off(falloff);
+            //light.set_fall_start(fallstart);
+        }
+
+    }
+
+    return true;
+}
+
