@@ -404,6 +404,8 @@ void Window::destroy_frame_resources() {
 	//}
 	if (m_renderer->m_depth_buffer)m_renderer->m_depth_buffer->Release();
 	if (m_renderer->m_depth_stencil_view)m_renderer->m_depth_stencil_view->Release();
+	if (m_renderer->m_deferred_resources.depth_srv)m_renderer->m_deferred_resources.depth_srv->Release();
+	m_renderer->m_deferred_resources.depth_srv = nullptr;
 
 	
 	// Release render target view
@@ -431,18 +433,28 @@ void Window::create_frame_resources(){
 		.Height = height_w,
 		.MipLevels = 1,
 		.ArraySize = 1,
-		.Format = DXGI_FORMAT_D24_UNORM_S8_UINT,
+		.Format = DXGI_FORMAT_R24G8_TYPELESS,	// Typeless: se usa como depth y tambien se lee desde shaders
 		.SampleDesc{
 			.Count = 1
 		},
 		.Usage = D3D11_USAGE_DEFAULT,
-		.BindFlags = D3D11_BIND_DEPTH_STENCIL
+		.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE
 	};
 
 	m_renderer->m_depth_buffer = nullptr;
 	m_renderer->m_depth_stencil_view = nullptr;
 	e->get_engine_props()->deviceInterface->CreateTexture2D(&depth_desc, nullptr, &(m_renderer->m_depth_buffer));
-	e->get_engine_props()->deviceInterface->CreateDepthStencilView(m_renderer->m_depth_buffer, nullptr, &(m_renderer->m_depth_stencil_view));
+
+	D3D11_DEPTH_STENCIL_VIEW_DESC dsv_desc = {};
+	dsv_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	dsv_desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	e->get_engine_props()->deviceInterface->CreateDepthStencilView(m_renderer->m_depth_buffer, &dsv_desc, &(m_renderer->m_depth_stencil_view));
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC depth_srv_desc = {};
+	depth_srv_desc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	depth_srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	depth_srv_desc.Texture2D.MipLevels = 1;
+	e->get_engine_props()->deviceInterface->CreateShaderResourceView(m_renderer->m_depth_buffer, &depth_srv_desc, &(m_renderer->m_deferred_resources.depth_srv));
 
 	e->get_engine_props()->swapChain->ResizeBuffers(NUM_BUFFERING, width_w, height_w, DXGI_FORMAT_UNKNOWN, 0);
 

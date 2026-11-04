@@ -30,6 +30,9 @@ struct PointLightConstantBuffer {
 class PointLight : public Light{
 
 public:
+	// entt no mueve este componente al borrar otros: los punteros a el siguen siendo validos
+	static constexpr bool in_place_delete = true;
+
 	PointLight();
 	PointLight(float aspect_ratio);
 	PointLight(const PointLight&);

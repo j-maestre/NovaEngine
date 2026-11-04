@@ -9,16 +9,16 @@ SpotLight::SpotLight(float aspect_ratio) : Light(aspect_ratio){
 	init_buffers();
 }
 
-SpotLight::SpotLight(const SpotLight&)
-{
+SpotLight::SpotLight(const SpotLight& other) : Light(other), m_buffer(other.m_buffer) {
+	init_buffers();
 }
 
-SpotLight::SpotLight(SpotLight&&)
-{
+SpotLight::SpotLight(SpotLight&& other) : Light(std::move(other)), m_buffer(other.m_buffer), m_light_desc_constant_buffer(other.m_light_desc_constant_buffer), m_constant_buffer_light(other.m_constant_buffer_light) {
+	other.m_constant_buffer_light = nullptr;
 }
 
 SpotLight::~SpotLight(){
-	m_constant_buffer_light->Release();
+	if (m_constant_buffer_light) m_constant_buffer_light->Release();
 }
 
 void SpotLight::upload_data(){

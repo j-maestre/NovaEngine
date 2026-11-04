@@ -42,6 +42,7 @@ private:
 	/*******************************/
 
 	void depth_pass(EntityComponentSystem& ecs);
+	void pick_entity(EntityComponentSystem& ecs, int x, int y);
 	void update_light_buffer(EntityComponentSystem& ecs);
 	void draw_skybox();
 
@@ -76,7 +77,6 @@ private:
 	
 	// Clear colors
 	float m_clear_emissive_color[4];
-	float m_clear_depth_color[4];
 
 	DeferredResources m_deferred_resources{};
 
@@ -97,9 +97,7 @@ private:
 
 	D3D11_BUFFER_DESC m_ssao_constant_buffer_desc;
 	ID3D11Buffer* m_pVBuffer_ssao;
-	ID3D11Buffer* m_pVBuffer_blend_ssao;
 	SSAOConstantBuffer m_constant_buffer_ssao;
-	SSAOBlendConstantBuffer m_ssao_blend_constant_buffer;
 
 	ID3D11Buffer* m_pVBuffer_full_triangle;
 
@@ -108,6 +106,11 @@ private:
 	ID3D11ShaderResourceView* m_light_buffer_srv = nullptr;
 	ID3D11Buffer* m_pVBuffer_light_pass = nullptr;
 	ID3D11Buffer* m_pVBuffer_composite = nullptr;
+
+	// Seleccion con clic
+	ID3D11Buffer* m_pVBuffer_entity_id = nullptr;
+	ID3D11Texture2D* m_entity_id_staging = nullptr;
+
 	GpuProfiler m_gpu_profiler;
 	std::vector<GPULight> m_gpu_lights;
 	unsigned int m_light_buffer_capacity = 0;

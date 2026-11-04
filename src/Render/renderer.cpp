@@ -25,10 +25,6 @@ Renderer::Renderer() : m_shader_files(), m_sampler_desc{} {
 	m_clear_emissive_color[2] = 0.0f;
 	m_clear_emissive_color[3] = 0.0f;
 
-	m_clear_depth_color[0] = 1.0f;
-	m_clear_depth_color[1] = 1.0f;
-	m_clear_depth_color[2] = 1.0f;
-	m_clear_depth_color[3] = 1.0f;
 
 	m_fs_quad[0] = { {-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f} };
 	m_fs_quad[1] = { {-1.0f,  3.0f, 0.0f}, {0.0f, -1.0f} };
@@ -44,12 +40,13 @@ Renderer::~Renderer(){
 	m_pVBufferConstantCamera->Release();
 	m_pVBufferDeferredConstantCamera->Release();
 	m_pVBuffer_ssao->Release();
-	m_pVBuffer_blend_ssao->Release();
 	m_pVBuffer_full_triangle->Release();
 	if (m_light_buffer_srv) m_light_buffer_srv->Release();
 	if (m_light_buffer) m_light_buffer->Release();
 	if (m_pVBuffer_light_pass) m_pVBuffer_light_pass->Release();
 	if (m_pVBuffer_composite) m_pVBuffer_composite->Release();
+	if (m_pVBuffer_entity_id) m_pVBuffer_entity_id->Release();
+	if (m_entity_id_staging) m_entity_id_staging->Release();
 
 	m_pLayout->Release();
 	m_sampler_state->Release();
@@ -127,12 +124,6 @@ bool Renderer::init_pipeline(Window* win){
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_composite);
 
-	// Light pass pixel shader Passthrough
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_passthrough.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
-	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_passthrough);
-	
 	// Bloom downscaling
 	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_post_process_bloom_downscaling.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
@@ -172,17 +163,11 @@ bool Renderer::init_pipeline(Window* win){
 	if (!m_isInitialized)return m_isInitialized;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_SSAO_Blur_blend);
 
-	// SSAO Mix with albedo
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_ssao_blend.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
+	// Seleccion con clic
+	hr = D3DCompileFromFile(L"data/shaders/ps_entity_id.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
 	m_isInitialized = CheckShaderError(hr, error_msg);
 	if (!m_isInitialized)return m_isInitialized;
-	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_SSAO_Mix);
-
-	// Depth prepass PS (for depth rtv used in ssao)
-	hr = D3DCompileFromFile(L"data/shaders/ps_depth_prepass.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
-	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_depth_prepass);
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_entity_id);
 
 	// Depth prepass VS
 	hr = D3DCompileFromFile(L"data/shaders/vs_depth_prepass.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS_depth, &error_msg);
@@ -246,14 +231,6 @@ bool Renderer::init_pipeline(Window* win){
 	m_ssao_constant_buffer_desc.CPUAccessFlags = 0;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&m_ssao_constant_buffer_desc,NULL, &m_pVBuffer_ssao);
 
-	// SSAO Blend constant buffer creation
-	ZeroMemory(&m_ssao_constant_buffer_desc, sizeof(m_ssao_constant_buffer_desc));
-	m_ssao_constant_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
-	m_ssao_constant_buffer_desc.ByteWidth = sizeof(SSAOBlendConstantBuffer);
-	m_ssao_constant_buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	m_ssao_constant_buffer_desc.CPUAccessFlags = 0;
-	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&m_ssao_constant_buffer_desc,NULL, &m_pVBuffer_blend_ssao);
-
 	// Light pass constant buffer creation
 	D3D11_BUFFER_DESC light_pass_desc = {};
 	light_pass_desc.Usage = D3D11_USAGE_DEFAULT;
@@ -267,6 +244,24 @@ bool Renderer::init_pipeline(Window* win){
 	composite_desc.ByteWidth = sizeof(CompositeConstantBuffer);
 	composite_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&composite_desc, NULL, &m_pVBuffer_composite);
+
+	// Seleccion con clic: constant buffer del ID y textura de 1 pixel para leer el resultado en la CPU
+	D3D11_BUFFER_DESC entity_id_desc = {};
+	entity_id_desc.Usage = D3D11_USAGE_DEFAULT;
+	entity_id_desc.ByteWidth = sizeof(EntityIdConstantBuffer);
+	entity_id_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&entity_id_desc, NULL, &m_pVBuffer_entity_id);
+
+	D3D11_TEXTURE2D_DESC staging_desc = {};
+	staging_desc.Width = 1;
+	staging_desc.Height = 1;
+	staging_desc.MipLevels = 1;
+	staging_desc.ArraySize = 1;
+	staging_desc.Format = DXGI_FORMAT_R32_UINT;
+	staging_desc.SampleDesc.Count = 1;
+	staging_desc.Usage = D3D11_USAGE_STAGING;
+	staging_desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateTexture2D(&staging_desc, NULL, &m_entity_id_staging);
 
 	m_gpu_profiler.init(m_engine_ptr->get_engine_props()->deviceInterface);
 
@@ -468,9 +463,8 @@ bool Renderer::init_pipeline(Window* win){
 
 	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateInputLayout(ied_depth_pass, 1, VS_depth->GetBufferPointer(), VS_depth->GetBufferSize(), &m_pLayout_depth);
 	CheckShaderError(hr);
-	m_sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	//m_sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
-	m_sampler_desc.MaxAnisotropy = 2;
+	m_sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
+	m_sampler_desc.MaxAnisotropy = 8;
 
 	m_sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	m_sampler_desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -538,10 +532,6 @@ void Renderer::active_shader(ShaderType type){
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_composite, nullptr, 0);
 		break;
-	case ShaderType::DeferredPassThrough:
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_passthrough, nullptr, 0);
-		break;
 	case ShaderType::DirectionalLight:
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_directional, nullptr, 0);
@@ -562,9 +552,14 @@ void Renderer::active_shader(ShaderType type){
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_skybox, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_skybox, nullptr, 0);
 		break;
+	case ShaderType::EntityId:
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_depth_prepass, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_entity_id, nullptr, 0);
+		break;
 	case ShaderType::Depth:
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_depth_prepass, nullptr, 0);
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_depth_prepass, nullptr, 0);
+		// Sin pixel shader: solo se escribe el depth buffer
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(nullptr, nullptr, 0);
 		break;
 	case ShaderType::SSAO:
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_SSAO, nullptr, 0);
@@ -573,10 +568,6 @@ void Renderer::active_shader(ShaderType type){
 	case ShaderType::BlurSSAO:
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_SSAO_Blur_blend, nullptr, 0);
-		break;
-	case ShaderType::SSAO_Mix:
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_SSAO_Mix, nullptr, 0);
 		break;
 
 	default:break;
@@ -710,6 +701,13 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 #ifdef DEPTH_PREPASS
 	depth_pass(ecs);
 	m_gpu_profiler.mark(gpu_context, GpuPass::Depth);
+
+	// Necesita la profundidad del prepass para que solo escriba la superficie visible
+	int pick_x = 0;
+	int pick_y = 0;
+	if (ImguiManager::get_instance()->consume_pick_request(pick_x, pick_y)) {
+		pick_entity(ecs, pick_x, pick_y);
+	}
 #endif // DEPTH_PREPASS
 
 	active_shader(ShaderType::GeometryPass);
@@ -776,6 +774,9 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	if (m_render_info_parameters.ssao_active) {
 		draw_ssao(&cam_buffer.projection, &cam_buffer.view, &proj_inverse_transposed);
 	}
+	else {
+		props->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.ssao_blur_render_target_view, m_clear_emissive_color);
+	}
 
 
 	// Light Pass
@@ -808,6 +809,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 		m_engine_ptr->m_resource.get_brdf_srv(),
 		m_light_buffer_srv,
 		m_engine_ptr->m_resource.get_irradiance_srv(),
+		m_render_info_parameters.ssao_active ? m_deferred_resources.ssao_blur_shader_resource_view : nullptr,
 	};
 	props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs), srvs);
 	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
@@ -831,6 +833,10 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	props->inmediateDeviceContext->Draw(3, 0);
 	add_draw_call();
 
+	// El blur se vuelve a usar como render target en el siguiente frame
+	ID3D11ShaderResourceView* null_ssao_srv = nullptr;
+	props->inmediateDeviceContext->PSSetShaderResources(9, 1, &null_ssao_srv);
+
 	m_gpu_profiler.mark(gpu_context, GpuPass::Lights);
 
 	// Unbind light pass rtv
@@ -851,7 +857,8 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 
 	// Draw in the back buffer
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->backbuffer, m_depth_stencil_view);
+	// Sin depth: el panel G-Buffer lo va a leer como textura al dibujar ImGui
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->backbuffer, nullptr);
 
 	// Setear textura resultado (SRV)
 	if (m_render_info_parameters.bloom_active) {
@@ -908,6 +915,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	ImguiManager::get_instance()->render_guizmo(m_cam/*, scene_pos, scene_size*/);
 	ImguiManager::get_instance()->gbuffer_info(&m_deferred_resources);
 	ImguiManager::get_instance()->show_render_parameters(&m_render_info_parameters);
+	ImguiManager::get_instance()->update_picking();
 
 	set_draw_mode(m_render_info_parameters.draw_mode);
 	auto end_imgui = std::chrono::high_resolution_clock::now();
@@ -926,12 +934,23 @@ void Renderer::update_light_buffer(EntityComponentSystem& ecs){
 
 	m_gpu_lights.clear();
 
+	// La direccion de la luz es local: gira con su transform y con el de sus padres
+	auto world_direction = [&](entt::entity entity, Vec3 direction) {
+		DirectX::XMVECTOR result = DirectX::XMLoadFloat3(&direction);
+		if (TransformComponent* transform = ecs.get_component<TransformComponent>(Entity(static_cast<unsigned int>(entity), ""))) {
+			result = DirectX::XMVector3TransformNormal(result, transform->get_transform());
+		}
+		Vec3 output;
+		DirectX::XMStoreFloat3(&output, DirectX::XMVector3Normalize(result));
+		return output;
+	};
+
 	for (auto [entity, light] : ecs.viewComponents<DirectionalLight>().each()) {
 		if (!light.get_enabled()) continue;
 
 		GPULight gpu{};
 		gpu.type = GPULightType::Directional;
-		DirectX::XMStoreFloat3(&gpu.direction, DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&light.get_direction())));
+		gpu.direction = world_direction(entity, light.get_direction());
 		gpu.color = light.get_color();
 		gpu.intensity = light.get_intensity();
 		m_gpu_lights.push_back(gpu);
@@ -961,7 +980,7 @@ void Renderer::update_light_buffer(EntityComponentSystem& ecs){
 		GPULight gpu{};
 		gpu.type = GPULightType::Spot;
 		gpu.position = light.get_position();
-		DirectX::XMStoreFloat3(&gpu.direction, DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&direction)));
+		gpu.direction = world_direction(entity, direction);
 		gpu.color = light.get_color();
 		gpu.intensity = light.get_intensity();
 		gpu.range = light.get_distance();
@@ -1019,6 +1038,8 @@ void Renderer::update_light_buffer(EntityComponentSystem& ecs){
 	LightPassConstantBuffer constants{};
 	constants.light_count = count;
 	constants.ambient_intensity = m_render_info_parameters.ambient_intensity;
+	constants.ssao_power = m_render_info_parameters.ssao_active ? m_render_info_parameters.ssao_intensity : 0.0f;
+	constants.ssao_direct = m_render_info_parameters.ssao_direct;
 	props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_light_pass, 0, nullptr, &constants, 0, 0);
 }
 
@@ -1055,6 +1076,11 @@ void Renderer::render_mesh_internal(CameraConstantBuffer* camera_buffer, Transfo
 	
 	// Set camera values to constant buffer
 	camera_buffer->model = DirectX::XMMatrixTranspose(trans.get_transform());
+
+	// La normal usa la inversa transpuesta de model. Como las matrices se suben traspuestas,
+	// lo que se sube es la inversa tal cual: las dos trasposiciones se cancelan.
+	camera_buffer->normal_matrix = trans.get_inverse_transform();
+	camera_buffer->uv_scale = m.material.get_uv_scale();
 
 	// Upload metallic and roughness values to constant buffer
 	camera_buffer->metallic = m.material.get_metallic_value();
@@ -1312,53 +1338,6 @@ void Renderer::draw_ssao(Mat4* projection, Mat4* view, Mat4* projection_inverse)
 	draw_ssao_blur();
 	m_gpu_profiler.mark(props->inmediateDeviceContext, GpuPass::SSAOBlur);
 
-	// Blend with albedo
-
-	// Draw ssao_blur_render_target_view into albedo gbuffer
-	active_shader(ShaderType::SSAO_Mix);
-
-	clear_rtv(5);
-	clear_srv(5);
-
-	props->inmediateDeviceContext->RSSetState(m_engine_ptr->m_raster_state);
-	props->inmediateDeviceContext->OMSetDepthStencilState(m_depth_stencil_ssao, 0);
-	props->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
-
-	props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.postprocess_render_target_view, nullptr);
-
-	// SSAO Blur and Albedo
-	ID3D11ShaderResourceView* gbuffer_srv_blend[] = {
-		m_deferred_resources.ssao_blur_shader_resource_view,
-		m_deferred_resources.gbuffer_albedo_shader_resource_view,
-	};
-	props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(gbuffer_srv_blend), gbuffer_srv_blend);
-
-
-	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
-	props->inmediateDeviceContext->IASetInputLayout(m_pLayout_deferred);
-	props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
-
-	m_ssao_blend_constant_buffer.blend_intensity = m_render_info_parameters.ssao_blend_intensity;
-	props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_blend_ssao, 0, nullptr, &m_ssao_blend_constant_buffer, 0, 0);
-	props->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_blend_ssao);
-
-	props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	props->inmediateDeviceContext->Draw(3, 0);
-	add_draw_call();
-	clear_srv(2);
-	clear_rtv(1);
-
-	// Now albedo and ssao is mixed, draw mixed in albedo
-	active_shader(ShaderType::DeferredPassThrough);
-
-	props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.gbuffer_albedo_render_target_view, nullptr);
-	props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.postprocess_resource_view);
-	props->inmediateDeviceContext->Draw(3, 0);
-	add_draw_call();
-	clear_srv(1);
-	clear_rtv(1);
-
-	m_gpu_profiler.mark(props->inmediateDeviceContext, GpuPass::SSAOMix);
 }
 
 void Renderer::draw_ssao_blur(){
@@ -1385,7 +1364,7 @@ void Renderer::depth_pass(EntityComponentSystem& ecs){
 	
 	active_shader(ShaderType::Depth);
 	auto props = m_engine_ptr->get_engine_props();
-	props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.depth_rtv, m_depth_stencil_view);
+	props->inmediateDeviceContext->OMSetRenderTargets(0, nullptr, m_depth_stencil_view);
 	props->inmediateDeviceContext->OMSetDepthStencilState(m_depth_only_state, 1);
 	props->inmediateDeviceContext->RSSetState(m_current_raster);
 
@@ -1406,6 +1385,67 @@ void Renderer::depth_pass(EntityComponentSystem& ecs){
 	}
 
 	//clear_rtv(1);
+}
+
+void Renderer::pick_entity(EntityComponentSystem& ecs, int x, int y){
+
+	ID3D11DeviceContext* context = m_engine_ptr->get_engine_props()->inmediateDeviceContext;
+
+	D3D11_TEXTURE2D_DESC id_desc;
+	m_deferred_resources.entity_id_texture->GetDesc(&id_desc);
+	if (x < 0 || y < 0 || x >= static_cast<int>(id_desc.Width) || y >= static_cast<int>(id_desc.Height)) return;
+
+	// 0 = ningun objeto; por eso cada ID se guarda sumando 1
+	const float clear_id[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	context->ClearRenderTargetView(m_deferred_resources.entity_id_rtv, clear_id);
+
+	active_shader(ShaderType::EntityId);
+	context->OMSetRenderTargets(1, &m_deferred_resources.entity_id_rtv, m_depth_stencil_view);
+	context->OMSetDepthStencilState(m_depth_stencil_state, 1);
+	context->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
+	context->RSSetState(m_engine_ptr->m_raster_state);
+	context->IASetInputLayout(m_pLayout_depth);
+	context->VSSetConstantBuffers(0, 1, &m_pVBuffer_constant_camera_depth_only);
+	context->PSSetConstantBuffers(0, 1, &m_pVBuffer_entity_id);
+
+	CameraDepthPrePass cam_buffer;
+	cam_buffer.view = DirectX::XMMatrixTranspose(*m_cam->get_view());
+	cam_buffer.projection = DirectX::XMMatrixTranspose(*m_cam->get_projection());
+
+	auto transforms = ecs.viewComponents<TransformComponent, MeshComponent>();
+	for (auto [entity, trans, mesh] : transforms.each()) {
+
+		EntityIdConstantBuffer id_constants{};
+		id_constants.entity_id = static_cast<uint32>(entity) + 1;
+		context->UpdateSubresource(m_pVBuffer_entity_id, 0, nullptr, &id_constants, 0, 0);
+
+		for (Mesh& m : mesh.get_model()->meshes) {
+			render_mesh_depth_only(&cam_buffer, trans, m);
+		}
+	}
+
+	clear_rtv(1);
+
+	// Se copia solo el pixel del clic y se espera a la GPU: un instante, y solo en este frame
+	const D3D11_BOX pixel = { static_cast<UINT>(x), static_cast<UINT>(y), 0, static_cast<UINT>(x) + 1, static_cast<UINT>(y) + 1, 1 };
+	context->CopySubresourceRegion(m_entity_id_staging, 0, 0, 0, 0, m_deferred_resources.entity_id_texture, 0, &pixel);
+
+	D3D11_MAPPED_SUBRESOURCE mapped;
+	if (FAILED(context->Map(m_entity_id_staging, 0, D3D11_MAP_READ, 0, &mapped))) return;
+	const uint32 picked = *static_cast<const uint32*>(mapped.pData);
+	context->Unmap(m_entity_id_staging, 0);
+
+	Scene* scene = m_engine_ptr->get_scene();
+	if (picked != 0) {
+		const unsigned int picked_id = picked - 1;
+		for (Entity& e : ecs.get_entities()) {
+			if (e.get_id() == picked_id) {
+				scene->select_entity(e);
+				return;
+			}
+		}
+	}
+	scene->select_entity(Entity(static_cast<unsigned int>(-1), ""));
 }
 
 void Renderer::draw_skybox(){
@@ -1602,12 +1642,13 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 		&m_deferred_resources.ssao_blur_shader_resource_view
 	);
 	
-	// Depth
-	create_render_target(DXGI_FORMAT_R32_FLOAT,
-		&m_deferred_resources.depth_texture,
-		&m_deferred_resources.depth_rtv,
-		&m_deferred_resources.depth_srv
+	// IDs de entidad, para seleccionar con clic
+	create_render_target(DXGI_FORMAT_R32_UINT,
+		&m_deferred_resources.entity_id_texture,
+		&m_deferred_resources.entity_id_rtv,
+		&m_deferred_resources.entity_id_srv
 	);
+
 
 }
 
@@ -1634,7 +1675,7 @@ void Renderer::release_deferred_resources(){
 	func(&m_deferred_resources.postprocess_texture, &m_deferred_resources.postprocess_render_target_view,&m_deferred_resources.postprocess_resource_view);
 	func(&m_deferred_resources.ssao_texture, &m_deferred_resources.ssao_render_target_view,&m_deferred_resources.ssao_shader_resource_view);
 	func(&m_deferred_resources.ssao_blur_texture, &m_deferred_resources.ssao_blur_render_target_view, &m_deferred_resources.ssao_blur_shader_resource_view);
-	func(&m_deferred_resources.depth_texture, &m_deferred_resources.depth_rtv,&m_deferred_resources.depth_srv);
+	func(&m_deferred_resources.entity_id_texture, &m_deferred_resources.entity_id_rtv, &m_deferred_resources.entity_id_srv);
 }
 
 void Renderer::init_ssao(){
@@ -1747,7 +1788,6 @@ void Renderer::clear_render_target(){
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[i], m_clear_emissive_color);
 	}
 	
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.depth_rtv, m_clear_depth_color);
 }
 
 void Renderer::clear_rtv(int size){

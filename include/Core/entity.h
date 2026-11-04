@@ -13,6 +13,7 @@ public:
 
 	unsigned int get_id();
 	std::string get_name();
+	void set_name(const std::string& name) { m_name = name; }
 private:
 
 	unsigned int m_id;

@@ -6,6 +6,9 @@
 class TransformComponent {
 
 public:
+	// entt no mueve este componente al borrar otros: los punteros a el siguen siendo validos
+	static constexpr bool in_place_delete = true;
+
 	TransformComponent();
 	TransformComponent(const Vec3& postion);
 	TransformComponent(const Vec3& postion, const Vec3& scale);

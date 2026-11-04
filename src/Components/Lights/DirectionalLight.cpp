@@ -9,16 +9,16 @@ DirectionalLight::DirectionalLight(float aspect_ratio) : Light(aspect_ratio){
 	init_buffers();
 }
 
-DirectionalLight::DirectionalLight(const DirectionalLight&)
-{
+DirectionalLight::DirectionalLight(const DirectionalLight& other) : Light(other), m_buffer(other.m_buffer) {
+	init_buffers();
 }
 
-DirectionalLight::DirectionalLight(DirectionalLight&&)
-{
+DirectionalLight::DirectionalLight(DirectionalLight&& other) : Light(std::move(other)), m_buffer(other.m_buffer), m_light_desc_constant_buffer(other.m_light_desc_constant_buffer), m_constant_buffer_light(other.m_constant_buffer_light) {
+	other.m_constant_buffer_light = nullptr;
 }
 
 DirectionalLight::~DirectionalLight(){
-	m_constant_buffer_light->Release();
+	if (m_constant_buffer_light) m_constant_buffer_light->Release();
 }
 
 void DirectionalLight::upload_data(){

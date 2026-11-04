@@ -17,13 +17,9 @@ Light::Light(float aspect_ratio) : m_view(), m_projection(), m_view_projection()
 	m_aspect_ratio = aspect_ratio;
 }
 
-Light::Light(const Light&){
+Light::Light(const Light&) = default;
 
-}
-
-Light::Light(Light&&){
-
-}
+Light::Light(Light&&) = default;
 
 Light::~Light(){
 

@@ -17,6 +17,7 @@ Mesh::Mesh(const Mesh& other){
 	buffer = other.buffer;
 	index_buffer = other.index_buffer;
 	material = other.material;
+	material_slot = other.material_slot;
 }
 
 Mesh::~Mesh()
@@ -33,6 +34,7 @@ Mesh& Mesh::operator=(const Mesh& other){
 		buffer = other.buffer;
 		index_buffer = other.index_buffer;
 		material = other.material;
+		material_slot = other.material_slot;
 	}
 	return *this;
 	
@@ -51,6 +53,7 @@ Mesh& Mesh::operator=(Mesh&& other){
 		buffer = other.buffer;
 		index_buffer = other.index_buffer;
 		material = other.material;
+		material_slot = other.material_slot;
 
 		other.vertices.clear();
 		other.indices.clear();

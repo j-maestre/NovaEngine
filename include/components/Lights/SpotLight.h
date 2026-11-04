@@ -25,6 +25,9 @@ struct SpotLightConstantBuffer {
 class SpotLight : public Light {
 
 public:
+	// entt no mueve este componente al borrar otros: los punteros a el siguen siendo validos
+	static constexpr bool in_place_delete = true;
+
 	SpotLight();
 	SpotLight(float aspect_ratio);
 	SpotLight(const SpotLight&);

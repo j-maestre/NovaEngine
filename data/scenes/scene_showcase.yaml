@@ -13,11 +13,11 @@ Entities:
       Scale: [16.00, 1.00, 14.00]
     MeshComponent: "data/models/basics/cube.fbx"
     Material:
-      - {Albedo: [0.320, 0.320, 0.340] }
-      - {Metallic: 0.00}
-      - {Roughness: 0.85}
-      - {EmissiveColor: [0.00, 0.00, 0.00]}
-      - {EmissiveIntensity: 0.00}
+      - {Texture: "data/materials/wood_floor/albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/materials/wood_floor/normal.jpg", Type: "Normal"}
+      - {Texture: "data/materials/wood_floor/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/materials/wood_floor/ao.jpg", Type: "AO"}
+      - {UVScale: [8.0, 7.0]}
   WallBack:
     Transform:
       Position: [0.00, 1.00, 33.00]
@@ -25,11 +25,11 @@ Entities:
       Scale: [16.00, 7.00, 1.00]
     MeshComponent: "data/models/basics/cube.fbx"
     Material:
-      - {Albedo: [0.420, 0.400, 0.380] }
-      - {Metallic: 0.00}
-      - {Roughness: 0.90}
-      - {EmissiveColor: [0.00, 0.00, 0.00]}
-      - {EmissiveIntensity: 0.00}
+      - {Texture: "data/materials/red_brick/albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/materials/red_brick/normal.jpg", Type: "Normal"}
+      - {Texture: "data/materials/red_brick/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/materials/red_brick/ao.jpg", Type: "AO"}
+      - {UVScale: [8.0, 3.5]}
   WallLeft:
     Transform:
       Position: [-17.00, 1.00, 18.00]
@@ -37,11 +37,11 @@ Entities:
       Scale: [1.00, 7.00, 14.00]
     MeshComponent: "data/models/basics/cube.fbx"
     Material:
-      - {Albedo: [0.420, 0.400, 0.380] }
-      - {Metallic: 0.00}
-      - {Roughness: 0.90}
-      - {EmissiveColor: [0.00, 0.00, 0.00]}
-      - {EmissiveIntensity: 0.00}
+      - {Texture: "data/materials/red_brick/albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/materials/red_brick/normal.jpg", Type: "Normal"}
+      - {Texture: "data/materials/red_brick/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/materials/red_brick/ao.jpg", Type: "AO"}
+      - {UVScale: [7.0, 3.5]}
   WallRight:
     Transform:
       Position: [17.00, 1.00, 18.00]
@@ -49,11 +49,11 @@ Entities:
       Scale: [1.00, 7.00, 14.00]
     MeshComponent: "data/models/basics/cube.fbx"
     Material:
-      - {Albedo: [0.420, 0.400, 0.380] }
-      - {Metallic: 0.00}
-      - {Roughness: 0.90}
-      - {EmissiveColor: [0.00, 0.00, 0.00]}
-      - {EmissiveIntensity: 0.00}
+      - {Texture: "data/materials/red_brick/albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/materials/red_brick/normal.jpg", Type: "Normal"}
+      - {Texture: "data/materials/red_brick/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/materials/red_brick/ao.jpg", Type: "AO"}
+      - {UVScale: [7.0, 3.5]}
   Plastic_0:
     Transform:
       Position: [-7.80, -5.00, 8.00]
@@ -531,13 +531,92 @@ Entities:
       - {Texture: "data/models/wooden_stool_02/normal.jpg", Type: "Normal"}
       - {Texture: "data/models/wooden_stool_02/roughness.jpg", Type: "Roughness"}
       - {Texture: "data/models/wooden_stool_02/ao.jpg", Type: "AO"}
+  Stand_cannon:
+    Transform:
+      Position: [5.80, -4.40, 29.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [3.20, 1.60, 1.90]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.120, 0.120, 0.130] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.60}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Prop_cannon_01:
+    Transform:
+      Position: [5.80, -2.62, 30.36]
+      Rotation: [-90.0, 0.0, 90.0]
+      Scale: [2.50, 2.50, 2.50]
+    MeshComponent: "data/models/cannon_01/cannon_01.fbx"
+    Material:
+      - {Texture: "data/models/cannon_01/albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/models/cannon_01/normal.jpg", Type: "Normal"}
+      - {Texture: "data/models/cannon_01/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/models/cannon_01/ao.jpg", Type: "AO"}
+      - {Texture: "data/models/cannon_01/metallic.jpg", Type: "Metallic"}
+  Stand_brass_pot:
+    Transform:
+      Position: [-5.50, -4.40, 29.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.90, 1.60, 1.90]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.120, 0.120, 0.130] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.60}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Prop_brass_pot_01:
+    Transform:
+      Position: [-5.50, -2.79, 29.00]
+      Rotation: [-90.0, 0.0, 0.0]
+      Scale: [8.00, 8.00, 8.00]
+    MeshComponent: "data/models/brass_pot_01/brass_pot_01.fbx"
+    Material:
+      - {Texture: "data/models/brass_pot_01/albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/models/brass_pot_01/normal.jpg", Type: "Normal"}
+      - {Texture: "data/models/brass_pot_01/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/models/brass_pot_01/ao.jpg", Type: "AO"}
+      - {Texture: "data/models/brass_pot_01/metallic.jpg", Type: "Metallic"}
+  Prop_chess_set:
+    Transform:
+      Position: [14.93, -5.80, 8.57]
+      Rotation: [-90.0, 0.0, 0.0]
+      Scale: [12.0, 12.0, 12.0]
+    MeshComponent: "data/models/chess_set/chess_set.fbx"
+    Materials:
+      - - {Texture: "data/models/chess_set/pieces_white_albedo.jpg", Type: "Albedo"}
+        - {Texture: "data/models/chess_set/pieces_white_normal.jpg", Type: "Normal"}
+        - {Texture: "data/models/chess_set/pieces_white_roughness.jpg", Type: "Roughness"}
+        - {Texture: "data/models/chess_set/pieces_white_ao.jpg", Type: "AO"}
+      - - {Texture: "data/models/chess_set/board_albedo.jpg", Type: "Albedo"}
+        - {Texture: "data/models/chess_set/board_normal.jpg", Type: "Normal"}
+        - {Texture: "data/models/chess_set/board_roughness.jpg", Type: "Roughness"}
+        - {Texture: "data/models/chess_set/board_ao.jpg", Type: "AO"}
+      - - {Texture: "data/models/chess_set/pieces_black_albedo.jpg", Type: "Albedo"}
+        - {Texture: "data/models/chess_set/pieces_black_normal.jpg", Type: "Normal"}
+        - {Texture: "data/models/chess_set/pieces_black_roughness.jpg", Type: "Roughness"}
+        - {Texture: "data/models/chess_set/pieces_black_ao.jpg", Type: "AO"}
+  Ellipsoid:
+    Transform:
+      Position: [-12.50, -5.40, 13.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [2.20, 0.60, 1.20]
+    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    Material:
+      - {Albedo: [0.850, 0.850, 0.850] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.25}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
   Light_Warm:
     Light:
       Type: "Point"
       Position: [-8.00, -1.00, 14.00]
       Color: [1.00, 0.65, 0.35]
       Distance: 16.0
-      Intensity: 8.0
+      Intensity: 3.0
       Attenuation: 1.0
       FallOff: 7.5
       FallStart: 0.2
@@ -548,7 +627,7 @@ Entities:
       Position: [8.00, -1.00, 14.00]
       Color: [0.35, 0.60, 1.00]
       Distance: 16.0
-      Intensity: 8.0
+      Intensity: 3.0
       Attenuation: 1.0
       FallOff: 7.5
       FallStart: 0.2
@@ -559,7 +638,7 @@ Entities:
       Position: [0.00, 2.00, 20.00]
       Color: [1.00, 1.00, 1.00]
       Distance: 14.0
-      Intensity: 8.0
+      Intensity: 3.0
       Attenuation: 1.0
       FallOff: 7.5
       FallStart: 0.2

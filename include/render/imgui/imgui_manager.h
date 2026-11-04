@@ -59,6 +59,10 @@ public:
 
 	void add_resource_loaded(std::string text);
 
+	// Seleccion con clic: la UI detecta el clic y el renderer lo resuelve en el frame siguiente
+	void update_picking();
+	bool consume_pick_request(int& x, int& y);
+
 	std::string m_resources = "";
 private:
 	friend class Engine;
@@ -77,6 +81,8 @@ private:
 
 	void show_hierarchy(Scene* scene);
 	void show_inspector(Scene* scene);
+	void handle_shortcuts(Scene* scene);
+	void create_menu_items(Scene* scene);
 	void show_transform(TransformComponent* trans);
 	void show_light(DirectionalLight* light);
 	void show_light(PointLight* light);
@@ -98,6 +104,17 @@ private:
 	bool m_show_stats = true;
 	bool m_show_gbuffer = true;
 	bool m_reset_layout = false;
+
+	bool m_gizmo_hovered = false;
+	bool m_was_interacting = false;
+	bool m_open_save_as = false;
+	char m_save_as_name[128] = {};
+	char m_rename_buffer[128] = {};
+	unsigned int m_rename_entity_id = static_cast<unsigned int>(-1);
+	CameraComponent* m_camera = nullptr;
+	bool m_pick_requested = false;
+	int m_pick_x = 0;
+	int m_pick_y = 0;
 
 	ImGuiTextFilter m_filter;
 

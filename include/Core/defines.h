@@ -26,6 +26,8 @@ static inline float radToDeg(const float radians) {
 	return radians * kfRadToDeg;
 }
 
+constexpr float DEFAULT_ROUGHNESS = 0.6f;
+
 constexpr unsigned int ssao_kernel = 64;
 constexpr unsigned int ssao_noise = 16;
 constexpr unsigned int ssao_noise_dim = 4;
@@ -65,7 +67,6 @@ struct ShaderFiles {
 
 	// Light pass
 	ID3D11VertexShader* VS_deferred_common = nullptr;
-	ID3D11PixelShader* PS_deferred_passthrough = nullptr;
 	ID3D11PixelShader* PS_deferred_composite = nullptr;
 	ID3D11PixelShader* PS_deferred_lights = nullptr;
 
@@ -76,15 +77,16 @@ struct ShaderFiles {
 	ID3D11VertexShader* VS_deferred_skybox = nullptr;
 	ID3D11PixelShader* PS_deferred_skybox = nullptr;
 
-	// Depth Pre pass
+	// Depth Pre pass: no tiene pixel shader
 	ID3D11VertexShader* VS_depth_prepass = nullptr;
-	ID3D11PixelShader* PS_depth_prepass = nullptr;
+
+	// Seleccion con clic
+	ID3D11PixelShader* PS_entity_id = nullptr;
 
 	// SSAO
 	ID3D11PixelShader* PS_SSAO = nullptr;
 	ID3D11VertexShader* VS_SSAO = nullptr;
 	ID3D11PixelShader* PS_SSAO_Blur_blend = nullptr;
-	ID3D11PixelShader* PS_SSAO_Mix = nullptr;
 };
 
 enum class ShaderType {
@@ -93,14 +95,13 @@ enum class ShaderType {
 	PointLight,
 	GeometryPass,
 	DeferredLights,
-	DeferredPassThrough,
 	DeferredComposite,
 	BloomDownsample,
 	Skybox,
 	Depth,
+	EntityId,
 	SSAO,
 	BlurSSAO,
-	SSAO_Mix,
 };
 
 enum class DrawMode {
@@ -146,6 +147,9 @@ struct CameraConstantBuffer {
 	float roughness;
 	Vec3 emissive;
 	float emissive_intensity;
+	Mat4 normal_matrix;
+	Vec2 uv_scale;
+	Vec2 uv_padding;
 };
 
 struct CameraDeferredConstantBuffer {
@@ -213,7 +217,8 @@ static_assert(sizeof(GPULight) == 80, "GPULight debe coincidir con el shader");
 struct LightPassConstantBuffer {
 	uint32 light_count;
 	float ambient_intensity;
-	Vec2 padding;
+	float ssao_power;
+	float ssao_direct;
 };
 
 enum class Tonemapper : int {
@@ -221,15 +226,15 @@ enum class Tonemapper : int {
 	ACES = 1,
 };
 
+struct EntityIdConstantBuffer {
+	uint32 entity_id;
+	Vec3 padding;
+};
+
 struct CompositeConstantBuffer {
 	float exposure;
 	Tonemapper tonemapper;
 	Vec2 padding;
-};
-
-struct SSAOBlendConstantBuffer {
-	float blend_intensity = 1.0f;
-	Vec3 padding;
 };
 
 struct Color {
@@ -297,23 +302,27 @@ struct DeferredResources {
 	ID3D11Texture2D* ssao_blur_texture;
 	ID3D11ShaderResourceView* ssao_blur_shader_resource_view;
 
-	// Depth (for ssao)
-	ID3D11RenderTargetView* depth_rtv;
-	ID3D11Texture2D* depth_texture;
+	// Vista de lectura del depth buffer. La crea y la libera Window, junto con el depth buffer.
 	ID3D11ShaderResourceView* depth_srv;
+
+	// IDs de entidad: solo se escribe en el frame de un clic
+	ID3D11RenderTargetView* entity_id_rtv;
+	ID3D11Texture2D* entity_id_texture;
+	ID3D11ShaderResourceView* entity_id_srv;
 };
 
 
 
 struct RenderInfo {
 	int ssao_samples = 16;
-	float ssao_base_radius = 1.0f;
+	float ssao_base_radius = 1.5f;
 	float ssao_max_radius_px = 128.0f;
-	float ssao_blend_intensity = 1.0f;
+	float ssao_intensity = 2.0f;
+	float ssao_direct = 0.5f;
 	float exposure = 1.0f;
 	Tonemapper tonemapper = Tonemapper::ACES;
 	float ambient_intensity = 1.0f;
-	bool ssao_active = false;
+	bool ssao_active = true;
 	bool bloom_active = true;
 	DrawMode draw_mode = DrawMode::Solid;
 };

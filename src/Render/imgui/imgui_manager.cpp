@@ -150,6 +150,12 @@ namespace {
 		return true;
 	}
 
+	// True si el raton esta sobre la UI. No se usa IsWindowHovered porque devuelve false justo
+	// cuando el clic activa un control del panel, ni WantCaptureMouse porque ImGuizmo tambien lo activa.
+	bool is_mouse_over_ui() {
+		return GImGui->HoveredWindow != nullptr || ImGui::IsAnyItemActive() || ImGui::IsPopupOpen("", ImGuiPopupFlags_AnyPopupId);
+	}
+
 	ImVec4 fps_color(float fps) {
 		if (fps >= 60.0f) return k_green;
 		if (fps >= 30.0f) return k_amber;
@@ -372,7 +378,9 @@ void ImguiManager::show_render_parameters(RenderInfo* info){
 				prop_slider("Radius", &info->ssao_base_radius, 0.1f, 5.0f);
 				prop_slider("Max radius", &info->ssao_max_radius_px, 32.0f, 512.0f, "%.0f px");
 				ImGui::SetItemTooltip("Screen-space limit. Higher reaches further but costs more up close.");
-				prop_slider("Intensity", &info->ssao_blend_intensity, 0.1f, 3.0f);
+				prop_slider("Intensity", &info->ssao_intensity, 0.1f, 4.0f);
+				prop_slider("Direct", &info->ssao_direct, 0.0f, 1.0f);
+				ImGui::SetItemTooltip("How much SSAO also darkens direct light. Ambient and reflections always get it in full.");
 				ImGui::EndDisabled();
 
 				ImGui::EndTable();
@@ -406,7 +414,36 @@ void ImguiManager::init(HWND handle){
 	m_window_handle = handle;
 }
 
+void ImguiManager::update_picking(){
+
+	const ImGuiIO& io = ImGui::GetIO();
+	if (!ImGui::IsMouseClicked(ImGuiMouseButton_Left) || m_gizmo_hovered || is_mouse_over_ui()) return;
+
+	// Con viewports la posicion del raton es de pantalla; la textura va en pixeles de la ventana
+	const ImVec2 mouse = ImGui::GetMousePos();
+	const int x = static_cast<int>(mouse.x - m_viewport->Pos.x);
+	const int y = static_cast<int>(mouse.y - m_viewport->Pos.y);
+	if (x < 0 || y < 0 || x >= static_cast<int>(m_viewport->Size.x) || y >= static_cast<int>(m_viewport->Size.y)) return;
+
+	m_pick_x = x;
+	m_pick_y = y;
+	m_pick_requested = true;
+}
+
+bool ImguiManager::consume_pick_request(int& x, int& y){
+
+	if (!m_pick_requested) return false;
+
+	m_pick_requested = false;
+	x = m_pick_x;
+	y = m_pick_y;
+	return true;
+}
+
 void ImguiManager::render_guizmo(CameraComponent* cam/*, ImVec2 pos, ImVec2 size*/) {
+
+	m_gizmo_hovered = false;
+	m_camera = cam;
 
 	Entity e = Engine::get_instance()->m_current_scene->get_selected_entity();
 	if (e.get_id() != -1) {
@@ -418,7 +455,9 @@ void ImguiManager::render_guizmo(CameraComponent* cam/*, ImVec2 pos, ImVec2 size
 
 		// Detras de los paneles, y sin robarles el raton
 		ImGuizmo::SetDrawlist(ImGui::GetBackgroundDrawList());
-		ImGuizmo::Enable(ImGuizmo::IsUsing() || !io.WantCaptureMouse);
+		// No se usa WantCaptureMouse: ImGuizmo lo activa al pasar por encima, y desactivarlo por eso
+		// haria que se apagase y encendiese en frames alternos.
+		ImGuizmo::Enable(ImGuizmo::IsUsing() || !is_mouse_over_ui());
 
 		const ImGuiViewport* HUD_viewport_ = ImGui::GetMainViewport();
 		ImGuizmo::SetRect(HUD_viewport_->Pos.x, HUD_viewport_->Pos.y, HUD_viewport_->Size.x, HUD_viewport_->Size.y);
@@ -429,24 +468,6 @@ void ImguiManager::render_guizmo(CameraComponent* cam/*, ImVec2 pos, ImVec2 size
 
 		// Matriz del objeto a manipular
 		float* object_matrix = nullptr;
-		PointLight* p = Engine::get_instance()->m_current_scene->m_ecs.get_component<PointLight>(e);
-		SpotLight* s = Engine::get_instance()->m_current_scene->m_ecs.get_component<SpotLight>(e);
-
-		DirectX::XMFLOAT4X4 tmp_4x4;
-		if (p) {
-			Vec3 position = p->get_position();
-			Mat4 tmp = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
-			DirectX::XMStoreFloat4x4(&tmp_4x4, tmp);
-			object_matrix = &tmp_4x4.m[0][0];
-		}
-
-		if (s) {
-			Vec3 position = s->get_position();
-			Mat4 tmp = DirectX::XMMatrixTranslation(position.x, position.y, position.z);
-			DirectX::XMStoreFloat4x4(&tmp_4x4, tmp);
-			object_matrix = &tmp_4x4.m[0][0];
-		}
-
 		TransformComponent* t = Engine::get_instance()->m_current_scene->m_ecs.get_component<TransformComponent>(e);
 		if (t) {
 			object_matrix = t->get_transform_raw();
@@ -463,29 +484,18 @@ void ImguiManager::render_guizmo(CameraComponent* cam/*, ImVec2 pos, ImVec2 size
 			object_matrix
 		);
 
+		m_gizmo_hovered = ImGuizmo::IsOver() || ImGuizmo::IsUsing();
+
 		// For physics in future (picking)
 		//if(ImGuizmo::IsOver())
 
 		if (ImGuizmo::IsUsing()) {
-
-			float position[3], rotation[3], scale[3];
-			// angles in degrees
-			ImGuizmo::DecomposeMatrixToComponents(object_matrix, position, rotation, scale);
 
 			if (t) {
 				const DirectX::XMFLOAT4X4 world(object_matrix);
 				t->set_world_matrix(DirectX::XMLoadFloat4x4(&world));
 			}
 
-			if (p) {
-				Vec3 pos_tmp(position);
-				p->set_position(pos_tmp);
-			}
-
-			if (s) {
-				Vec3 pos_tmp(position);
-				s->set_position(pos_tmp);
-			}
 		}
 	}
 }
@@ -526,6 +536,8 @@ void ImguiManager::open_scene(const std::string& filename){
 		light.set_color({ 1.0f, 1.0f, 1.0f });
 		light.set_direction({ 0.5f,-1.0f, -1.0f });
 		light.set_enabled(true);
+		s->m_ecs.add_component<TransformComponent>(directional_light);
+		s->reset_history();
 	}
 }
 
@@ -574,9 +586,36 @@ void ImguiManager::main_menu(){
 				ImGui::EndMenu();
 			}
 
+			Scene* current_scene = Engine::get_instance()->m_current_scene;
+			if (ImGui::MenuItem("Save", "Ctrl+S")) {
+				current_scene->save();
+			}
+			if (ImGui::MenuItem("Save As...")) {
+				m_open_save_as = true;
+				snprintf(m_save_as_name, sizeof(m_save_as_name), "%s", std::filesystem::path(current_scene->get_path()).filename().string().c_str());
+			}
+
 			ImGui::Separator();
 			if (ImGui::MenuItem("Exit")) {
 				PostQuitMessage(0);
+			}
+			ImGui::EndMenu();
+		}
+
+		if (ImGui::BeginMenu("Edit")) {
+			Scene* current_scene = Engine::get_instance()->m_current_scene;
+			Entity selected = current_scene->get_selected_entity();
+			const bool has_selection = selected.get_id() != k_no_entity;
+
+			if (ImGui::MenuItem("Undo", "Ctrl+Z", false, current_scene->can_undo())) current_scene->undo();
+			if (ImGui::MenuItem("Redo", "Ctrl+Y", false, current_scene->can_redo())) current_scene->redo();
+			ImGui::Separator();
+			if (ImGui::MenuItem("Duplicate", "Ctrl+D", false, has_selection)) current_scene->duplicate_entity(selected.get_id());
+			if (ImGui::MenuItem("Delete", "Del", false, has_selection)) current_scene->delete_entity(selected.get_id());
+			ImGui::Separator();
+			if (ImGui::BeginMenu("Create")) {
+				create_menu_items(current_scene);
+				ImGui::EndMenu();
 			}
 			ImGui::EndMenu();
 		}
@@ -625,6 +664,34 @@ void ImguiManager::main_menu(){
 		ImGui::EndMenuBar();
 	}
 	ImGui::PopStyleVar();
+
+	// Guardar como
+	if (m_open_save_as) {
+		ImGui::OpenPopup("Save Scene As");
+		m_open_save_as = false;
+	}
+	if (ImGui::BeginPopupModal("Save Scene As", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+		ImGui::TextColored(k_text_dim, "data/scenes/");
+		ImGui::SameLine(0.0f, 2.0f);
+		ImGui::SetNextItemWidth(280.0f);
+		const bool confirmed = ImGui::InputText("##save_as", m_save_as_name, sizeof(m_save_as_name), ImGuiInputTextFlags_EnterReturnsTrue);
+
+		std::string file_name = m_save_as_name;
+		if (file_name.size() < 5 || file_name.substr(file_name.size() - 5) != ".yaml") file_name += ".yaml";
+		const bool valid = file_name != ".yaml" && file_name.find_first_of("/\\:") == std::string::npos;
+
+		ImGui::BeginDisabled(!valid);
+		if (ImGui::Button("Save") || (confirmed && valid)) {
+			Engine::get_instance()->m_current_scene->save("data/scenes/" + file_name);
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndDisabled();
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel")) {
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 
 	ImGui::End();
 }
@@ -781,7 +848,6 @@ void ImguiManager::show_light(PointLight* light){
 
 	if (!section("Point Light")) return;
 
-	Vec3 position = light->get_position();
 	Vec3 color = light->get_color();
 	Vec3 specular_color = light->get_specular_color();
 	float color_tmp[3] = { color.x, color.y, color.z };
@@ -802,7 +868,6 @@ void ImguiManager::show_light(PointLight* light){
 
 	if (begin_props("##point")) {
 		prop_check("Enabled", &enabled);
-		prop_vec3("Position", position, 0.0f, 0.1f);
 		prop_color("Color", color_tmp);
 		prop_float("Intensity", &intensity, 0.05f, 0.0f, 100000.0f);
 		prop_float("Range", &distance, 0.1f, 0.0f, 20000.0f);
@@ -833,7 +898,6 @@ void ImguiManager::show_light(PointLight* light){
 		ImGui::TreePop();
 	}
 
-	light->set_position(position);
 	light->set_enabled(enabled);
 	light->set_color({ color_tmp[0], color_tmp[1], color_tmp[2] });
 	light->set_specular_strenght(specular_strength);
@@ -854,7 +918,6 @@ void ImguiManager::show_light(SpotLight* light){
 
 	if (!section("Spot Light")) return;
 
-	Vec3 position = light->get_position();
 	Vec3 direction = light->get_direction();
 	Vec3 color = light->get_color();
 	Vec3 specular_color = light->get_specular_color();
@@ -875,7 +938,6 @@ void ImguiManager::show_light(SpotLight* light){
 
 	if (begin_props("##spot")) {
 		prop_check("Enabled", &enabled);
-		prop_vec3("Position", position, 0.0f, 0.1f);
 		prop_vec3("Direction", direction, 0.0f, 0.01f);
 		prop_color("Color", color_tmp);
 		prop_float("Intensity", &intensity, 0.05f, 0.0f, 100000.0f);
@@ -906,7 +968,6 @@ void ImguiManager::show_light(SpotLight* light){
 		ImGui::TreePop();
 	}
 
-	light->set_position(position);
 	light->set_direction(direction);
 	light->set_inner_circle(inner);
 	light->set_outer_circle(outer);
@@ -975,39 +1036,71 @@ void ImguiManager::show_mesh_comp(MeshComponent* mesh_comp){
 		return;
 	}
 
-	int index = 0;
-	for (auto& m : meshes) {
-		ImGui::PushID(index);
+	// Un bloque por cada material del archivo; todas sus mallas se editan a la vez
+	unsigned int slots = 0;
+	for (const Mesh& m : meshes) {
+		slots = std::max(slots, m.material_slot + 1);
+	}
 
-		Vec4 color_v = m.material.get_color_value();
-		Vec3 color_emissive = m.material.get_emissive_value();
+	bool any_change = false;
+	for (unsigned int slot = 0; slot < slots; slot++) {
+
+		Mesh* first = nullptr;
+		for (Mesh& m : meshes) {
+			if (m.material_slot == slot) {
+				first = &m;
+				break;
+			}
+		}
+		if (!first) continue;
+
+		ImGui::PushID(static_cast<int>(slot));
+
+		Material& material = first->material;
+		Vec4 color_v = material.get_color_value();
+		Vec3 color_emissive = material.get_emissive_value();
+		Vec2 uv_scale = material.get_uv_scale();
 		float color[4] = { color_v.x, color_v.y, color_v.z, color_v.w };
 		float emissive[3] = { color_emissive.x, color_emissive.y, color_emissive.z };
-		float emissive_intensity = m.material.get_emissive_intensity();
-		float metallic = m.material.get_metallic_value();
-		float roughness = m.material.get_roughness_value();
+		float uv[2] = { uv_scale.x, uv_scale.y };
+		float emissive_intensity = material.get_emissive_intensity();
+		float metallic = material.get_metallic_value();
+		float roughness = material.get_roughness_value();
 
-		if (meshes.size() > 1) {
-			ImGui::SeparatorText(("Mesh " + std::to_string(index)).c_str());
+		if (slots > 1) {
+			ImGui::SeparatorText(("Material " + std::to_string(slot)).c_str());
 		}
 
+		bool changed = false;
 		if (begin_props("##material")) {
-			prop_color("Albedo", color);
-			prop_slider("Metallic", &metallic, 0.0f, 1.0f);
-			prop_slider("Roughness", &roughness, 0.0f, 1.0f);
-			prop_color("Emissive", emissive);
-			prop_float("Emissive int.", &emissive_intensity, 0.1f, 0.0f, 100000.0f);
+			changed |= prop_color("Albedo", color);
+			changed |= prop_slider("Metallic", &metallic, 0.0f, 1.0f);
+			changed |= prop_slider("Roughness", &roughness, 0.0f, 1.0f);
+			changed |= prop_color("Emissive", emissive);
+			changed |= prop_float("Emissive int.", &emissive_intensity, 0.1f, 0.0f, 100000.0f);
+			prop_label("UV scale");
+			changed |= ImGui::DragFloat2("##uv_scale", uv, 0.05f, 0.01f, 1000.0f);
 			ImGui::EndTable();
 		}
 
-		m.material.set_color_value({ color[0], color[1], color[2], color[3] });
-		m.material.set_emissive_value({ emissive[0], emissive[1], emissive[2] });
-		m.material.set_emissive_intensity(emissive_intensity);
-		m.material.set_metallic_value(metallic);
-		m.material.set_roughness_value(roughness);
+		if (changed) {
+			any_change = true;
+			for (Mesh& m : meshes) {
+				if (m.material_slot != slot) continue;
+				m.material.set_color_value({ color[0], color[1], color[2], color[3] });
+				m.material.set_emissive_value({ emissive[0], emissive[1], emissive[2] });
+				m.material.set_emissive_intensity(emissive_intensity);
+				m.material.set_metallic_value(metallic);
+				m.material.set_roughness_value(roughness);
+				m.material.set_uv_scale({ uv[0], uv[1] });
+			}
+		}
 
 		ImGui::PopID();
-		index++;
+	}
+
+	if (any_change) {
+		mesh_comp->store_materials_from_model();
 	}
 }
 
@@ -1058,6 +1151,56 @@ void ImguiManager::add_resource_loaded(std::string text){
 	m_resources_loaded.push_back(text);
 }
 
+void ImguiManager::create_menu_items(Scene* scene){
+
+	// Delante de la camara
+	Vec3 position = { 0.0f, 0.0f, 0.0f };
+	if (m_camera) {
+		const Vec3 cam = m_camera->get_position();
+		const float yaw = degToRad(m_camera->get_yaw());
+		const float pitch = degToRad(m_camera->get_pitch());
+		const float distance = 8.0f;
+		position = {
+			cam.x + cosf(yaw) * cosf(pitch) * distance,
+			cam.y + sinf(pitch) * distance,
+			cam.z + sinf(-yaw) * cosf(pitch) * distance,
+		};
+	}
+
+	if (ImGui::MenuItem("Empty")) scene->create_entity_from_template(EntityTemplate::Empty, position);
+	ImGui::Separator();
+	if (ImGui::MenuItem("Cube")) scene->create_entity_from_template(EntityTemplate::Cube, position);
+	if (ImGui::MenuItem("Sphere")) scene->create_entity_from_template(EntityTemplate::Sphere, position);
+	if (ImGui::MenuItem("Cylinder")) scene->create_entity_from_template(EntityTemplate::Cylinder, position);
+	if (ImGui::MenuItem("Cone")) scene->create_entity_from_template(EntityTemplate::Cone, position);
+	ImGui::Separator();
+	if (ImGui::MenuItem("Point Light")) scene->create_entity_from_template(EntityTemplate::PointLight, position);
+	if (ImGui::MenuItem("Spot Light")) scene->create_entity_from_template(EntityTemplate::SpotLight, position);
+	if (ImGui::MenuItem("Directional Light")) scene->create_entity_from_template(EntityTemplate::DirectionalLight, position);
+}
+
+void ImguiManager::handle_shortcuts(Scene* scene){
+
+	const ImGuiIO& io = ImGui::GetIO();
+	if (io.WantTextInput) return;
+
+	Entity selected = scene->get_selected_entity();
+	const bool has_selection = selected.get_id() != k_no_entity;
+
+	if (io.KeyCtrl) {
+		if (ImGui::IsKeyPressed(ImGuiKey_Z, false)) {
+			if (io.KeyShift) scene->redo();
+			else scene->undo();
+		}
+		if (ImGui::IsKeyPressed(ImGuiKey_Y, false)) scene->redo();
+		if (ImGui::IsKeyPressed(ImGuiKey_S, false)) scene->save();
+		if (has_selection && ImGui::IsKeyPressed(ImGuiKey_D, false)) scene->duplicate_entity(selected.get_id());
+	}
+	else if (has_selection && ImGui::IsKeyPressed(ImGuiKey_Delete, false)) {
+		scene->delete_entity(selected.get_id());
+	}
+}
+
 void ImguiManager::show_hierarchy(Scene* scene){
 
 	if (!m_show_hierarchy) return;
@@ -1068,6 +1211,15 @@ void ImguiManager::show_hierarchy(Scene* scene){
 		std::vector<Entity>& entities = ecs.get_entities();
 		const unsigned int selected_id = scene->get_selected_entity().get_id();
 
+		if (ImGui::Button("+")) {
+			ImGui::OpenPopup("##create_entity");
+		}
+		ImGui::SetItemTooltip("Create entity");
+		if (ImGui::BeginPopup("##create_entity")) {
+			create_menu_items(scene);
+			ImGui::EndPopup();
+		}
+		ImGui::SameLine();
 		ImGui::SetNextItemWidth(-FLT_MIN);
 		if (ImGui::InputTextWithHint("##search", "Search...", m_filter.InputBuf, IM_ARRAYSIZE(m_filter.InputBuf))) {
 			m_filter.Build();
@@ -1102,8 +1254,10 @@ void ImguiManager::show_hierarchy(Scene* scene){
 		}
 
 		// El cambio de padre se aplica al acabar de dibujar
+		enum class DropMode { Into, Before, After };
 		int reparent_child = -1;
 		int reparent_target = -1;
+		DropMode drop_mode = DropMode::Into;
 		const char* payload_type = "NOVA_ENTITY";
 
 		ImGui::BeginChild("##entities");
@@ -1137,13 +1291,20 @@ void ImguiManager::show_hierarchy(Scene* scene){
 			const float row_x = ImGui::GetCursorScreenPos().x;
 			const float label_spacing = ImGui::GetTreeNodeToLabelSpacing();
 
-			ImGui::PushID(static_cast<int>(e.get_id()));
+			// Por nombre: el arbol conserva lo plegado aunque el historial reconstruya la escena
+			ImGui::PushID(name.c_str());
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(4.0f, 3.0f));
 			const bool open = ImGui::TreeNodeEx("##row", flags);
 			ImGui::PopStyleVar();
 
 			if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) {
 				scene->select_entity(e);
+			}
+
+			if (ImGui::BeginPopupContextItem("##row_menu")) {
+				if (ImGui::MenuItem("Duplicate", "Ctrl+D")) scene->duplicate_entity(e.get_id());
+				if (ImGui::MenuItem("Delete", "Del")) scene->delete_entity(e.get_id());
+				ImGui::EndPopup();
 			}
 
 			const ImVec2 min = ImGui::GetItemRectMin();
@@ -1163,10 +1324,26 @@ void ImguiManager::show_hierarchy(Scene* scene){
 					if (peek && peek->IsDataType(payload_type)) {
 						auto it = node_by_id.find(*static_cast<const unsigned int*>(peek->Data));
 						TransformComponent* dragged = it != node_by_id.end() ? nodes[it->second].transform : nullptr;
+
+						// Tercio superior: encima. Inferior: debajo. Centro: hija.
+						const float relative = (ImGui::GetMousePos().y - min.y) / std::max(max.y - min.y, 1.0f);
+						const DropMode mode = relative < 0.25f ? DropMode::Before : (relative > 0.75f ? DropMode::After : DropMode::Into);
+
 						const bool valid = dragged && dragged != node.transform && !node.transform->is_descendant_of(dragged);
-						if (valid && ImGui::AcceptDragDropPayload(payload_type)) {
-							reparent_child = it->second;
-							reparent_target = index;
+						if (valid) {
+							if (mode == DropMode::Into) {
+								draw->AddRect(min, max, ImGui::GetColorU32(k_accent), 3.0f, 0, 1.5f);
+							}
+							else {
+								const float y = mode == DropMode::Before ? min.y : max.y;
+								draw->AddLine(ImVec2(min.x, y), ImVec2(max.x, y), ImGui::GetColorU32(k_accent), 2.0f);
+							}
+
+							if (ImGui::AcceptDragDropPayload(payload_type, ImGuiDragDropFlags_AcceptNoDrawDefaultRect)) {
+								reparent_child = it->second;
+								reparent_target = index;
+								drop_mode = mode;
+							}
 						}
 					}
 					ImGui::EndDragDropTarget();
@@ -1226,8 +1403,22 @@ void ImguiManager::show_hierarchy(Scene* scene){
 		}
 
 		if (reparent_child != -1 && nodes[reparent_child].transform) {
-			TransformComponent* new_parent = reparent_target != -1 ? nodes[reparent_target].transform : nullptr;
-			nodes[reparent_child].transform->set_parent_keep_world(new_parent);
+			TransformComponent* child = nodes[reparent_child].transform;
+
+			TransformComponent* new_parent = nullptr;
+			if (reparent_target != -1) {
+				new_parent = drop_mode == DropMode::Into ? nodes[reparent_target].transform : nodes[reparent_target].transform->get_parent();
+			}
+			if (child->get_parent() != new_parent) {
+				child->set_parent_keep_world(new_parent);
+			}
+
+			if (reparent_target != -1 && drop_mode != DropMode::Into) {
+				const unsigned int child_id = nodes[reparent_child].entity->get_id();
+				const unsigned int target_id = nodes[reparent_target].entity->get_id();
+				ecs.move_entity(child_id, target_id, drop_mode == DropMode::After);
+			}
+			scene->request_history_check();
 		}
 
 		// Clic en vacio: quita la seleccion
@@ -1253,9 +1444,15 @@ void ImguiManager::show_inspector(Scene* scene){
 		}
 		else {
 			const std::string name = e.get_name();
-			ImGui::SetWindowFontScale(1.2f);
-			ImGui::TextUnformatted(name.c_str());
-			ImGui::SetWindowFontScale(1.0f);
+			if (m_rename_entity_id != e.get_id() || !ImGui::IsAnyItemActive()) {
+				m_rename_entity_id = e.get_id();
+				snprintf(m_rename_buffer, sizeof(m_rename_buffer), "%s", name.c_str());
+			}
+			ImGui::SetNextItemWidth(-60.0f);
+			ImGui::InputText("##entity_name", m_rename_buffer, sizeof(m_rename_buffer));
+			if (ImGui::IsItemDeactivatedAfterEdit()) {
+				scene->rename_entity(e.get_id(), m_rename_buffer);
+			}
 			ImGui::SameLine();
 			ImGui::AlignTextToFramePadding();
 			ImGui::TextColored(k_text_dim, "ID %u", e.get_id());
@@ -1291,6 +1488,14 @@ void ImguiManager::show_inspector(Scene* scene){
 void ImguiManager::scene_info(Scene* scene){
 	show_hierarchy(scene);
 	show_inspector(scene);
+	handle_shortcuts(scene);
+
+	// Al acabar una edicion (soltar un control o el gizmo), el historial mira si la escena ha cambiado
+	const bool interacting = ImGui::IsAnyItemActive() || ImGuizmo::IsUsing();
+	if (m_was_interacting && !interacting) {
+		scene->request_history_check();
+	}
+	m_was_interacting = interacting;
 }
 
 void ImguiManager::gbuffer_info(DeferredResources* gbuffer){

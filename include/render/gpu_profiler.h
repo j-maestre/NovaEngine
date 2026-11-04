@@ -8,7 +8,6 @@ enum class GpuPass : int {
 	GBuffer,
 	SSAO,
 	SSAOBlur,
-	SSAOMix,
 	Lights,
 	Skybox,
 	Bloom,

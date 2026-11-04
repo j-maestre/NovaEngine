@@ -19,12 +19,14 @@ TransformComponent::TransformComponent(const Vec3& postion, const Vec3& scale, c
 	m_is_calculated = false;
 }
 
-TransformComponent::TransformComponent(const TransformComponent& other){
-
+TransformComponent::TransformComponent(const TransformComponent& other)
+	: m_position(other.m_position), m_rotation(other.m_rotation), m_scale(other.m_scale), m_parent(other.m_parent) {
+	m_is_calculated = false;
 }
 
-TransformComponent::TransformComponent(TransformComponent&& other){
-
+TransformComponent::TransformComponent(TransformComponent&& other)
+	: m_position(other.m_position), m_rotation(other.m_rotation), m_scale(other.m_scale), m_parent(other.m_parent) {
+	m_is_calculated = false;
 }
 
 TransformComponent::~TransformComponent(){

@@ -9,16 +9,16 @@ PointLight::PointLight(float aspect_ratio) : Light(aspect_ratio){
 	init_buffers();
 }
 
-PointLight::PointLight(const PointLight&)
-{
+PointLight::PointLight(const PointLight& other) : Light(other), m_buffer(other.m_buffer) {
+	init_buffers();
 }
 
-PointLight::PointLight(PointLight&&)
-{
+PointLight::PointLight(PointLight&& other) : Light(std::move(other)), m_buffer(other.m_buffer), m_light_desc_constant_buffer(other.m_light_desc_constant_buffer), m_constant_buffer_light(other.m_constant_buffer_light) {
+	other.m_constant_buffer_light = nullptr;
 }
 
 PointLight::~PointLight(){
-	m_constant_buffer_light->Release();
+	if (m_constant_buffer_light) m_constant_buffer_light->Release();
 }
 
 void PointLight::upload_data(){

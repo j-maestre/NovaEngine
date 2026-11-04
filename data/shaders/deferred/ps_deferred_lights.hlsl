@@ -46,6 +46,7 @@ TextureCube skybox_tex : register(t5);
 Texture2D brdf_tex : register(t6);
 StructuredBuffer<GPULight> lights : register(t7);
 TextureCube irradiance_tex : register(t8);
+Texture2D ssao_tex : register(t9);
 
 SamplerState linear_sampler : register(s0);
 
@@ -53,7 +54,8 @@ cbuffer LightPassConstants : register(b0)
 {
     uint light_count;
     float ambient_intensity;
-    float2 light_pass_padding;
+    float ssao_power;   // 0 = SSAO apagado
+    float ssao_direct;  // Cuanto atenua el SSAO la luz directa
 };
 
 cbuffer CameraDeferred : register(b1)
@@ -126,6 +128,7 @@ PS_OUT PShader(PS_INPUT input)
     float metallic = material.r;
     float roughness = material.g;
     float ao = material.b;
+    float screen_ao = ssao_power > 0.0f ? pow(saturate(ssao_tex.Load(pixel).r), ssao_power) : 1.0f;
 
     float3 V = normalize(cam_pos - P);
     float NdotV = max(dot(N, V), 0.0f);
@@ -156,7 +159,10 @@ PS_OUT PShader(PS_INPUT input)
         color += (kD * albedo / PI + specular) * radiance * NdotL;
     }
 
-    // Ambiente difuso e IBL especular, una sola vez
+    // Fisicamente el AO no afecta a la luz directa; una parte se aplica para que se vea bajo luz fuerte
+    color *= lerp(1.0f, screen_ao, ssao_direct);
+
+    // Ambiente difuso e IBL especular, una sola vez. Aqui el AO se aplica entero.
     float3 reflected = reflect(-V, N);
     float3 reflect_color = skybox_tex.SampleLevel(linear_sampler, reflected, roughness * cubemap_max_mip_level).rgb;
     float2 env_brdf = brdf_tex.SampleLevel(linear_sampler, float2(NdotV, roughness), 0.0f).rg;
@@ -165,8 +171,9 @@ PS_OUT PShader(PS_INPUT input)
     float3 kD_ibl = (1.0f - F_ibl) * (1.0f - metallic);
     float3 irradiance = irradiance_tex.SampleLevel(linear_sampler, N, 0.0f).rgb * IRRADIANCE_SCALE;
 
-    color += reflect_color * (F_ibl * env_brdf.x + env_brdf.y) * ao * ambient_intensity;
-    color += kD_ibl * albedo * irradiance * ao * ambient_intensity;
+    const float occlusion = ao * screen_ao;
+    color += reflect_color * (F_ibl * env_brdf.x + env_brdf.y) * occlusion * ambient_intensity;
+    color += kD_ibl * albedo * irradiance * occlusion * ambient_intensity;
 
     // Bloom sobre la luz total
     float bright = smoothstep(BLOOM_START, BLOOM_END, dot(color, LUMINANCE));

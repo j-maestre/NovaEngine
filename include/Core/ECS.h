@@ -45,6 +45,13 @@ public:
 
 	Entity get_entity_by_name(std::string name);
 
+	void destroy_entity(unsigned int id);
+	void rename_entity(unsigned int id, const std::string& name);
+	void clear();
+
+	// Mueve una entidad justo antes o despues de otra en la lista
+	void move_entity(unsigned int id, unsigned int target_id, bool after);
+
 
 private:
 

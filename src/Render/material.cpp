@@ -23,6 +23,7 @@ Material::Material(const Material& other){
 	m_initialised = other.m_initialised;
 	m_emissive = other.m_emissive;
 	m_emissive_intensity = other.m_emissive_intensity;
+	m_uv_scale = other.m_uv_scale;
 
 	m_color_value = other.m_color_value;
 	m_metallic_value = other.m_metallic_value;
@@ -39,6 +40,7 @@ Material::Material(Material&& other){
 	m_texture_emissive = other.m_texture_emissive;
 	m_emissive = other.m_emissive;
 	m_emissive_intensity = other.m_emissive_intensity;
+	m_uv_scale = other.m_uv_scale;
 
 	m_color_value = other.m_color_value;
 	m_metallic_value = other.m_metallic_value;
@@ -84,6 +86,7 @@ Material& Material::operator=(const Material& other){
 		m_texture_emissive = other.m_texture_emissive;
 		m_emissive = other.m_emissive;
 		m_emissive_intensity = other.m_emissive_intensity;
+		m_uv_scale = other.m_uv_scale;
 
 		m_color_value = other.m_color_value;
 		m_metallic_value = other.m_metallic_value;
@@ -107,6 +110,7 @@ Material& Material::operator=(Material&& other){
 		m_texture_emissive = other.m_texture_emissive;
 		m_emissive = other.m_emissive;
 		m_emissive_intensity = other.m_emissive_intensity;
+		m_uv_scale = other.m_uv_scale;
 
 		m_color_value = other.m_color_value;
 		m_metallic_value = other.m_metallic_value;
@@ -143,6 +147,9 @@ void Material::init_material(){
 	set_texture_roughness(m->get_roughness());
 	set_texture_ao(m->get_ao());
 	set_texture_emissive(m->get_emissive());
+
+	// Sin mapa de rugosidad ni valor propio. set_texture_roughness lo vuelve a poner a 0 si hay mapa.
+	m_roughness_value = DEFAULT_ROUGHNESS;
 }
 
 

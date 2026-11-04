@@ -22,6 +22,7 @@ public:
 	ID3D11Buffer* index_buffer = nullptr;
 
 	Material material;
+	unsigned int material_slot = 0;	// Material del archivo original al que pertenece esta malla
 
 private:
 

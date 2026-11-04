@@ -18,6 +18,9 @@ struct DirectionalLightConstantBuffer {
 class DirectionalLight : public Light {
 
 public:
+	// entt no mueve este componente al borrar otros: los punteros a el siguen siendo validos
+	static constexpr bool in_place_delete = true;
+
 	DirectionalLight();
 	DirectionalLight(float aspect_ratio);
 	DirectionalLight(const DirectionalLight&);

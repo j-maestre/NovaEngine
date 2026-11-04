@@ -268,7 +268,8 @@ void Engine::load_default_textures(){
 	Texture* t2 = m_resource.load_texture("data/textures/kirby.png");
 	Texture* normal = m_resource.load_texture("data/textures/default_normal.png");
 	Texture* metallic = m_resource.load_texture("data/textures/default_metallic_new.png");
-	Texture* roughness = m_resource.load_texture("data/textures/default_roughness_new.png");
+	// El shader usa max(textura, valor): la textura por defecto va en negro y manda el valor del material
+	Texture* roughness = m_resource.load_texture("data/textures/black.png");
 	Texture* ao = m_resource.load_texture("data/textures/default_ao.png");
 	Texture* emissive = m_resource.load_texture("data/textures/black.png");
 
@@ -293,7 +294,7 @@ void Engine::load_default_textures(){
 	m_default_material.set_texture_emissive(emissive);
 
 	m_default_material.set_metallic_value(0.5f);
-	m_default_material.set_roughness_value(0.5f);
+	m_default_material.set_roughness_value(DEFAULT_ROUGHNESS);
 
 	//m_resource.load_cube_map("data/textures/sky.dds");
 	m_resource.load_cube_map("data/textures/cubemap/pruebaEnvHDR.dds");

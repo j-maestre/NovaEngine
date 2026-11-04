@@ -37,6 +37,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Scene* scene = engine->create_scene("scene_ssao.yaml");
 	engine->set_scene(scene);
 	
+	
 	/*
 	Entity spot_light = scene->m_ecs.create_entity("Spot Light");
 	auto& spot = scene->m_ecs.add_component<SpotLight>(spot_light);
@@ -66,7 +67,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		cam.update();
 
 		
-		scene->update();
+		engine->get_scene()->update();
 		//render.render_forward(scene->m_ecs);
 		render.render_deferred(scene->m_ecs);
 

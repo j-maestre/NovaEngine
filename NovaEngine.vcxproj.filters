@@ -241,7 +241,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\shaders\ps_depth_prepass.hlsl">
+    <None Include="data\shaders\ps_entity_id.hlsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="data\shaders\vs_depth_prepass.hlsl">
@@ -262,9 +262,6 @@
     <None Include="data\shaders\deferred\ps_deferred_lights.hlsl">
       <Filter>Shaders\Deferred</Filter>
     </None>
-    <None Include="data\shaders\deferred\ps_deferred_passthrough.hlsl">
-      <Filter>Shaders\Deferred</Filter>
-    </None>
     <None Include="data\shaders\deferred\ps_deferred_post_process_bloom_downscaling.hlsl">
       <Filter>Shaders\Deferred</Filter>
     </None>
@@ -272,9 +269,6 @@
       <Filter>Shaders\Deferred</Filter>
     </None>
     <None Include="data\shaders\deferred\ps_deferred_ssao.hlsl">
-      <Filter>Shaders\Deferred</Filter>
-    </None>
-    <None Include="data\shaders\deferred\ps_deferred_ssao_blend.hlsl">
       <Filter>Shaders\Deferred</Filter>
     </None>
     <None Include="data\shaders\deferred\ps_deferred_ssao_blur.hlsl">

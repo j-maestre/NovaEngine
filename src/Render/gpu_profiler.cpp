@@ -105,7 +105,6 @@ const char* GpuProfiler::get_pass_name(int pass) {
 		"G-Buffer",
 		"SSAO",
 		"SSAO blur",
-		"SSAO mix",
 		"Lights",
 		"Skybox",
 		"Bloom",

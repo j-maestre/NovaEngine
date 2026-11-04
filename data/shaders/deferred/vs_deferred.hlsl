@@ -32,6 +32,9 @@ cbuffer CameraObject : register(b0){
     float roughness_value;
     float3 emissive_value;
     float emissive_intensity;
+    float4x4 normal_matrix; // Inversa transpuesta de model: mantiene la normal correcta con escala no uniforme
+    float2 uv_scale;
+    float2 uv_padding;
 }
 
 
@@ -47,13 +50,13 @@ VOut VShader(VS_IN input){
     output.position = mul(viewPos, projection);     // Clip space
     //output.position = viewPos;  // Clip space
 
-    output.normal = normalize(mul(input.normal, (float3x3) model));
+    output.normal = normalize(mul(input.normal, (float3x3) normal_matrix));
     
     float3 tangent_world = normalize(mul(float4(input.tangent.xyz, 0.0f), model).xyz);
     output.tangent = float4(tangent_world, input.tangent.w);
     output.bitangent = cross(output.normal, output.tangent.rgb) * input.tangent.w;
 
-    output.uv = input.uv;
+    output.uv = input.uv * uv_scale;
     output.cam_pos = cam_pos;
     
     output.metallic_value = metallic_value;

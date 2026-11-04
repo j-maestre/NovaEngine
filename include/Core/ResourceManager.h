@@ -12,6 +12,7 @@
 
 #include "Core/JobSystem.h"
 #include <mutex>
+#include <atomic>
 
 class Engine;
 class MeshComponent;
@@ -20,6 +21,7 @@ struct TextureToLoad {
 	Texture* tex;
 	ImageData* data;
 	unsigned char* pixels;
+	bool srgb = false;
 };
 
 struct ModelToLoad {
@@ -43,6 +45,14 @@ public:
 	void load_irradiance_map(std::string path);
 
 	Texture* load_texture(std::string path);
+	// Para texturas de color (albedo, emissive): la GPU las convierte a lineal al leerlas y al generar mips
+	Texture* load_texture_srgb(std::string path);
+
+	// Ruta con la que se cargo la textura; vacia si es una de las del motor
+	std::string get_texture_path(Texture* texture);
+
+	// Mientras haya cargas en curso no se puede destruir ningun MeshComponent
+	bool is_loading_models() const { return m_pending_model_loads > 0; }
 	Texture* load_texture_with_flip(std::string path, unsigned int flip = 1);
 	Texture* get_texture(unsigned int id);
 
@@ -64,8 +74,11 @@ private:
 	
 	Model* load_mesh(std::string path, bool async);
 
-	Texture* load_texture(std::string path, bool async);
+	Texture* load_texture(std::string path, bool async, bool srgb = false);
+	Texture* load_texture_sync(std::string path, bool srgb);
+	void register_texture_path(unsigned int hash, const std::string& path);
 	void ProcessNode(Model* mesh, aiNode* node, const aiScene* scene, std::string absolute_path, bool async = false);
+	void ProcessNodeTree(Model* model, aiNode* node, const aiScene* scene, const std::string& absolute_path, bool async, const aiMatrix4x4& parent_world, const aiMatrix4x4& to_first_mesh);
 	void ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene* scene, std::string absolute_path, bool async = false);
 
 	void check_models_to_load();
@@ -73,6 +86,9 @@ private:
 
 
 	std::vector<ModelToLoad> m_mesh_component_to_load;
+	std::atomic<int> m_pending_model_loads{ 0 };
+	std::unordered_map<unsigned int, std::string> m_texture_paths;
+	std::mutex m_mutex_texture_paths;
 	std::vector<std::shared_ptr<Model>> m_model_to_load;
 	std::vector<std::shared_ptr<TextureToLoad>> m_texture_to_load;
 

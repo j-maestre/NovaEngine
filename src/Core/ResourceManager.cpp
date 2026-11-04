@@ -97,8 +97,32 @@ void ResourceManager::load_cube_map(std::string path){
 }
 
 Texture* ResourceManager::load_texture(std::string path){
+	return load_texture_sync(path, false);
+}
+
+Texture* ResourceManager::load_texture_srgb(std::string path){
+	return load_texture_sync(path, true);
+}
+
+std::string ResourceManager::get_texture_path(Texture* texture){
+
+	if (!texture || texture->m_engine_default) return "";
+
+	std::lock_guard<std::mutex> locked{ m_mutex_texture_paths };
+	auto it = m_texture_paths.find(texture->get_id());
+	return it != m_texture_paths.end() ? it->second : "";
+}
+
+void ResourceManager::register_texture_path(unsigned int hash, const std::string& path){
+
+	std::lock_guard<std::mutex> locked{ m_mutex_texture_paths };
+	m_texture_paths[hash] = path;
+}
+
+Texture* ResourceManager::load_texture_sync(std::string path, bool srgb){
 
 	unsigned int hash = (unsigned int)std::hash<std::string>{}(path);
+	register_texture_path(hash, path);
 	
 	if (m_textures.contains(hash)) {
 		return &(m_textures.find(hash)->second);
@@ -123,7 +147,7 @@ Texture* ResourceManager::load_texture(std::string path){
 	texture_desc.Height = data->height;
 	texture_desc.MipLevels = 0;				// Generate all mips
 	texture_desc.ArraySize = 1;
-	texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	texture_desc.Format = srgb ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM;
 	texture_desc.SampleDesc.Count = 1;
 	texture_desc.Usage = D3D11_USAGE_DEFAULT;
 	texture_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
@@ -241,9 +265,10 @@ Texture* ResourceManager::load_texture_with_flip(std::string path, unsigned int 
 	return &(m_textures.find(texture_class.get_id())->second);
 }
 
-Texture* ResourceManager::load_texture(std::string path, bool async){
+Texture* ResourceManager::load_texture(std::string path, bool async, bool srgb){
 
 	unsigned int hash = (unsigned int)std::hash<std::string>{}(path);
+	register_texture_path(hash, path);
 
 	if (m_textures.contains(hash)) {
 		return &(m_textures.find(hash)->second);
@@ -280,7 +305,7 @@ Texture* ResourceManager::load_texture(std::string path, bool async){
 	Texture* new_texture_inserted = &(m_textures.find(texture_class.get_id())->second);
 	TextureToLoad pending_texture{ new_texture_inserted, new_texture_inserted->get_data(), pixels};
 	std::shared_ptr<TextureToLoad> pending_texture_ptr = std::make_shared<TextureToLoad>(
-		TextureToLoad{ new_texture_inserted, new_texture_inserted->get_data(), pixels }
+		TextureToLoad{ new_texture_inserted, new_texture_inserted->get_data(), pixels, srgb }
 	);
 
 	{
@@ -351,20 +376,21 @@ Model* ResourceManager::load_mesh(std::string path){
 		// Vertex buffer
 		D3D11_BUFFER_DESC buffer_desc{};
 		ZeroMemory(&buffer_desc, sizeof(buffer_desc));
-		buffer_desc.Usage = D3D11_USAGE_DYNAMIC;					// Write acces by CPU and GPU
+		buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;					// Solo la GPU, y nunca cambia
 		buffer_desc.ByteWidth = m.num_vertices * sizeof(Vertex);
 		buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;			// Using as Vertex buffer
-		buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;		// allow CPU to write in the buffer
-		Engine::get_instance()->get_engine_props()->deviceInterface->CreateBuffer(&buffer_desc, NULL, &m.buffer);
+		buffer_desc.CPUAccessFlags = 0;
+		D3D11_SUBRESOURCE_DATA vertex_data = {};
+		vertex_data.pSysMem = m.vertices.data();
+		Engine::get_instance()->get_engine_props()->deviceInterface->CreateBuffer(&buffer_desc, &vertex_data, &m.buffer);
 
-		D3D11_MAPPED_SUBRESOURCE ms_mesh;
 
 
 
 		// Index buffer
 		D3D11_BUFFER_DESC index_buffer_desc{};
 		ZeroMemory(&index_buffer_desc, sizeof(index_buffer_desc));
-		index_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+		index_buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;
 		index_buffer_desc.ByteWidth = m.num_indices * sizeof(unsigned int);
 		index_buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		index_buffer_desc.CPUAccessFlags = 0;
@@ -377,9 +403,6 @@ Model* ResourceManager::load_mesh(std::string path){
 		if (FAILED(hr)) {
 			assert("Buffer creation failed");
 		}
-		Engine::get_instance()->get_engine_props()->inmediateDeviceContext->Map(m.buffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms_mesh);
-		memcpy(ms_mesh.pData, m.vertices.data(), sizeof(Vertex) * m.num_vertices);
-		Engine::get_instance()->get_engine_props()->inmediateDeviceContext->Unmap(m.buffer, NULL);
 	}
 
 
@@ -399,6 +422,8 @@ void ResourceManager::load_mesh_async(std::string path, MeshComponent* mesh_comp
 		return;
 	}
 
+
+	m_pending_model_loads++;
 
 	Model model_cube = *m_engine->get_cube();
 	Engine* e = Engine::get_instance();
@@ -580,7 +605,76 @@ Model* ResourceManager::load_mesh(std::string path, bool async){
 	return model;
 }
 
+// Matriz de mundo del primer nodo con mallas, en el mismo orden en que se recorre el arbol
+static bool find_first_mesh_world(const aiNode* node, const aiMatrix4x4& parent_world, aiMatrix4x4& out) {
+
+	const aiMatrix4x4 world = parent_world * node->mTransformation;
+	if (node->mNumMeshes > 0) {
+		out = world;
+		return true;
+	}
+
+	for (unsigned int i = 0; i < node->mNumChildren; i++) {
+		if (find_first_mesh_world(node->mChildren[i], world, out)) return true;
+	}
+	return false;
+}
+
+static bool is_identity(const aiMatrix4x4& m) {
+
+	const float identity[16] = { 1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1 };
+	const float* values = &m.a1;
+	for (int i = 0; i < 16; i++) {
+		if (fabsf(values[i] - identity[i]) > 0.00001f) return false;
+	}
+	return true;
+}
+
+// Coloca los vertices de una malla segun la transformacion de su nodo
+static void bake_transform(Mesh& mesh, const aiMatrix4x4& transform) {
+
+	aiMatrix3x3 normal_matrix(transform);
+	normal_matrix.Inverse().Transpose();
+	const aiMatrix3x3 tangent_matrix(transform);
+	const bool mirrored = transform.Determinant() < 0.0f;
+
+	for (Vertex& v : mesh.vertices) {
+		const aiVector3D position = transform * aiVector3D(v.pos_x, v.pos_y, v.pos_z);
+		const aiVector3D normal = (normal_matrix * aiVector3D(v.nrm_x, v.nrm_y, v.nrm_z)).NormalizeSafe();
+		const aiVector3D tangent = (tangent_matrix * aiVector3D(v.tan_x, v.tan_y, v.tan_z)).NormalizeSafe();
+
+		v.pos_x = position.x; v.pos_y = position.y; v.pos_z = position.z;
+		v.nrm_x = normal.x; v.nrm_y = normal.y; v.nrm_z = normal.z;
+		v.tan_x = tangent.x; v.tan_y = tangent.y; v.tan_z = tangent.z;
+		if (mirrored) v.tan_w = -v.tan_w;
+	}
+
+	// Una transformacion en espejo invierte el orden de los triangulos
+	if (mirrored) {
+		for (size_t i = 0; i + 2 < mesh.indices.size(); i += 3) {
+			std::swap(mesh.indices[i + 1], mesh.indices[i + 2]);
+		}
+	}
+}
+
+// Todas las piezas se expresan en el espacio local de la primera malla. Asi un modelo de una sola
+// malla conserva sus vertices tal cual, y las demas piezas quedan en su sitio respecto a esa.
 void ResourceManager::ProcessNode(Model* model, aiNode* node, const aiScene* scene, std::string absolute_path, bool async){
+
+	aiMatrix4x4 first_mesh_world;
+	find_first_mesh_world(node, aiMatrix4x4(), first_mesh_world);
+
+	aiMatrix4x4 to_first_mesh = first_mesh_world;
+	to_first_mesh.Inverse();
+
+	ProcessNodeTree(model, node, scene, absolute_path, async, aiMatrix4x4(), to_first_mesh);
+}
+
+void ResourceManager::ProcessNodeTree(Model* model, aiNode* node, const aiScene* scene, const std::string& absolute_path, bool async, const aiMatrix4x4& parent_world, const aiMatrix4x4& to_first_mesh){
+
+	const aiMatrix4x4 world = parent_world * node->mTransformation;
+	const aiMatrix4x4 relative = to_first_mesh * world;
+	const bool needs_bake = !is_identity(relative);
 
 	// Process all node's meshes
 	for (unsigned int i = 0; i < node->mNumMeshes; ++i) {
@@ -589,14 +683,13 @@ void ResourceManager::ProcessNode(Model* model, aiNode* node, const aiScene* sce
 		Mesh mesh_tmp;
 		mesh_tmp.material.init_material();
 		ProcessMesh(&mesh_tmp, mesh, scene, absolute_path, async);
+		if (needs_bake) bake_transform(mesh_tmp, relative);
 		model->meshes.push_back(std::move(mesh_tmp));
 	}
 
 	for (unsigned int i = 0; i < node->mNumChildren; i++) {
-		ProcessNode(std::move(model), node->mChildren[i], scene, absolute_path, async);
+		ProcessNodeTree(model, node->mChildren[i], scene, absolute_path, async, world, to_first_mesh);
 	}
-
-
 }
 
 void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene* scene, std::string absolute_path, bool async){
@@ -604,6 +697,7 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 
 
 	mesh->num_vertices= assimp_mesh->mNumVertices;
+	mesh->material_slot = assimp_mesh->mMaterialIndex;
 
 	// Position, Normals & UVs
 	for (unsigned int i = 0; i < assimp_mesh->mNumVertices; i++) {
@@ -673,9 +767,9 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 			std::string tmp(absolute_path + texturePath.C_Str());
 			Texture* t;
 			if (async) {
-				t = load_texture(tmp, async);
+				t = load_texture(tmp, async, true);
 			}else {
-				t = load_texture(tmp);
+				t = load_texture_srgb(tmp);
 			}
 			mesh->material.set_texture_albedo(t);
 			
@@ -782,20 +876,21 @@ void ResourceManager::check_models_to_load(){
 				// Vertex buffer
 				D3D11_BUFFER_DESC buffer_desc{};
 				ZeroMemory(&buffer_desc, sizeof(buffer_desc));
-				buffer_desc.Usage = D3D11_USAGE_DYNAMIC;					// Write acces by CPU and GPU
+				buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;					// Solo la GPU, y nunca cambia
 				buffer_desc.ByteWidth = m.num_vertices * sizeof(Vertex);
 				buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;			// Using as Vertex buffer
-				buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;		// allow CPU to write in the buffer
-				Engine::get_instance()->get_engine_props()->deviceInterface->CreateBuffer(&buffer_desc, NULL, &m.buffer);
+				buffer_desc.CPUAccessFlags = 0;
+				D3D11_SUBRESOURCE_DATA vertex_data = {};
+				vertex_data.pSysMem = m.vertices.data();
+				Engine::get_instance()->get_engine_props()->deviceInterface->CreateBuffer(&buffer_desc, &vertex_data, &m.buffer);
 
-				D3D11_MAPPED_SUBRESOURCE ms_mesh;
 
 
 
 				// Index buffer
 				D3D11_BUFFER_DESC index_buffer_desc{};
 				ZeroMemory(&index_buffer_desc, sizeof(index_buffer_desc));
-				index_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+				index_buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;
 				index_buffer_desc.ByteWidth = m.num_indices * sizeof(unsigned int);
 				index_buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 				index_buffer_desc.CPUAccessFlags = 0;
@@ -808,9 +903,6 @@ void ResourceManager::check_models_to_load(){
 				if (FAILED(hr)) {
 					assert("Buffer creation failed");
 				}
-				Engine::get_instance()->get_engine_props()->inmediateDeviceContext->Map(m.buffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms_mesh);
-				memcpy(ms_mesh.pData, m.vertices.data(), sizeof(Vertex) * m.num_vertices);
-				Engine::get_instance()->get_engine_props()->inmediateDeviceContext->Unmap(m.buffer, NULL);
 
 			}
 		
@@ -834,18 +926,19 @@ void ResourceManager::check_models_to_load(){
 				// Vertex buffer
 				D3D11_BUFFER_DESC buffer_desc{};
 				ZeroMemory(&buffer_desc, sizeof(buffer_desc));
-				buffer_desc.Usage = D3D11_USAGE_DYNAMIC;					// Write acces by CPU and GPU
+				buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;					// Solo la GPU, y nunca cambia
 				buffer_desc.ByteWidth = m.num_vertices * sizeof(Vertex);
 				buffer_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;			// Using as Vertex buffer
-				buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;		// allow CPU to write in the buffer
-				Engine::get_instance()->get_engine_props()->deviceInterface->CreateBuffer(&buffer_desc, NULL, &m.buffer);
+				buffer_desc.CPUAccessFlags = 0;
+				D3D11_SUBRESOURCE_DATA vertex_data = {};
+				vertex_data.pSysMem = m.vertices.data();
+				Engine::get_instance()->get_engine_props()->deviceInterface->CreateBuffer(&buffer_desc, &vertex_data, &m.buffer);
 
-				D3D11_MAPPED_SUBRESOURCE ms_mesh;
 
 				// Index buffer
 				D3D11_BUFFER_DESC index_buffer_desc{};
 				ZeroMemory(&index_buffer_desc, sizeof(index_buffer_desc));
-				index_buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+				index_buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;
 				index_buffer_desc.ByteWidth = m.num_indices * sizeof(unsigned int);
 				index_buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 				index_buffer_desc.CPUAccessFlags = 0;
@@ -858,9 +951,6 @@ void ResourceManager::check_models_to_load(){
 				if (FAILED(hr)) {
 					assert("Buffer creation failed");
 				}
-				Engine::get_instance()->get_engine_props()->inmediateDeviceContext->Map(m.buffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &ms_mesh);
-				memcpy(ms_mesh.pData, m.vertices.data(), sizeof(Vertex) * m.num_vertices);
-				Engine::get_instance()->get_engine_props()->inmediateDeviceContext->Unmap(m.buffer, NULL);
 
 			}
 		
@@ -872,6 +962,7 @@ void ResourceManager::check_models_to_load(){
 		}
 
 	
+		m_pending_model_loads -= static_cast<int>(m_mesh_component_to_load.size());
 		m_mesh_component_to_load.clear();
 	
 	}
@@ -891,7 +982,7 @@ void ResourceManager::check_textures_to_load(){
 			texture_desc.Height = pair->data->height;
 			texture_desc.MipLevels = 0;				// Generate all mips
 			texture_desc.ArraySize = 1;
-			texture_desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			texture_desc.Format = pair->srgb ? DXGI_FORMAT_R8G8B8A8_UNORM_SRGB : DXGI_FORMAT_R8G8B8A8_UNORM;
 			texture_desc.SampleDesc.Count = 1;
 			texture_desc.Usage = D3D11_USAGE_DEFAULT;
 			texture_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;

@@ -214,18 +214,16 @@
     <ClInclude Include="include\render\window.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\shaders\ps_depth_prepass.hlsl" />
+    <None Include="data\shaders\ps_entity_id.hlsl" />
     <None Include="data\shaders\vs_depth_prepass.hlsl" />
     <None Include="data\shaders\deferred\color_common.hlsli" />
     <None Include="data\shaders\deferred\pbr_common.hlsli" />
     <None Include="data\shaders\deferred\ps_deferred.hlsl" />
     <None Include="data\shaders\deferred\ps_deferred_composite.hlsl" />
     <None Include="data\shaders\deferred\ps_deferred_lights.hlsl" />
-    <None Include="data\shaders\deferred\ps_deferred_passthrough.hlsl" />
     <None Include="data\shaders\deferred\ps_deferred_post_process_bloom_downscaling.hlsl" />
     <None Include="data\shaders\deferred\ps_deferred_skybox.hlsl" />
     <None Include="data\shaders\deferred\ps_deferred_ssao.hlsl" />
-    <None Include="data\shaders\deferred\ps_deferred_ssao_blend.hlsl" />
     <None Include="data\shaders\deferred\ps_deferred_ssao_blur.hlsl" />
     <None Include="data\shaders\deferred\ps_deferred_ssao_learnopengl.hlsl" />
     <None Include="data\shaders\deferred\vs_deferred.hlsl" />
