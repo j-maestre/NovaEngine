@@ -297,6 +297,7 @@ void Engine::load_default_textures(){
 
 	//m_resource.load_cube_map("data/textures/sky.dds");
 	m_resource.load_cube_map("data/textures/cubemap/pruebaEnvHDR.dds");
+	m_resource.load_irradiance_map("data/textures/cubemap/pruebaDiffuseHDR.dds");
 	// m_resource.load_cube_map("data/textures/clouds.dds");
 
 	m_resource.check_textures_to_load();

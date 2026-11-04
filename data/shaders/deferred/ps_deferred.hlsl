@@ -1,3 +1,5 @@
+#include "color_common.hlsli"
+
 struct PS_INPUT
 {
     float4 position : SV_POSITION;
@@ -63,14 +65,16 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     const float PI = 3.14159265359;
   
     const float3 view_dir = normalize(input.cam_pos - input.world_position);
-    const float4 texture_color = max((albedo_tex.Sample(mySampler, input.uv)), input.color_value);
+    // Las texturas de color se guardan en sRGB; el material y la luz trabajan en lineal
+    const float4 albedo_sample = albedo_tex.Sample(mySampler, input.uv);
+    const float4 texture_color = max(float4(SRGBToLinear(albedo_sample.rgb), albedo_sample.a), input.color_value);
     const float4 texture_normal = (normal_tex.Sample(mySampler, input.uv));
     
     const float texture_metallic = max((metallic_tex.Sample(mySampler, input.uv)).r, input.metallic_value);
     const float texture_roughness = max((roughness_tex.Sample(mySampler, input.uv)).r, input.roughness_value);
     
     const float texture_ao = (ao_tex.Sample(mySampler, input.uv)).r;
-    const float3 texture_emissive = (emissive_tex.Sample(mySampler, input.uv)).rgb;
+    const float3 texture_emissive = SRGBToLinear((emissive_tex.Sample(mySampler, input.uv)).rgb);
     
     const float3 normal_procesed = getNormalFromMap(texture_normal.rgb, input.normal, input.tangent);
    

@@ -47,16 +47,8 @@ constexpr unsigned int ssao_noise_dim = 4;
 /*******************************/
 
 
-/*** Deprecated ***/
-// #include <d3dx11.h>
-// #include <d3dx10.h>
-/******************/
-
 #include <stdio.h>
 #include <string>
-
-#define SHADER_PATH_FORWARD "data/shaders/forward";
-#define SHADER_PATH_DEFERRED "data/shaders/deferred";
 
 struct ShaderFiles {
 	// Forward shaders
@@ -64,7 +56,6 @@ struct ShaderFiles {
 	ID3D11PixelShader* PS_directional = nullptr;
 	ID3D11PixelShader* PS_point = nullptr;
 	ID3D11PixelShader* PS_spot = nullptr;
-	ID3D11PixelShader* PS_emissive = nullptr;
 
 	// Deferred shaders
 	
@@ -75,15 +66,11 @@ struct ShaderFiles {
 	// Light pass
 	ID3D11VertexShader* VS_deferred_common = nullptr;
 	ID3D11PixelShader* PS_deferred_passthrough = nullptr;
-	ID3D11PixelShader* PS_deferred_directional = nullptr;
-	ID3D11PixelShader* PS_deferred_point = nullptr;
-	ID3D11PixelShader* PS_deferred_spot = nullptr;
-
-	// Deferred post process
-	ID3D11PixelShader* PS_deferred_emissive = nullptr;
+	ID3D11PixelShader* PS_deferred_composite = nullptr;
+	ID3D11PixelShader* PS_deferred_lights = nullptr;
 
 	// Emissive downsample
-	ID3D11PixelShader* PS_deferred_emissive_downsample;
+	ID3D11PixelShader* PS_deferred_emissive_downsample = nullptr;
 
 	// Skybox
 	ID3D11VertexShader* VS_deferred_skybox = nullptr;
@@ -105,14 +92,9 @@ enum class ShaderType {
 	SpotLight,
 	PointLight,
 	GeometryPass,
-	DeferredDirectional,
-	DeferredPoint,
-	DeferredSpot,
-	DeferredPointLight,
-	DeferredSpotLight,
+	DeferredLights,
 	DeferredPassThrough,
-	DeferredMix,
-	DeferredEmissive,
+	DeferredComposite,
 	BloomDownsample,
 	Skybox,
 	Depth,
@@ -124,11 +106,6 @@ enum class ShaderType {
 enum class DrawMode {
 	Solid = 0,
 	Wireframe,
-};
-
-enum class ErrorCode {
-	OK = 0,
-	UNKNOW,
 };
 
 
@@ -191,21 +168,6 @@ struct EmissiveConstantBuffer {
 	Vec3 padding;
 };
 
-/*
-struct SSAOConstantBuffer {
-	Mat4 projection;
-	Mat4 view;
-	Vec4 kernel_samples[ssao_kernel];
-	int samples;
-	float ssao_base_radius;
-	float samples_float;
-	float width;
-	float height;
-	Vec3 padding;
-};
-*/
-
-
 
 
 struct SSAOConstantBuffer {
@@ -219,9 +181,51 @@ struct SSAOConstantBuffer {
 	float samples_float;
 	float width;
 	float height;
-	Vec3 padding;
+	float max_radius_px;
+	Vec2 padding;
 };
 
+
+enum class GPULightType : int {
+	Directional = 0,
+	Point = 1,
+	Spot = 2,
+};
+
+// Debe coincidir con GPULight en ps_deferred_lights.hlsl
+struct GPULight {
+	Vec3 position;
+	GPULightType type;
+	Vec3 direction;
+	float intensity;
+	Vec3 color;
+	float range;
+	float cos_inner;
+	float cos_outer;
+	float fall_start;
+	float constant_att;
+	float linear_att;
+	float quadratic_att;
+	Vec2 padding;
+};
+static_assert(sizeof(GPULight) == 80, "GPULight debe coincidir con el shader");
+
+struct LightPassConstantBuffer {
+	uint32 light_count;
+	float ambient_intensity;
+	Vec2 padding;
+};
+
+enum class Tonemapper : int {
+	Exponential = 0,
+	ACES = 1,
+};
+
+struct CompositeConstantBuffer {
+	float exposure;
+	Tonemapper tonemapper;
+	Vec2 padding;
+};
 
 struct SSAOBlendConstantBuffer {
 	float blend_intensity = 1.0f;
@@ -238,11 +242,9 @@ struct WindowInfo {
 	HWND window_handle;
 	WNDCLASSEX window_info;
 	ID3D11RenderTargetView* backbuffer;
-	ID3D11RenderTargetView* emissive_buffer_view;
 };
 
 constexpr unsigned int NUM_MIPMAPS_EMISSIVE = (5 + 1);
-constexpr unsigned int NUM_MIPMAPS_SSAO = 5;
 
 struct DeferredResources {
 	
@@ -270,16 +272,6 @@ struct DeferredResources {
 	ID3D11RenderTargetView* gbuffer_emissive_render_target_view;
 	ID3D11Texture2D* gbuffer_emissive_texture;
 	ID3D11ShaderResourceView* gbuffer_emissive_shader_resource_view;
-	
-	// Emissive (Output)
-	ID3D11RenderTargetView* gbuffer_emissive_out_render_target_view;
-	ID3D11Texture2D* gbuffer_emissive_out_texture;
-	ID3D11ShaderResourceView* gbuffer_emissive_out_shader_resource_view;
-	
-	// Emissive (Output B)
-	ID3D11RenderTargetView* gbuffer_emissive_out_b_render_target_view;
-	ID3D11Texture2D* gbuffer_emissive_out_b_texture;
-	ID3D11ShaderResourceView* gbuffer_emissive_out_b_shader_resource_view;
 
 	// Emissive mipmaps
 	ID3D11RenderTargetView* gbuffer_emissive_mipmap_render_target_view[NUM_MIPMAPS_EMISSIVE];
@@ -295,24 +287,15 @@ struct DeferredResources {
 	ID3D11Texture2D* postprocess_texture;
 	ID3D11ShaderResourceView* postprocess_resource_view;
 
-	// Light
-	ID3D11RenderTargetView* light_render_target_view;
-	ID3D11Texture2D* light_texture;
-	ID3D11ShaderResourceView* light_shader_resource_view;
-	
 	// SSAO
 	ID3D11RenderTargetView* ssao_render_target_view;
 	ID3D11Texture2D* ssao_texture;
 	ID3D11ShaderResourceView* ssao_shader_resource_view;
 
-	// SSAO mipmaps
-	ID3D11RenderTargetView* gbuffer_ssao_mipmap_render_target_view[NUM_MIPMAPS_EMISSIVE];
-	ID3D11Texture2D* gbuffer_ssao_mipmap_texture[NUM_MIPMAPS_EMISSIVE];
-	ID3D11ShaderResourceView* gbuffer_ssao_mipmap_shader_resource_view[NUM_MIPMAPS_EMISSIVE];
-
-	ID3D11RenderTargetView* ssao_dowscaling_render_target_view[NUM_MIPMAPS_EMISSIVE];
-	ID3D11Texture2D* ssao_dowscaling_texture[NUM_MIPMAPS_EMISSIVE];
-	ID3D11ShaderResourceView* ssao_dowscaling_shader_resource_view[NUM_MIPMAPS_EMISSIVE];
+	// SSAO blur
+	ID3D11RenderTargetView* ssao_blur_render_target_view;
+	ID3D11Texture2D* ssao_blur_texture;
+	ID3D11ShaderResourceView* ssao_blur_shader_resource_view;
 
 	// Depth (for ssao)
 	ID3D11RenderTargetView* depth_rtv;
@@ -323,9 +306,13 @@ struct DeferredResources {
 
 
 struct RenderInfo {
-	int ssao_samples = ssao_kernel;
+	int ssao_samples = 16;
 	float ssao_base_radius = 1.0f;
+	float ssao_max_radius_px = 128.0f;
 	float ssao_blend_intensity = 1.0f;
+	float exposure = 1.0f;
+	Tonemapper tonemapper = Tonemapper::ACES;
+	float ambient_intensity = 1.0f;
 	bool ssao_active = false;
 	bool bloom_active = true;
 	DrawMode draw_mode = DrawMode::Solid;

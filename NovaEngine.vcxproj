@@ -178,6 +178,7 @@
     <ClCompile Include="src\Core\mesh.cpp" />
     <ClCompile Include="src\Core\ResourceManager.cpp" />
     <ClCompile Include="src\Core\Scene.cpp" />
+    <ClCompile Include="src\Render\gpu_profiler.cpp" />
     <ClCompile Include="src\Render\imgui\imgui_manager.cpp" />
     <ClCompile Include="src\Render\material.cpp" />
     <ClCompile Include="src\Render\renderer.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="include\Core\ResourceManager.h" />
     <ClInclude Include="include\Core\Scene.h" />
     <ClInclude Include="include\nova_engine.h" />
+    <ClInclude Include="include\render\gpu_profiler.h" />
     <ClInclude Include="include\render\imgui\imgui_manager.h" />
     <ClInclude Include="include\render\material.h" />
     <ClInclude Include="include\render\renderer.h" />
@@ -212,17 +214,28 @@
     <ClInclude Include="include\render\window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\shaders\ps_depth_prepass.hlsl" />
+    <None Include="data\shaders\vs_depth_prepass.hlsl" />
+    <None Include="data\shaders\deferred\color_common.hlsli" />
+    <None Include="data\shaders\deferred\pbr_common.hlsli" />
+    <None Include="data\shaders\deferred\ps_deferred.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred_composite.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred_lights.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred_passthrough.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred_post_process_bloom_downscaling.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred_skybox.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred_ssao.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred_ssao_blend.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred_ssao_blur.hlsl" />
+    <None Include="data\shaders\deferred\ps_deferred_ssao_learnopengl.hlsl" />
+    <None Include="data\shaders\deferred\vs_deferred.hlsl" />
+    <None Include="data\shaders\deferred\vs_deferred_common.hlsl" />
+    <None Include="data\shaders\deferred\vs_deferred_skybox.hlsl" />
+    <None Include="data\shaders\deferred\vs_deferred_ssao.hlsl" />
     <None Include="data\shaders\forward\ps_directional.hlsl" />
-    <None Include="data\shaders\forward\vs_common.hlsl" />
     <None Include="data\shaders\forward\ps_point.hlsl" />
     <None Include="data\shaders\forward\ps_spot.hlsl" />
-    <None Include="data\shaders\deferred\vs_deferred.hlsl" />
-    <None Include="data\shaders\deferred\ps_deferred.hlsl" />
-    <None Include="data\shaders\deferred\ps_deferred_directional.hlsl" />
-    <None Include="data\shaders\deferred\vs_deferred_common.hlsl" />
-    <None Include="data\shaders\deferred\ps_deferred_passthrough.hlsl" />
-    <None Include="data\shaders\deferred\ps_deferred_post_process_bloom.hlsl" />
-    <None Include="data\shaders\deferred\ps_deferred_post_process_bloom_downscaling.hlsl" />
+    <None Include="data\shaders\forward\vs_common.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

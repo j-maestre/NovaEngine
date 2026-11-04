@@ -10,6 +10,7 @@
 #include "backends/imgui_impl_dx11.h"
 #include "backends/imgui_impl_win32.h"
 #include "Core/ImGuizmo.h"
+#include "render/gpu_profiler.h"
 
 #include "Core/engine.h"
 #include "Core/ECS.h"
@@ -50,7 +51,6 @@ public:
 	void gbuffer_info(DeferredResources* gbuffer);
 
 	void apply_nova_style();
-	void show_demo_window();
 
 	void show_render_parameters(RenderInfo* info);
 
@@ -71,22 +71,35 @@ private:
 
 
 	void main_menu();
+	void build_default_layout(unsigned int dockspace_id);
+	void open_scene(const std::string& filename);
 	void system_info();
 
-	void show_vec(Vec3& vector, int entity_id, std::string label, std::vector<std::string>& axes_label);
-	void show_transform(TransformComponent* trans, int entity_id);
-	void show_light(DirectionalLight* light, int entity_id);
-	void show_light(PointLight* light, int entity_id);
-	void show_light(SpotLight* light, int entity_id);
-	void show_mesh_comp(MeshComponent* mesh_comp, int entity_id);
-
-	__forceinline void hover_item();
+	void show_hierarchy(Scene* scene);
+	void show_inspector(Scene* scene);
+	void show_transform(TransformComponent* trans);
+	void show_light(DirectionalLight* light);
+	void show_light(PointLight* light);
+	void show_light(SpotLight* light);
+	void show_mesh_comp(MeshComponent* mesh_comp);
 
 	std::vector<std::string> m_resources_loaded;
 
 	float m_time;
 	float m_last_fps;
 	float m_update_fps_time;
+	int m_fps_frames = 0;
+
+	// Paneles visibles (menu View)
+	bool m_show_hierarchy = true;
+	bool m_show_inspector = true;
+	bool m_show_camera = true;
+	bool m_show_render = true;
+	bool m_show_stats = true;
+	bool m_show_gbuffer = true;
+	bool m_reset_layout = false;
+
+	ImGuiTextFilter m_filter;
 
 	std::vector<float> m_dt_history;
 	int m_dt_history_size;
@@ -96,6 +109,8 @@ private:
 
 	float m_mouse_delta_x = 0.0f;
 	float m_mouse_delta_y = 0.0f;
+
+	float m_gpu_ms[GPU_PASS_COUNT] = {};
 
 	float m_draw_time = 0.0f;
 	float m_update_transform_time = 0.0f;

@@ -91,7 +91,7 @@ private:
 
 	float m_speed = 1.0f;
 	float m_movement_speed = 5.0f;
-	float m_mouse_sensitivity = 40.0f;
+	float m_mouse_sensitivity = 0.4f;	// Grados por pixel
 	float m_last_mouse_x = 0.0f;
 	float m_last_mouse_y = 0.0f;
 

@@ -6,36 +6,23 @@
 #include <components/transform_component.h>
 #include <components/mesh_component.h>
 #include <render/material.h>
+#include <render/gpu_profiler.h>
 #include <Core/ECS.h>
 
 class Renderer {
-
-
-	enum classCullMode {
-		Front,
-		Back,
-		Always,
-		None
-	};
-
-
-
 public:
 	Renderer();
 	Renderer(const Renderer&) = delete;
-	Renderer(Renderer&&);
+	Renderer(Renderer&&) = delete;
 	~Renderer();
 
 	bool init_pipeline(Window* win);
 	void active_shader(ShaderType type);
 
-	void enable_depth_prepass(bool enabled);
-
 	void render_forward(EntityComponentSystem& ecs);
 	void render_deferred(EntityComponentSystem& ecs);
 
 	void set_draw_mode(DrawMode mode);
-	void set_cull_mode();
 	void set_camera(CameraComponent* cam);
 
 	DrawMode get_current_draw_mode();
@@ -43,22 +30,19 @@ public:
 	void release();
 private:
 
-	void compile_shader(std::string path);
 	__forceinline void clear_depth();
 	__forceinline void clear_render_target();
-	__forceinline void clear_full_quad();
 	__forceinline void render_mesh_internal(CameraConstantBuffer* camera_buffer, TransformComponent& trans, Mesh& m);
 	__forceinline void render_mesh_depth_only(CameraDepthPrePass* camera_buffer, TransformComponent& trans, Mesh& m);
-	__forceinline void render_deferred_internal();
 
 	/*** Post process techniques ***/
-	__forceinline void draw_emissive();
 	__forceinline void draw_emissive_downsample();
 	__forceinline void draw_ssao(Mat4* projection, Mat4* view, Mat4* projection_inverse);
 	__forceinline void draw_ssao_blur();
 	/*******************************/
 
 	void depth_pass(EntityComponentSystem& ecs);
+	void update_light_buffer(EntityComponentSystem& ecs);
 	void draw_skybox();
 
 	void clear_shader_reources(int size = 5);
@@ -86,33 +70,15 @@ private:
 
 	ID3D11BlendState* m_blend_state_overwrite;
 	ID3D11BlendState* m_blend_state_additive;
-	ID3D11BlendState* m_blend_off;
-	ID3D11BlendState* m_blend_skybox;
-	unsigned int m_blend_mask = 0xffffffff;
-	float m_blend_factor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	//ID3D11BlendState* m_blend_state_opaque;
 
-	D3D11_BUFFER_DESC m_cube_index_buffer_desc; // tmp
-	ID3D11Buffer* m_cube_index_buffer; // tmp
-
-	ID3D11Texture2D* m_backbuffer_texture;
+	ID3D11Texture2D* m_backbuffer_texture = nullptr;
 	
-	// Emissive
-	ID3D11Texture2D* m_emissive_texture;
-	ID3D11ShaderResourceView* m_emissive_SRV = nullptr;
+	// Clear colors
 	float m_clear_emissive_color[4];
 	float m_clear_depth_color[4];
 
-	DeferredResources m_deferred_resources;
-
-	// Full screen quad
-	ID3D11Texture2D* m_quad_texture;
-	ID3D11ShaderResourceView* m_quad_SRV = nullptr;
-	ID3D11RenderTargetView* m_quad_RTV = nullptr;
-
-
-	D3D11_BUFFER_DESC m_buffer_description;
-	D3D11_BUFFER_DESC m_buffer_description_cube;
+	DeferredResources m_deferred_resources{};
 
 	D3D11_BUFFER_DESC m_cam_constant_buffer;
 	ID3D11Buffer* m_pVBufferConstantCamera;
@@ -135,10 +101,16 @@ private:
 	SSAOConstantBuffer m_constant_buffer_ssao;
 	SSAOBlendConstantBuffer m_ssao_blend_constant_buffer;
 
-	ID3D11Buffer* m_pVBufferLight;
-
-	ID3D11Buffer* m_pVBuffer;
 	ID3D11Buffer* m_pVBuffer_full_triangle;
+
+	// Luces del pase deferred
+	ID3D11Buffer* m_light_buffer = nullptr;
+	ID3D11ShaderResourceView* m_light_buffer_srv = nullptr;
+	ID3D11Buffer* m_pVBuffer_light_pass = nullptr;
+	ID3D11Buffer* m_pVBuffer_composite = nullptr;
+	GpuProfiler m_gpu_profiler;
+	std::vector<GPULight> m_gpu_lights;
+	unsigned int m_light_buffer_capacity = 0;
 
 	ID3D11InputLayout* m_pLayout;
 	ID3D11InputLayout* m_pLayout_deferred;
@@ -154,7 +126,6 @@ private:
 	ID3D11DepthStencilView* m_depth_stencil_view;
 	ID3D11DepthStencilState* m_depth_stencil_state;
 
-	ID3D11DepthStencilState* m_depth_stencil_state_skybox;
 	ID3D11DepthStencilState* m_depth_only_state;
 	ID3D11DepthStencilState* m_depth_stencil_ssao;
 
@@ -167,11 +138,6 @@ private:
 
 	RenderInfo m_render_info_parameters;
 	bool m_isInitialized;
-	bool m_bloom_active = true;
-	bool m_depth_prepass = true;
-	bool m_ssao_active = true;
-
-	int m_buffer_index = 0;
 	std::string m_pixel_shader_model;
 	std::string m_vertex_shader_model;
 
@@ -179,7 +145,6 @@ private:
 
 	ID3D11Texture2D* m_noise_texture = nullptr;
 	ID3D11ShaderResourceView* m_noise_srv = nullptr;
-	std::vector<Vec3> m_ssao_kernel_random;
 	std::vector<float> m_ssao_noise_random;
 
 	float m_skybox_vertices[36 * 3] = {

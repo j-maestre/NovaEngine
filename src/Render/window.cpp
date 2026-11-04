@@ -95,7 +95,6 @@ Window::Window() : m_window_info(){
 	m_deviceInterface = nullptr;
 	m_inmediateDeviceContext = nullptr;
 	m_imgui = ImguiManager::get_instance();
-	//m_window_info->emissive_buffer_view = nullptr;
 	//m_window_info->backbuffer = nullptr;
 }
 
@@ -177,7 +176,6 @@ void Window::init(WindowProperties* props){
 
 	m_window_props = std::make_shared<WindowProperties>(*props);
 
-	m_window_info->emissive_buffer_view = nullptr;
 	//for (int i = 0; i < NUM_BUFFERING; i++) {
 		m_window_info->backbuffer = nullptr;
 	//}
@@ -413,23 +411,6 @@ void Window::destroy_frame_resources() {
 		if (m_window_info->backbuffer)m_window_info->backbuffer->Release();
 		m_window_info->backbuffer = nullptr;
 	//}
-
-	// Release emissive buffer
-	if (m_renderer->m_emissive_texture) {
-		m_renderer->m_emissive_texture->Release();
-		m_renderer->m_emissive_texture = nullptr;
-	}
-
-	if (m_renderer->m_emissive_SRV) {
-		m_renderer->m_emissive_SRV->Release();
-		m_renderer->m_emissive_SRV = nullptr;
-	}
-
-	if (m_window_info->emissive_buffer_view) {
-		m_window_info->emissive_buffer_view->Release();
-		m_window_info->emissive_buffer_view = nullptr;
-	}
-
 }
 
 void Window::create_frame_resources(){
@@ -495,94 +476,10 @@ void Window::create_frame_resources(){
 	e->m_viewport = viewport;
 	e->get_engine_props()->inmediateDeviceContext->RSSetViewports(1, &e->m_viewport);
 
-
-	
-	// Emissive buffer texture creation
-	ID3D11Texture2D* emissive_buffer = nullptr;
-	D3D11_TEXTURE2D_DESC emissive_desc{
-		.Width = width_w,
-		.Height = height_w,
-		.MipLevels = 1,
-		.ArraySize = 1,
-		.Format = DXGI_FORMAT_R16G16B16A16_FLOAT, // HDR compatible format
-		.SampleDesc{
-			.Count = 1,
-		},
-		.Usage = D3D11_USAGE_DEFAULT,
-		.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE,
-	};
-
-	HRESULT hr = e->get_engine_props()->deviceInterface->CreateTexture2D(&emissive_desc, nullptr, &emissive_buffer);
-	if (FAILED(hr)) {
-		printf("\n*** Error creating emissive buffer ***\n");
-		assert("Error creating emissive buffer");
-	}
-	m_renderer->m_emissive_texture = emissive_buffer;
-	
-	// Emissive buffer render target view
-	hr = e->get_engine_props()->deviceInterface->CreateRenderTargetView(m_renderer->m_emissive_texture, nullptr, &m_window_info->emissive_buffer_view);
-	if (FAILED(hr)) {
-		printf("\n*** Error creating emissive render target view ***\n");
-		assert("Error creating emissive render target view");
-	}
-
-	// Emissive buffer shader resource view
-	hr = e->get_engine_props()->deviceInterface->CreateShaderResourceView(m_renderer->m_emissive_texture, nullptr, &m_renderer->m_emissive_SRV);
-	if (FAILED(hr)) {
-		printf("\n*** Error creating emissive shader resource view ***\n");
-		assert("Error creating emissive shader resource view");
-	}
-
-	create_full_screen_quad_resources(width_w, height_w);
-
 	m_renderer->create_deferred_resources(width_w, height_w);
 #ifdef ENABLE_IMGUI
 	ImguiManager::get_instance()->resize(m_window_info->window_handle, width_w, height_w);
 #endif
 
 }
-
-void Window::create_full_screen_quad_resources(unsigned int width, unsigned int height){
-
-	Engine* e = Engine::get_instance();
-
-	ID3D11Texture2D* scene_render_target_texture = nullptr;
-	D3D11_TEXTURE2D_DESC rt_desc{};
-	rt_desc.Width = width;
-	rt_desc.Height = height;
-	rt_desc.MipLevels = 1;
-	rt_desc.ArraySize = 1;
-	rt_desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;	// HDR format
-	rt_desc.SampleDesc.Count = 1;
-	rt_desc.SampleDesc.Quality = 0;
-	rt_desc.Usage = D3D11_USAGE_DEFAULT;
-	rt_desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	rt_desc.CPUAccessFlags = 0;
-	rt_desc.MiscFlags = 0;
-
-	HRESULT hr = e->get_engine_props()->deviceInterface->CreateTexture2D(&rt_desc, nullptr, &scene_render_target_texture);
-	if (FAILED(hr)) {
-		printf("*** Error creating scene render target texture ***\n");
-		assert(false);
-	}
-
-	ID3D11RenderTargetView* scene_render_target_view = nullptr;
-	hr = e->get_engine_props()->deviceInterface->CreateRenderTargetView(scene_render_target_texture, nullptr, &scene_render_target_view);
-	if (FAILED(hr)) {
-		printf("*** Error creating scene render target view ***\n");
-		assert(false);
-	}
-
-	ID3D11ShaderResourceView* scene_SRV = nullptr;
-	hr = e->get_engine_props()->deviceInterface->CreateShaderResourceView(scene_render_target_texture, nullptr, &scene_SRV);
-	if (FAILED(hr)) {
-		printf("*** Error creating scene shader resource view ***\n");
-		assert(false);
-	}
-
-	m_renderer->m_quad_texture = scene_render_target_texture;
-	m_renderer->m_quad_RTV = scene_render_target_view;
-	m_renderer->m_quad_SRV = scene_SRV;
-}
-
 

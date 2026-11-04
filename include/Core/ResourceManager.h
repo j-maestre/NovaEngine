@@ -40,6 +40,7 @@ public:
 	~ResourceManager();
 
 	void load_cube_map(std::string path = "");
+	void load_irradiance_map(std::string path);
 
 	Texture* load_texture(std::string path);
 	Texture* load_texture_with_flip(std::string path, unsigned int flip = 1);
@@ -52,6 +53,7 @@ public:
 	__forceinline ID3D11Resource** get_skybox_texture() { return m_skybox_texture; }
 	unsigned int get_skybox_max_miplevel() { return m_cubemap_max_mip_level; }
 	__forceinline ID3D11ShaderResourceView* get_brdf_srv() { return m_brdf_srv; }
+	__forceinline ID3D11ShaderResourceView* get_irradiance_srv() { return m_irradiance_srv; }
 	__forceinline ID3D11Resource** get_brdf_texture() { return m_brdf_texture; }
 
 	void release();
@@ -80,6 +82,7 @@ private:
 	unsigned int m_cubemap_max_mip_level;
 
 	ID3D11ShaderResourceView* m_brdf_srv = nullptr;
+	ID3D11ShaderResourceView* m_irradiance_srv = nullptr;
 	ID3D11Resource** m_brdf_texture = nullptr;
 
 	std::mutex m_mutex_textures;

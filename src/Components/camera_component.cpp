@@ -148,8 +148,10 @@ void CameraComponent::fly(float dt) {
 			LPARAM param = MAKELPARAM(m_center_x, m_center_y);
 			m_win->process_mouse(param);
 		}
-		m_yaw += OffsetX * dt;
-		m_pitch -= OffsetY * dt;
+		// Sin dt: el offset ya es el movimiento acumulado desde el frame anterior.
+		// Multiplicarlo por dt haria que la camara girase mas rapido cuanto menos fps.
+		m_yaw += OffsetX;
+		m_pitch -= OffsetY;
 
 		m_last_mouse_x = MouseX;
 		m_last_mouse_y = MouseY;

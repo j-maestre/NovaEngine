@@ -33,12 +33,14 @@ TransformComponent::~TransformComponent(){
 
 void TransformComponent::update(){
 
-	bool parent_calculated = true;
+	// Primero el padre: si se ha recalculado, su version cambia, aunque ya este marcado como calculado
+	unsigned int parent_version = 0;
 	if (m_parent) {
-		parent_calculated = m_parent->m_is_calculated;
+		m_parent->update();
+		parent_version = m_parent->m_version;
 	}
 
-	if (m_is_calculated && parent_calculated ) return;
+	if (m_is_calculated && parent_version == m_parent_version) return;
 
 	Mat4 scale = DirectX::XMMatrixScaling(m_scale.x, m_scale.y, m_scale.z);
 
@@ -55,8 +57,7 @@ void TransformComponent::update(){
 
 	// Parenting
 	if (m_parent) {
-		m_parent->update();
-		m_transform *= m_parent->get_transform();
+		m_transform *= m_parent->m_transform;
 	}
 
 	// Raw transform
@@ -68,6 +69,8 @@ void TransformComponent::update(){
 	m_inverse_transform = DirectX::XMMatrixInverse(nullptr, m_transform);
 
 	m_is_calculated = true;
+	m_parent_version = parent_version;
+	m_version++;
 }
 
 void TransformComponent::force_update(){
@@ -151,6 +154,60 @@ void TransformComponent::set_rotation(const float rotation[3]){
 
 void TransformComponent::set_parent(TransformComponent* parent){
 	m_parent = parent;
+	m_is_calculated = false;
+}
+
+bool TransformComponent::is_descendant_of(const TransformComponent* other) const{
+
+	for (const TransformComponent* p = m_parent; p != nullptr; p = p->m_parent) {
+		if (p == other) return true;
+	}
+	return false;
+}
+
+bool TransformComponent::set_parent_keep_world(TransformComponent* parent){
+
+	if (parent == this || (parent && parent->is_descendant_of(this))) return false;
+
+	const Mat4 world = get_transform();
+	m_parent = parent;
+	return set_world_matrix(world);
+}
+
+bool TransformComponent::set_world_matrix(const Mat4& world){
+
+	Mat4 local = world;
+	if (m_parent) {
+		local = world * DirectX::XMMatrixInverse(nullptr, m_parent->get_transform());
+	}
+
+	FVector scale, rotation, translation;
+	if (!DirectX::XMMatrixDecompose(&scale, &rotation, &translation, local)) {
+		m_is_calculated = false;
+		return false;
+	}
+
+	DirectX::XMStoreFloat3(&m_position, translation);
+	DirectX::XMStoreFloat3(&m_scale, scale);
+
+	// update() compone la rotacion como Rz * Ry * Rx: esta extraccion es su inversa
+	DirectX::XMFLOAT4X4 r;
+	DirectX::XMStoreFloat4x4(&r, DirectX::XMMatrixRotationQuaternion(rotation));
+
+	const float sin_y = r._31 > 1.0f ? 1.0f : (r._31 < -1.0f ? -1.0f : r._31);
+	m_rotation.y = asinf(sin_y);
+	if (fabsf(sin_y) < 0.9999f) {
+		m_rotation.x = atan2f(-r._32, r._33);
+		m_rotation.z = atan2f(-r._21, r._11);
+	}
+	else {
+		// Gimbal lock: X y Z giran sobre el mismo eje
+		m_rotation.x = 0.0f;
+		m_rotation.z = atan2f(r._12, r._22);
+	}
+
+	m_is_calculated = false;
+	return true;
 }
 
 Vec3& TransformComponent::get_position(){

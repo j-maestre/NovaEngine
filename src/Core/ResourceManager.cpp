@@ -31,6 +31,21 @@ ResourceManager::~ResourceManager(){
 	release();
 }
 
+void ResourceManager::load_irradiance_map(std::string path){
+
+	std::wstring path_tmp(path.begin(), path.end());
+	HRESULT hr = DirectX::CreateDDSTextureFromFile(
+		m_engine->get_engine_props()->deviceInterface,
+		path_tmp.c_str(),
+		nullptr,
+		&m_irradiance_srv
+	);
+
+	if (FAILED(hr)) {
+		printf("\n*** Error loading %s ***\n", path.c_str());
+	}
+}
+
 void ResourceManager::load_cube_map(std::string path){
 
 	std::wstring path_tmp(path.begin(), path.end());

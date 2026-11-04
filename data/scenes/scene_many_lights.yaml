@@ -1,0 +1,1414 @@
+# Generada para probar fps con muchas luces: 100 puntuales + 25 esferas.
+Entities:
+  Floor:
+    Transform:
+      Position: [0.0, -8.0, 30.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [27.5, 1.0, 27.5]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.50, 0.50, 0.50] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.8}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_0_0:
+    Transform:
+      Position: [-20.0, -5.5, 10.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_0_1:
+    Transform:
+      Position: [-10.0, -5.5, 10.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_0_2:
+    Transform:
+      Position: [0.0, -5.5, 10.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_0_3:
+    Transform:
+      Position: [10.0, -5.5, 10.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_0_4:
+    Transform:
+      Position: [20.0, -5.5, 10.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_1_0:
+    Transform:
+      Position: [-20.0, -5.5, 20.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_1_1:
+    Transform:
+      Position: [-10.0, -5.5, 20.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_1_2:
+    Transform:
+      Position: [0.0, -5.5, 20.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_1_3:
+    Transform:
+      Position: [10.0, -5.5, 20.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_1_4:
+    Transform:
+      Position: [20.0, -5.5, 20.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_2_0:
+    Transform:
+      Position: [-20.0, -5.5, 30.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_2_1:
+    Transform:
+      Position: [-10.0, -5.5, 30.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_2_2:
+    Transform:
+      Position: [0.0, -5.5, 30.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_2_3:
+    Transform:
+      Position: [10.0, -5.5, 30.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_2_4:
+    Transform:
+      Position: [20.0, -5.5, 30.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_3_0:
+    Transform:
+      Position: [-20.0, -5.5, 40.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_3_1:
+    Transform:
+      Position: [-10.0, -5.5, 40.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_3_2:
+    Transform:
+      Position: [0.0, -5.5, 40.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_3_3:
+    Transform:
+      Position: [10.0, -5.5, 40.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_3_4:
+    Transform:
+      Position: [20.0, -5.5, 40.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_4_0:
+    Transform:
+      Position: [-20.0, -5.5, 50.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_4_1:
+    Transform:
+      Position: [-10.0, -5.5, 50.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_4_2:
+    Transform:
+      Position: [0.0, -5.5, 50.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_4_3:
+    Transform:
+      Position: [10.0, -5.5, 50.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Sphere_4_4:
+    Transform:
+      Position: [20.0, -5.5, 50.0]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.5, 1.5, 1.5]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.80, 0.80, 0.80] }
+      - {Metallic: 0.0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [0.0, 0.0, 0.0]}
+      - {EmissiveIntensity: 0.0}
+  Point_0_0:
+    Light:
+      Type: "Point"
+      Position: [-22.5, -4.0, 7.5]
+      Color: [1.00, 0.20, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_0_1:
+    Light:
+      Type: "Point"
+      Position: [-17.5, -4.0, 7.5]
+      Color: [1.00, 0.54, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_0_2:
+    Light:
+      Type: "Point"
+      Position: [-12.5, -4.0, 7.5]
+      Color: [1.00, 0.87, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_0_3:
+    Light:
+      Type: "Point"
+      Position: [-7.5, -4.0, 7.5]
+      Color: [0.79, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_0_4:
+    Light:
+      Type: "Point"
+      Position: [-2.5, -4.0, 7.5]
+      Color: [0.46, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_0_5:
+    Light:
+      Type: "Point"
+      Position: [2.5, -4.0, 7.5]
+      Color: [0.20, 1.00, 0.28]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_0_6:
+    Light:
+      Type: "Point"
+      Position: [7.5, -4.0, 7.5]
+      Color: [0.20, 1.00, 0.62]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_0_7:
+    Light:
+      Type: "Point"
+      Position: [12.5, -4.0, 7.5]
+      Color: [0.20, 1.00, 0.95]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_0_8:
+    Light:
+      Type: "Point"
+      Position: [17.5, -4.0, 7.5]
+      Color: [0.20, 0.71, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_0_9:
+    Light:
+      Type: "Point"
+      Position: [22.5, -4.0, 7.5]
+      Color: [0.20, 0.38, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_1_0:
+    Light:
+      Type: "Point"
+      Position: [-22.5, -4.0, 12.5]
+      Color: [1.00, 0.82, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_1_1:
+    Light:
+      Type: "Point"
+      Position: [-17.5, -4.0, 12.5]
+      Color: [0.84, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_1_2:
+    Light:
+      Type: "Point"
+      Position: [-12.5, -4.0, 12.5]
+      Color: [0.50, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_1_3:
+    Light:
+      Type: "Point"
+      Position: [-7.5, -4.0, 12.5]
+      Color: [0.20, 1.00, 0.23]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_1_4:
+    Light:
+      Type: "Point"
+      Position: [-2.5, -4.0, 12.5]
+      Color: [0.20, 1.00, 0.57]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_1_5:
+    Light:
+      Type: "Point"
+      Position: [2.5, -4.0, 12.5]
+      Color: [0.20, 1.00, 0.90]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_1_6:
+    Light:
+      Type: "Point"
+      Position: [7.5, -4.0, 12.5]
+      Color: [0.20, 0.76, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_1_7:
+    Light:
+      Type: "Point"
+      Position: [12.5, -4.0, 12.5]
+      Color: [0.20, 0.42, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_1_8:
+    Light:
+      Type: "Point"
+      Position: [17.5, -4.0, 12.5]
+      Color: [0.31, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_1_9:
+    Light:
+      Type: "Point"
+      Position: [22.5, -4.0, 12.5]
+      Color: [0.65, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_2_0:
+    Light:
+      Type: "Point"
+      Position: [-22.5, -4.0, 17.5]
+      Color: [0.55, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_2_1:
+    Light:
+      Type: "Point"
+      Position: [-17.5, -4.0, 17.5]
+      Color: [0.22, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_2_2:
+    Light:
+      Type: "Point"
+      Position: [-12.5, -4.0, 17.5]
+      Color: [0.20, 1.00, 0.52]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_2_3:
+    Light:
+      Type: "Point"
+      Position: [-7.5, -4.0, 17.5]
+      Color: [0.20, 1.00, 0.86]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_2_4:
+    Light:
+      Type: "Point"
+      Position: [-2.5, -4.0, 17.5]
+      Color: [0.20, 0.81, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_2_5:
+    Light:
+      Type: "Point"
+      Position: [2.5, -4.0, 17.5]
+      Color: [0.20, 0.47, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_2_6:
+    Light:
+      Type: "Point"
+      Position: [7.5, -4.0, 17.5]
+      Color: [0.26, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_2_7:
+    Light:
+      Type: "Point"
+      Position: [12.5, -4.0, 17.5]
+      Color: [0.60, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_2_8:
+    Light:
+      Type: "Point"
+      Position: [17.5, -4.0, 17.5]
+      Color: [0.94, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_2_9:
+    Light:
+      Type: "Point"
+      Position: [22.5, -4.0, 17.5]
+      Color: [1.00, 0.20, 0.73]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_3_0:
+    Light:
+      Type: "Point"
+      Position: [-22.5, -4.0, 22.5]
+      Color: [0.20, 1.00, 0.47]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_3_1:
+    Light:
+      Type: "Point"
+      Position: [-17.5, -4.0, 22.5]
+      Color: [0.20, 1.00, 0.81]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_3_2:
+    Light:
+      Type: "Point"
+      Position: [-12.5, -4.0, 22.5]
+      Color: [0.20, 0.86, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_3_3:
+    Light:
+      Type: "Point"
+      Position: [-7.5, -4.0, 22.5]
+      Color: [0.20, 0.52, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_3_4:
+    Light:
+      Type: "Point"
+      Position: [-2.5, -4.0, 22.5]
+      Color: [0.22, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_3_5:
+    Light:
+      Type: "Point"
+      Position: [2.5, -4.0, 22.5]
+      Color: [0.55, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_3_6:
+    Light:
+      Type: "Point"
+      Position: [7.5, -4.0, 22.5]
+      Color: [0.89, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_3_7:
+    Light:
+      Type: "Point"
+      Position: [12.5, -4.0, 22.5]
+      Color: [1.00, 0.20, 0.78]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_3_8:
+    Light:
+      Type: "Point"
+      Position: [17.5, -4.0, 22.5]
+      Color: [1.00, 0.20, 0.44]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_3_9:
+    Light:
+      Type: "Point"
+      Position: [22.5, -4.0, 22.5]
+      Color: [1.00, 0.30, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_4_0:
+    Light:
+      Type: "Point"
+      Position: [-22.5, -4.0, 27.5]
+      Color: [0.20, 0.90, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_4_1:
+    Light:
+      Type: "Point"
+      Position: [-17.5, -4.0, 27.5]
+      Color: [0.20, 0.57, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_4_2:
+    Light:
+      Type: "Point"
+      Position: [-12.5, -4.0, 27.5]
+      Color: [0.20, 0.23, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_4_3:
+    Light:
+      Type: "Point"
+      Position: [-7.5, -4.0, 27.5]
+      Color: [0.50, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_4_4:
+    Light:
+      Type: "Point"
+      Position: [-2.5, -4.0, 27.5]
+      Color: [0.84, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_4_5:
+    Light:
+      Type: "Point"
+      Position: [2.5, -4.0, 27.5]
+      Color: [1.00, 0.20, 0.82]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_4_6:
+    Light:
+      Type: "Point"
+      Position: [7.5, -4.0, 27.5]
+      Color: [1.00, 0.20, 0.49]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_4_7:
+    Light:
+      Type: "Point"
+      Position: [12.5, -4.0, 27.5]
+      Color: [1.00, 0.25, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_4_8:
+    Light:
+      Type: "Point"
+      Position: [17.5, -4.0, 27.5]
+      Color: [1.00, 0.58, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_4_9:
+    Light:
+      Type: "Point"
+      Position: [22.5, -4.0, 27.5]
+      Color: [1.00, 0.92, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_5_0:
+    Light:
+      Type: "Point"
+      Position: [-22.5, -4.0, 32.5]
+      Color: [0.20, 0.28, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_5_1:
+    Light:
+      Type: "Point"
+      Position: [-17.5, -4.0, 32.5]
+      Color: [0.46, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_5_2:
+    Light:
+      Type: "Point"
+      Position: [-12.5, -4.0, 32.5]
+      Color: [0.79, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_5_3:
+    Light:
+      Type: "Point"
+      Position: [-7.5, -4.0, 32.5]
+      Color: [1.00, 0.20, 0.87]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_5_4:
+    Light:
+      Type: "Point"
+      Position: [-2.5, -4.0, 32.5]
+      Color: [1.00, 0.20, 0.54]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_5_5:
+    Light:
+      Type: "Point"
+      Position: [2.5, -4.0, 32.5]
+      Color: [1.00, 0.20, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_5_6:
+    Light:
+      Type: "Point"
+      Position: [7.5, -4.0, 32.5]
+      Color: [1.00, 0.54, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_5_7:
+    Light:
+      Type: "Point"
+      Position: [12.5, -4.0, 32.5]
+      Color: [1.00, 0.87, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_5_8:
+    Light:
+      Type: "Point"
+      Position: [17.5, -4.0, 32.5]
+      Color: [0.79, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_5_9:
+    Light:
+      Type: "Point"
+      Position: [22.5, -4.0, 32.5]
+      Color: [0.46, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_6_0:
+    Light:
+      Type: "Point"
+      Position: [-22.5, -4.0, 37.5]
+      Color: [0.74, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_6_1:
+    Light:
+      Type: "Point"
+      Position: [-17.5, -4.0, 37.5]
+      Color: [1.00, 0.20, 0.92]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_6_2:
+    Light:
+      Type: "Point"
+      Position: [-12.5, -4.0, 37.5]
+      Color: [1.00, 0.20, 0.58]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_6_3:
+    Light:
+      Type: "Point"
+      Position: [-7.5, -4.0, 37.5]
+      Color: [1.00, 0.20, 0.25]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_6_4:
+    Light:
+      Type: "Point"
+      Position: [-2.5, -4.0, 37.5]
+      Color: [1.00, 0.49, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_6_5:
+    Light:
+      Type: "Point"
+      Position: [2.5, -4.0, 37.5]
+      Color: [1.00, 0.82, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_6_6:
+    Light:
+      Type: "Point"
+      Position: [7.5, -4.0, 37.5]
+      Color: [0.84, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_6_7:
+    Light:
+      Type: "Point"
+      Position: [12.5, -4.0, 37.5]
+      Color: [0.50, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_6_8:
+    Light:
+      Type: "Point"
+      Position: [17.5, -4.0, 37.5]
+      Color: [0.20, 1.00, 0.23]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_6_9:
+    Light:
+      Type: "Point"
+      Position: [22.5, -4.0, 37.5]
+      Color: [0.20, 1.00, 0.57]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_7_0:
+    Light:
+      Type: "Point"
+      Position: [-22.5, -4.0, 42.5]
+      Color: [1.00, 0.20, 0.63]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_7_1:
+    Light:
+      Type: "Point"
+      Position: [-17.5, -4.0, 42.5]
+      Color: [1.00, 0.20, 0.30]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_7_2:
+    Light:
+      Type: "Point"
+      Position: [-12.5, -4.0, 42.5]
+      Color: [1.00, 0.44, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_7_3:
+    Light:
+      Type: "Point"
+      Position: [-7.5, -4.0, 42.5]
+      Color: [1.00, 0.78, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_7_4:
+    Light:
+      Type: "Point"
+      Position: [-2.5, -4.0, 42.5]
+      Color: [0.89, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_7_5:
+    Light:
+      Type: "Point"
+      Position: [2.5, -4.0, 42.5]
+      Color: [0.55, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_7_6:
+    Light:
+      Type: "Point"
+      Position: [7.5, -4.0, 42.5]
+      Color: [0.22, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_7_7:
+    Light:
+      Type: "Point"
+      Position: [12.5, -4.0, 42.5]
+      Color: [0.20, 1.00, 0.52]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_7_8:
+    Light:
+      Type: "Point"
+      Position: [17.5, -4.0, 42.5]
+      Color: [0.20, 1.00, 0.86]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_7_9:
+    Light:
+      Type: "Point"
+      Position: [22.5, -4.0, 42.5]
+      Color: [0.20, 0.81, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_8_0:
+    Light:
+      Type: "Point"
+      Position: [-22.5, -4.0, 47.5]
+      Color: [1.00, 0.39, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_8_1:
+    Light:
+      Type: "Point"
+      Position: [-17.5, -4.0, 47.5]
+      Color: [1.00, 0.73, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_8_2:
+    Light:
+      Type: "Point"
+      Position: [-12.5, -4.0, 47.5]
+      Color: [0.94, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_8_3:
+    Light:
+      Type: "Point"
+      Position: [-7.5, -4.0, 47.5]
+      Color: [0.60, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_8_4:
+    Light:
+      Type: "Point"
+      Position: [-2.5, -4.0, 47.5]
+      Color: [0.26, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_8_5:
+    Light:
+      Type: "Point"
+      Position: [2.5, -4.0, 47.5]
+      Color: [0.20, 1.00, 0.47]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_8_6:
+    Light:
+      Type: "Point"
+      Position: [7.5, -4.0, 47.5]
+      Color: [0.20, 1.00, 0.81]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_8_7:
+    Light:
+      Type: "Point"
+      Position: [12.5, -4.0, 47.5]
+      Color: [0.20, 0.86, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_8_8:
+    Light:
+      Type: "Point"
+      Position: [17.5, -4.0, 47.5]
+      Color: [0.20, 0.52, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_8_9:
+    Light:
+      Type: "Point"
+      Position: [22.5, -4.0, 47.5]
+      Color: [0.22, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_9_0:
+    Light:
+      Type: "Point"
+      Position: [-22.5, -4.0, 52.5]
+      Color: [0.98, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_9_1:
+    Light:
+      Type: "Point"
+      Position: [-17.5, -4.0, 52.5]
+      Color: [0.65, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_9_2:
+    Light:
+      Type: "Point"
+      Position: [-12.5, -4.0, 52.5]
+      Color: [0.31, 1.00, 0.20]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_9_3:
+    Light:
+      Type: "Point"
+      Position: [-7.5, -4.0, 52.5]
+      Color: [0.20, 1.00, 0.42]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_9_4:
+    Light:
+      Type: "Point"
+      Position: [-2.5, -4.0, 52.5]
+      Color: [0.20, 1.00, 0.76]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_9_5:
+    Light:
+      Type: "Point"
+      Position: [2.5, -4.0, 52.5]
+      Color: [0.20, 0.90, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_9_6:
+    Light:
+      Type: "Point"
+      Position: [7.5, -4.0, 52.5]
+      Color: [0.20, 0.57, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_9_7:
+    Light:
+      Type: "Point"
+      Position: [12.5, -4.0, 52.5]
+      Color: [0.20, 0.23, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_9_8:
+    Light:
+      Type: "Point"
+      Position: [17.5, -4.0, 52.5]
+      Color: [0.50, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Point_9_9:
+    Light:
+      Type: "Point"
+      Position: [22.5, -4.0, 52.5]
+      Color: [0.84, 0.20, 1.00]
+      Distance: 6.0
+      Intensity: 10.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true

@@ -1,0 +1,566 @@
+# Escena para ver los efectos graficos: materiales PBR, SSAO, bloom, IBL y luces.
+Entities:
+  Sun:
+    Light:
+      Type: "Directional"
+      Direction: [0.45, -0.8, 0.55]
+      Color: [1.0, 0.95, 0.88]
+      Enabled: true
+  Floor:
+    Transform:
+      Position: [0.00, -7.00, 18.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [16.00, 1.00, 14.00]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.320, 0.320, 0.340] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.85}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  WallBack:
+    Transform:
+      Position: [0.00, 1.00, 33.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [16.00, 7.00, 1.00]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.420, 0.400, 0.380] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.90}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  WallLeft:
+    Transform:
+      Position: [-17.00, 1.00, 18.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 7.00, 14.00]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.420, 0.400, 0.380] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.90}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  WallRight:
+    Transform:
+      Position: [17.00, 1.00, 18.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 7.00, 14.00]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.420, 0.400, 0.380] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.90}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Plastic_0:
+    Transform:
+      Position: [-7.80, -5.00, 8.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.700, 0.050, 0.050] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.05}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Plastic_1:
+    Transform:
+      Position: [-5.20, -5.00, 8.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.700, 0.050, 0.050] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.21}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Plastic_2:
+    Transform:
+      Position: [-2.60, -5.00, 8.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.700, 0.050, 0.050] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.37}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Plastic_3:
+    Transform:
+      Position: [0.00, -5.00, 8.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.700, 0.050, 0.050] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.53}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Plastic_4:
+    Transform:
+      Position: [2.60, -5.00, 8.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.700, 0.050, 0.050] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.68}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Plastic_5:
+    Transform:
+      Position: [5.20, -5.00, 8.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.700, 0.050, 0.050] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.84}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Plastic_6:
+    Transform:
+      Position: [7.80, -5.00, 8.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.700, 0.050, 0.050] }
+      - {Metallic: 0.00}
+      - {Roughness: 1.00}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Gold_0:
+    Transform:
+      Position: [-7.80, -5.00, 11.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [1.000, 0.720, 0.330] }
+      - {Metallic: 1.00}
+      - {Roughness: 0.05}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Gold_1:
+    Transform:
+      Position: [-5.20, -5.00, 11.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [1.000, 0.720, 0.330] }
+      - {Metallic: 1.00}
+      - {Roughness: 0.21}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Gold_2:
+    Transform:
+      Position: [-2.60, -5.00, 11.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [1.000, 0.720, 0.330] }
+      - {Metallic: 1.00}
+      - {Roughness: 0.37}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Gold_3:
+    Transform:
+      Position: [0.00, -5.00, 11.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [1.000, 0.720, 0.330] }
+      - {Metallic: 1.00}
+      - {Roughness: 0.53}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Gold_4:
+    Transform:
+      Position: [2.60, -5.00, 11.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [1.000, 0.720, 0.330] }
+      - {Metallic: 1.00}
+      - {Roughness: 0.68}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Gold_5:
+    Transform:
+      Position: [5.20, -5.00, 11.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [1.000, 0.720, 0.330] }
+      - {Metallic: 1.00}
+      - {Roughness: 0.84}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Gold_6:
+    Transform:
+      Position: [7.80, -5.00, 11.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [1.000, 0.720, 0.330] }
+      - {Metallic: 1.00}
+      - {Roughness: 1.00}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Pedestal_RoundedMetal:
+    Transform:
+      Position: [-7.50, -5.00, 16.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.30, 1.00, 1.30]
+    MeshComponent: "data/models/basics/cylinder_high.fbx"
+    Material:
+      - {Albedo: [0.120, 0.120, 0.130] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.60}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Sphere_RoundedMetal:
+    Transform:
+      Position: [-7.50, -2.60, 16.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.40, 1.40, 1.40]
+    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    Material:
+      - {Texture: "data/materials/rounded_metal/albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/rounded_metal/normal.png", Type: "Normal"}
+      - {Texture: "data/materials/rounded_metal/metallic.png", Type: "Metallic"}
+      - {Texture: "data/materials/rounded_metal/roughness.png", Type: "Roughness"}
+      - {Texture: "data/materials/rounded_metal/ao.png", Type: "AO"}
+  Pedestal_RustedMetal:
+    Transform:
+      Position: [-2.50, -5.00, 16.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.30, 1.00, 1.30]
+    MeshComponent: "data/models/basics/cylinder_high.fbx"
+    Material:
+      - {Albedo: [0.120, 0.120, 0.130] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.60}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Sphere_RustedMetal:
+    Transform:
+      Position: [-2.50, -2.60, 16.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.40, 1.40, 1.40]
+    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    Material:
+      - {Texture: "data/materials/rusted_metal/albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/rusted_metal/normal.png", Type: "Normal"}
+      - {Texture: "data/materials/rusted_metal/metallic.png", Type: "Metallic"}
+      - {Texture: "data/materials/rusted_metal/roughness.png", Type: "Roughness"}
+      - {Texture: "data/materials/rusted_metal/ao.png", Type: "AO"}
+  Pedestal_Titanium:
+    Transform:
+      Position: [2.50, -5.00, 16.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.30, 1.00, 1.30]
+    MeshComponent: "data/models/basics/cylinder_high.fbx"
+    Material:
+      - {Albedo: [0.120, 0.120, 0.130] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.60}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Sphere_Titanium:
+    Transform:
+      Position: [2.50, -2.60, 16.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.40, 1.40, 1.40]
+    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    Material:
+      - {Texture: "data/materials/titanium/albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/titanium/normal.png", Type: "Normal"}
+      - {Texture: "data/materials/titanium/metallic.png", Type: "Metallic"}
+      - {Texture: "data/materials/titanium/roughness.png", Type: "Roughness"}
+  Pedestal_Lava:
+    Transform:
+      Position: [7.50, -5.00, 16.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.30, 1.00, 1.30]
+    MeshComponent: "data/models/basics/cylinder_high.fbx"
+    Material:
+      - {Albedo: [0.120, 0.120, 0.130] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.60}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Sphere_Lava:
+    Transform:
+      Position: [7.50, -2.60, 16.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.40, 1.40, 1.40]
+    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    Material:
+      - {Texture: "data/materials/lava/albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/lava/normal.png", Type: "Normal"}
+      - {Texture: "data/materials/lava/metallic.png", Type: "Metallic"}
+      - {Texture: "data/materials/lava/roughness.png", Type: "Roughness"}
+      - {Texture: "data/materials/lava/emissive.png", Type: "Emissive"}
+  HelmetPedestal:
+    Transform:
+      Position: [0.00, -4.50, 24.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [2.40, 1.50, 2.40]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.120, 0.120, 0.130] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.60}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Helmet:
+    Transform:
+      Position: [0.00, -0.80, 24.00]
+      Rotation: [-90.0, 180.0, 0.0]
+      Scale: [2.20, 2.20, 2.20]
+    MeshComponent: "data/models/helmet/DamagedHelmet.gltf"
+    Material:
+      - {Texture: "data/models/helmet/Default_albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/models/helmet/Default_normal.jpg", Type: "Normal"}
+      - {Texture: "data/models/helmet/metallic.jpg", Type: "Metallic"}
+      - {Texture: "data/models/helmet/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/models/helmet/Default_AO.jpg", Type: "AO"}
+      - {Texture: "data/models/helmet/emissive.jpg", Type: "Emissive"}
+  AO_Cube:
+    Transform:
+      Position: [-10.50, -4.50, 26.50]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.50, 1.50, 1.50]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.750, 0.750, 0.750] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.90}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  AO_Cube2:
+    Transform:
+      Position: [-7.90, -5.00, 25.50]
+      Rotation: [0.0, 25.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.750, 0.750, 0.750] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.90}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  AO_Sphere:
+    Transform:
+      Position: [-10.40, -2.00, 26.50]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.750, 0.750, 0.750] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.90}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  AO_Sphere2:
+    Transform:
+      Position: [-8.50, -5.00, 28.30]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.750, 0.750, 0.750] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.90}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  AO_Sphere3:
+    Transform:
+      Position: [-10.70, -5.20, 24.40]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [0.80, 0.80, 0.80]
+    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    Material:
+      - {Albedo: [0.750, 0.750, 0.750] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.90}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Glow_0:
+    Transform:
+      Position: [8.30, -3.50, 26.50]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [0.35, 2.50, 0.35]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.000, 0.000, 0.000] }
+      - {Metallic: 0.00}
+      - {Roughness: 1.00}
+      - {EmissiveColor: [0.10, 0.60, 1.00]}
+      - {EmissiveIntensity: 4.00}
+  Glow_1:
+    Transform:
+      Position: [10.50, -4.20, 26.50]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [0.35, 1.80, 0.35]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.000, 0.000, 0.000] }
+      - {Metallic: 0.00}
+      - {Roughness: 1.00}
+      - {EmissiveColor: [1.00, 0.35, 0.10]}
+      - {EmissiveIntensity: 4.00}
+  Glow_2:
+    Transform:
+      Position: [12.70, -4.80, 26.50]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [0.35, 1.20, 0.35]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.000, 0.000, 0.000] }
+      - {Metallic: 0.00}
+      - {Roughness: 1.00}
+      - {EmissiveColor: [0.30, 1.00, 0.45]}
+      - {EmissiveIntensity: 4.00}
+  Stand_marble_bust_01:
+    Transform:
+      Position: [-11.00, -4.80, 21.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.90, 1.20, 1.90]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.120, 0.120, 0.130] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.60}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Prop_marble_bust_01:
+    Transform:
+      Position: [-11.00, -3.33, 21.00]
+      Rotation: [-90.0, 0.0, 180.0]
+      Scale: [9.70, 9.70, 9.70]
+    MeshComponent: "data/models/marble_bust_01/marble_bust_01.fbx"
+    Material:
+      - {Texture: "data/models/marble_bust_01/albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/models/marble_bust_01/normal.jpg", Type: "Normal"}
+      - {Texture: "data/models/marble_bust_01/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/models/marble_bust_01/ao.jpg", Type: "AO"}
+  Stand_carved_wooden_elephant:
+    Transform:
+      Position: [-6.50, -4.80, 21.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.90, 1.20, 1.90]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.120, 0.120, 0.130] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.60}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Prop_carved_wooden_elephant:
+    Transform:
+      Position: [-6.50, -3.57, 21.00]
+      Rotation: [-90.0, 0.0, 150.0]
+      Scale: [26.00, 26.00, 26.00]
+    MeshComponent: "data/models/carved_wooden_elephant/carved_wooden_elephant.fbx"
+    Material:
+      - {Texture: "data/models/carved_wooden_elephant/albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/models/carved_wooden_elephant/normal.jpg", Type: "Normal"}
+      - {Texture: "data/models/carved_wooden_elephant/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/models/carved_wooden_elephant/ao.jpg", Type: "AO"}
+  Stand_brass_vase_04:
+    Transform:
+      Position: [6.50, -4.80, 21.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.90, 1.20, 1.90]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.120, 0.120, 0.130] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.60}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Prop_brass_vase_04:
+    Transform:
+      Position: [6.50, -3.60, 21.00]
+      Rotation: [-90.0, 0.0, 0.0]
+      Scale: [18.00, 18.00, 18.00]
+    MeshComponent: "data/models/brass_vase_04/brass_vase_04.fbx"
+    Material:
+      - {Texture: "data/models/brass_vase_04/albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/models/brass_vase_04/normal.jpg", Type: "Normal"}
+      - {Texture: "data/models/brass_vase_04/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/models/brass_vase_04/ao.jpg", Type: "AO"}
+      - {Texture: "data/models/brass_vase_04/metallic.jpg", Type: "Metallic"}
+  Stand_wooden_stool_02:
+    Transform:
+      Position: [11.00, -4.80, 21.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.90, 1.20, 1.90]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.120, 0.120, 0.130] }
+      - {Metallic: 0.00}
+      - {Roughness: 0.60}
+      - {EmissiveColor: [0.00, 0.00, 0.00]}
+      - {EmissiveIntensity: 0.00}
+  Prop_wooden_stool_02:
+    Transform:
+      Position: [11.00, -3.60, 21.00]
+      Rotation: [-90.0, 0.0, 30.0]
+      Scale: [12.00, 12.00, 12.00]
+    MeshComponent: "data/models/wooden_stool_02/wooden_stool_02.fbx"
+    Material:
+      - {Texture: "data/models/wooden_stool_02/albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/models/wooden_stool_02/normal.jpg", Type: "Normal"}
+      - {Texture: "data/models/wooden_stool_02/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/models/wooden_stool_02/ao.jpg", Type: "AO"}
+  Light_Warm:
+    Light:
+      Type: "Point"
+      Position: [-8.00, -1.00, 14.00]
+      Color: [1.00, 0.65, 0.35]
+      Distance: 16.0
+      Intensity: 8.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Light_Cool:
+    Light:
+      Type: "Point"
+      Position: [8.00, -1.00, 14.00]
+      Color: [0.35, 0.60, 1.00]
+      Distance: 16.0
+      Intensity: 8.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
+  Light_Helmet:
+    Light:
+      Type: "Point"
+      Position: [0.00, 2.00, 20.00]
+      Color: [1.00, 1.00, 1.00]
+      Distance: 14.0
+      Intensity: 8.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.2
+      Enabled: true
