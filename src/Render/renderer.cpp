@@ -27,6 +27,11 @@ Renderer::Renderer() : m_shader_files(), m_sampler_desc{} {
 	m_clear_emissive_color[2] = 0.0f;
 	m_clear_emissive_color[3] = 0.0f;
 
+	m_clear_depth_color[0] = 1.0f;
+	m_clear_depth_color[1] = 1.0f;
+	m_clear_depth_color[2] = 1.0f;
+	m_clear_depth_color[3] = 1.0f;
+
 	m_fs_quad[0] = { {-1.0f, -1.0f, 0.0f}, {0.0f, 1.0f} };
 	m_fs_quad[1] = { {-1.0f,  3.0f, 0.0f}, {0.0f, -1.0f} };
 	m_fs_quad[2] = { { 3.0f, -1.0f, 0.0f}, {2.0f, 1.0f} };
@@ -1903,7 +1908,7 @@ void Renderer::init_ssao(){
 	for (unsigned int i = 0; i < ssao_kernel; i++) {
 
 
-		FVector random({ (dist(mt) * 2.0f) - 1.0f, (dist(mt) * 2.0f) - 1.0f, (dist(mt) * 2.0f) - 1.0f }); // Tangent space z positive to rotate around z
+		FVector random({ (dist(mt) * 2.0f) - 1.0f, (dist(mt) * 2.0f) - 1.0f, dist(mt) }); // Tangent space z positive to rotate around z
 		//FVector random({ /*(*/dist(mt)/* * 2.0f) - 1.0f*/, /*(*/dist(mt)/* * 2.0f) - 1.0f*/, 0.0f }); // Tangent space z positive to rotate around z
 		random = DirectX::XMVector3Normalize(random);
 		float random_magnitude = dist(mt);
@@ -1931,6 +1936,7 @@ void Renderer::init_ssao(){
 		m_ssao_noise_random.push_back(noise.x);
 		m_ssao_noise_random.push_back(noise.y);
 		m_ssao_noise_random.push_back(noise.z);
+		m_ssao_noise_random.push_back(0.0f);
 	}
 
 	// Noise texture
@@ -2022,7 +2028,7 @@ void Renderer::clear_render_target(){
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_ssao_mipmap_render_target_view[i], m_clear_emissive_color);
 	}
 
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.depth_rtv, m_clear_emissive_color);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.depth_rtv, m_clear_depth_color);
 }
 
 void Renderer::clear_full_quad(){

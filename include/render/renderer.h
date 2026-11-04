@@ -101,6 +101,7 @@ private:
 	ID3D11Texture2D* m_emissive_texture;
 	ID3D11ShaderResourceView* m_emissive_SRV = nullptr;
 	float m_clear_emissive_color[4];
+	float m_clear_depth_color[4];
 
 	DeferredResources m_deferred_resources;
 

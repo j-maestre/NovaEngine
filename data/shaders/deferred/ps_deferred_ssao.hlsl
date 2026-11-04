@@ -34,14 +34,14 @@ float3 ViewSpaceFromDepth(float depth, float2 uv)
     uv = uv * 2.0f - 1.0f;
     float4 screenPos = float4(uv, depth, 1.0f);
     // Back to view space
-    float4 viewPos = mul(projection_inverse, screenPos);
+    float4 viewPos = mul(screenPos, projection_inverse);
     return viewPos.xyz / viewPos.w;
 }
 
 float2 UVFromViewSpacePosition(float3 viewSpacePosition)
 {
     // Apply the projection matrix to the view space position then perspective divide
-    float4 samplePosScreen = mul(projection, float4(viewSpacePosition, 1.0f));
+    float4 samplePosScreen = mul(float4(viewSpacePosition, 1.0f), projection);
     samplePosScreen.xyz /= samplePosScreen.w;
     // Adjust from NDCs to UV coords (flip the Y!)
     samplePosScreen.xy = samplePosScreen.xy * 0.5f + 0.5f;
@@ -62,7 +62,8 @@ float PShader(VS_OUT input) : SV_TARGET {
     float2 aspect_ratio = float2(width / 4.0f, height / 4.0f);
     float3 random_dir = noiseTexture.Sample(samp, input.uv * aspect_ratio).xyz;
     
-    float3 normal = normalTexture.Sample(samp, input.uv).xyz * 2.0f - 1.0f;
+    //float3 normal = normalTexture.Sample(samp, input.uv).xyz * 2.0f - 1.0f;
+    float3 normal = normalTexture.Sample(samp, input.uv).xyz; // G buffer ya lo guarda
     normal = normalize(mul(normal, (float3x3)view));
     
     // TBN
@@ -82,7 +83,7 @@ float PShader(VS_OUT input) : SV_TARGET {
         float sampleZ = ViewSpaceFromDepth(sampleDepth, samplePosScreen.xy).z;
         
         float rangeCheck = smoothstep(0.0f, 1.0f, radius_base / abs(pixelPositionViewSpace.z - sampleZ));
-        occlusion += (sampleZ < samplePosView.z ? rangeCheck : 0.0f);
+        occlusion += (sampleZ < samplePosView.z - 0.025f ? rangeCheck : 0.0f);
                 
         
         /*
