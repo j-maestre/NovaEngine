@@ -37,3 +37,8 @@
 
 x64
 x86
+
+
+deps/build/
+deps/lib/
+deps/bin/
