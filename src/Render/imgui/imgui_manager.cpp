@@ -358,6 +358,8 @@ void ImguiManager::show_render_parameters(RenderInfo* info){
 
 				prop_slider("Ambient", &info->ambient_intensity, 0.0f, 3.0f);
 				prop_check("Bloom", &info->bloom_active);
+				prop_check("FXAA", &info->fxaa_active);
+				prop_check("Frustum culling", &info->frustum_culling);
 
 				prop_label("Draw mode");
 				int draw_index = static_cast<int>(info->draw_mode);
@@ -373,6 +375,8 @@ void ImguiManager::show_render_parameters(RenderInfo* info){
 				prop_check("Enabled", &info->ssao_active);
 
 				ImGui::BeginDisabled(!info->ssao_active);
+				prop_check("Half resolution", &info->ssao_half_res);
+				ImGui::SetItemTooltip("Computes SSAO at half width and height: about 4 times cheaper, slightly softer.");
 				prop_label("Samples");
 				ImGui::SliderInt("##samples", &info->ssao_samples, 1, ssao_kernel);
 				prop_slider("Radius", &info->ssao_base_radius, 0.1f, 5.0f);
@@ -521,6 +525,15 @@ void ImguiManager::build_default_layout(unsigned int dockspace_id){
 	ImGui::DockBuilderFinish(dockspace_id);
 }
 
+void ImguiManager::process_pending_scene(){
+
+	if (m_pending_scene.empty() || Engine::get_instance()->m_resource.is_loading_models()) return;
+
+	const std::string filename = m_pending_scene;
+	m_pending_scene.clear();
+	open_scene(filename);
+}
+
 void ImguiManager::open_scene(const std::string& filename){
 
 	printf("Opening scene: %s\n", filename.c_str());
@@ -579,7 +592,7 @@ void ImguiManager::main_menu(){
 						std::string filename = entry.path().filename().string();
 
 						if (ImGui::MenuItem(filename.c_str())) {
-							open_scene(filename);
+							request_open_scene(filename);
 						}
 					}
 				}
@@ -769,6 +782,15 @@ void ImguiManager::system_info(){
 			ImGui::SameLine(130.0f);
 			ImGui::Text("%u", m_draw_calls);
 
+			ImGui::TextColored(k_text_dim, "Meshes");
+			ImGui::SameLine(130.0f);
+			ImGui::Text("%u / %u", m_visible_meshes, m_total_meshes);
+
+			// Por pase: el prepass y el G-Buffer dibujan estos mismos triangulos cada uno
+			ImGui::TextColored(k_text_dim, "Triangles");
+			ImGui::SameLine(130.0f);
+			ImGui::Text("%llu / %llu", m_visible_triangles, m_total_triangles);
+
 			ImGui::TextColored(k_text_dim, "Entities");
 			ImGui::SameLine(130.0f);
 			ImGui::Text("%zu", scene ? scene->m_ecs.get_entities().size() : size_t(0));
@@ -872,6 +894,15 @@ void ImguiManager::show_light(PointLight* light){
 		prop_float("Intensity", &intensity, 0.05f, 0.0f, 100000.0f);
 		prop_float("Range", &distance, 0.1f, 0.0f, 20000.0f);
 		prop_slider("Fade start", &fall_start, 0.0f, 1.0f);
+		float pulse_speed = light->get_pulse_speed();
+		float pulse_min = light->get_pulse_min();
+		prop_float("Pulse speed", &pulse_speed, 0.05f, 0.0f, 50.0f);
+		prop_slider("Pulse min", &pulse_min, 0.0f, 1.0f);
+		light->set_pulse(pulse_speed, pulse_min);
+		if (pulse_speed != 0.0f) {
+			prop_label("Current intensity");
+			ImGui::Text("%.2f", light->get_current_intensity());
+		}
 		ImGui::EndTable();
 	}
 
@@ -1064,6 +1095,9 @@ void ImguiManager::show_mesh_comp(MeshComponent* mesh_comp){
 		float emissive[3] = { color_emissive.x, color_emissive.y, color_emissive.z };
 		float uv[2] = { uv_scale.x, uv_scale.y };
 		float emissive_intensity = material.get_emissive_intensity();
+		float emissive_bloom = material.get_emissive_bloom();
+		float pulse_speed = material.get_emissive_pulse_speed();
+		float pulse_min = material.get_emissive_pulse_min();
 		float metallic = material.get_metallic_value();
 		float roughness = material.get_roughness_value();
 
@@ -1078,6 +1112,13 @@ void ImguiManager::show_mesh_comp(MeshComponent* mesh_comp){
 			changed |= prop_slider("Roughness", &roughness, 0.0f, 1.0f);
 			changed |= prop_color("Emissive", emissive);
 			changed |= prop_float("Emissive int.", &emissive_intensity, 0.1f, 0.0f, 100000.0f);
+			changed |= prop_slider("Emissive bloom", &emissive_bloom, 0.0f, 1.0f);
+			changed |= prop_float("Pulse speed", &pulse_speed, 0.05f, 0.0f, 50.0f);
+			changed |= prop_slider("Pulse min", &pulse_min, 0.0f, 1.0f);
+			if (pulse_speed != 0.0f) {
+				prop_label("Current intensity");
+				ImGui::Text("%.2f", material.get_current_emissive_intensity());
+			}
 			prop_label("UV scale");
 			changed |= ImGui::DragFloat2("##uv_scale", uv, 0.05f, 0.01f, 1000.0f);
 			ImGui::EndTable();
@@ -1090,6 +1131,8 @@ void ImguiManager::show_mesh_comp(MeshComponent* mesh_comp){
 				m.material.set_color_value({ color[0], color[1], color[2], color[3] });
 				m.material.set_emissive_value({ emissive[0], emissive[1], emissive[2] });
 				m.material.set_emissive_intensity(emissive_intensity);
+				m.material.set_emissive_bloom(emissive_bloom);
+				m.material.set_emissive_pulse(pulse_speed, pulse_min);
 				m.material.set_metallic_value(metallic);
 				m.material.set_roughness_value(roughness);
 				m.material.set_uv_scale({ uv[0], uv[1] });
@@ -1378,6 +1421,10 @@ void ImguiManager::show_hierarchy(Scene* scene){
 			if (open) {
 				for (int child : node.children) draw_node(child);
 				ImGui::TreePop();
+				// ImGui 1.92 WIP no limpia esto en TreePop: si un padre posterior queda fuera de la vista, sus hijos
+				// creen tener datos en TreeNodeStack y escriben antes del inicio del buffer, corrompiendo el heap.
+				ImGuiWindow* tree_window = ImGui::GetCurrentWindow();
+				tree_window->DC.TreeRecordsClippedNodesY2Mask &= ~(1 << tree_window->DC.TreeDepth);
 			}
 			ImGui::PopID();
 		};
@@ -1507,7 +1554,6 @@ void ImguiManager::gbuffer_info(DeferredResources* gbuffer){
 		struct Slot { const char* name; ID3D11ShaderResourceView* srv; };
 		const Slot slots[] = {
 			{ "Albedo", gbuffer->gbuffer_albedo_shader_resource_view },
-			{ "Position", gbuffer->gbuffer_position_shader_resource_view },
 			{ "Normals", gbuffer->gbuffer_normals_shader_resource_view },
 			{ "Material", gbuffer->gbuffer_material_shader_resource_view },
 			{ "Emissive", gbuffer->gbuffer_emissive_shader_resource_view },

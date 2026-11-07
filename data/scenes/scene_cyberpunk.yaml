@@ -1,0 +1,6286 @@
+Environment:
+  Skybox: "data/textures/cubemap/cyberNightEnv.dds"
+  Irradiance: "data/textures/cubemap/cyberNightDiffuse.dds"
+  Specular: "data/textures/cubemap/cyberNightSpecular.dds"
+Entities:
+  "Moon":
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Directional"
+      Direction: [0.25, -0.9, 0.35]
+      Color: [0.04, 0.05, 0.11]
+      Intensity: 1
+      Enabled: true
+  "Road":
+    Transform:
+      Position: [0, -5.5, 63]
+      Rotation: [0, 0, 0]
+      Scale: [7, 0.5, 87]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/road_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/road_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/road_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/road_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 1}
+      - {EmissiveBloom: 0}
+      - {UVScale: [1, 1]}
+  "SidewalkL":
+    Transform:
+      Position: [-6, -5.35, 63]
+      Rotation: [0, 0, 0]
+      Scale: [1, 0.5, 87]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/sidewalk_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/sidewalk_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/sidewalk_rough.png", Type: "Roughness"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 1}
+      - {EmissiveBloom: 0}
+      - {UVScale: [1, 90]}
+  "CurbL":
+    Transform:
+      Position: [-4.97, -4.83, 63]
+      Rotation: [0, 0, 0]
+      Scale: [0.02, 0.015, 87]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 1.8}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "SidewalkR":
+    Transform:
+      Position: [6, -5.35, 63]
+      Rotation: [0, 0, 0]
+      Scale: [1, 0.5, 87]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/sidewalk_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/sidewalk_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/sidewalk_rough.png", Type: "Roughness"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 1}
+      - {EmissiveBloom: 0}
+      - {UVScale: [1, 90]}
+  "CurbR":
+    Transform:
+      Position: [4.97, -4.83, 63]
+      Rotation: [0, 0, 0]
+      Scale: [0.02, 0.015, 87]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 1.8}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL0":
+    Transform:
+      Position: [-17, 22.681, -16.013]
+      Rotation: [0, -90, 0]
+      Scale: [7.987, 27.681, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_concrete_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.33}
+      - {EmissiveBloom: 0}
+      - {UVScale: [2, 7]}
+  "BldL0_tube":
+    Transform:
+      Position: [-6.96, 7.027, -23.85]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 12.027, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL0_band":
+    Transform:
+      Position: [-6.95, -1.3, -16.013]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 7.687]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.5, 0.1, 1]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL0_awn":
+    Transform:
+      Position: [-6.2, -1.6, -16.013]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 7.387]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL0_awnl":
+    Transform:
+      Position: [-5.42, -1.68, -16.013]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 7.287]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL0_shop":
+    Transform:
+      Position: [-6.98, -3.2, -16.013]
+      Rotation: [0, -90, 0]
+      Scale: [7.487, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop0_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop0_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop0_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop0_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [4, 1]}
+  "BldL0_sign":
+    Transform:
+      Position: [-6.93, 2.044, -16.013]
+      Rotation: [0, -90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_nova.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL0_blade0":
+    Transform:
+      Position: [-5.9, 6.658, -20.046]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 4.037, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/ramen.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL0_bladeB0":
+    Transform:
+      Position: [-5.9, 6.658, -19.966]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 4.037, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/ramen.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL0_arm0":
+    Transform:
+      Position: [-6.9, 6.658, -20.006]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 3.634, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL0_blade1":
+    Transform:
+      Position: [-5.9, 9.857, -12.059]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/izakaya.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL0_bladeB1":
+    Transform:
+      Position: [-5.9, 9.857, -11.979]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/izakaya.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL0_arm1":
+    Transform:
+      Position: [-6.9, 9.857, -12.019]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 2.779, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL1":
+    Transform:
+      Position: [-17, 21.424, 0.004]
+      Rotation: [0, -90, 0]
+      Scale: [7.629, 26.424, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_panel_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_metal.png", Type: "Metallic"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.35}
+      - {EmissiveBloom: 0}
+      - {UVScale: [2, 7]}
+  "BldL1_tube":
+    Transform:
+      Position: [-6.96, 9.763, -7.475]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 14.763, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL1_band":
+    Transform:
+      Position: [-6.95, -1.3, 0.004]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 7.329]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL1_awn":
+    Transform:
+      Position: [-6.2, -1.6, 0.004]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 7.029]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL1_awnl":
+    Transform:
+      Position: [-5.42, -1.68, 0.004]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 6.929]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.5, 0.1, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL1_shop":
+    Transform:
+      Position: [-6.98, -3.2, 0.004]
+      Rotation: [0, -90, 0]
+      Scale: [7.129, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop1_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop1_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop1_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop1_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [4, 1]}
+  "BldL1_sign":
+    Transform:
+      Position: [-6.93, 3.123, 0.004]
+      Rotation: [0, -90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_hotel.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL1_blade0":
+    Transform:
+      Position: [-5.9, 3.16, -3.851]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/denno.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL1_bladeB0":
+    Transform:
+      Position: [-5.9, 3.16, -3.771]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/denno.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL1_arm0":
+    Transform:
+      Position: [-6.9, 3.16, -3.811]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 2.779, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL2":
+    Transform:
+      Position: [-17, 26.543, 17.091]
+      Rotation: [0, -90, 0]
+      Scale: [9.058, 31.543, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_brick_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.36}
+      - {EmissiveBloom: 0}
+      - {UVScale: [2, 8]}
+  "BldL2_tube":
+    Transform:
+      Position: [-6.96, 10.922, 8.183]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 15.922, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.5, 0.1, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL2_band":
+    Transform:
+      Position: [-6.95, -1.3, 17.091]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 8.758]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.08, 1, 0.42]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL2_awn":
+    Transform:
+      Position: [-6.2, -1.6, 17.091]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 8.458]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL2_awnl":
+    Transform:
+      Position: [-5.42, -1.68, 17.091]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 8.358]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL2_shop":
+    Transform:
+      Position: [-6.98, -3.2, 17.091]
+      Rotation: [0, -90, 0]
+      Scale: [8.558, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop2_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop2_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop2_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop2_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [4, 1]}
+  "BldL2_sign":
+    Transform:
+      Position: [-6.93, 2.665, 17.091]
+      Rotation: [0, -90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_bar.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL2_blade0":
+    Transform:
+      Position: [-5.9, 3.078, 12.522]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/shinsei.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL2_bladeB0":
+    Transform:
+      Position: [-5.9, 3.078, 12.602]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/shinsei.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL2_arm0":
+    Transform:
+      Position: [-6.9, 3.078, 12.562]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 1.924, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL3":
+    Transform:
+      Position: [-17, 26.129, 35.981]
+      Rotation: [0, -90, 0]
+      Scale: [9.432, 31.129, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_brick_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.38}
+      - {EmissiveBloom: 0}
+      - {UVScale: [2, 8]}
+  "BldL3_tube":
+    Transform:
+      Position: [-6.96, 5.39, 26.7]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 10.39, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL3_band":
+    Transform:
+      Position: [-6.95, -1.3, 35.981]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 9.132]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL3_awn":
+    Transform:
+      Position: [-6.2, -1.6, 35.981]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 8.832]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL3_awnl":
+    Transform:
+      Position: [-5.42, -1.68, 35.981]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 8.732]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.08, 1, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL3_shop":
+    Transform:
+      Position: [-6.98, -3.2, 35.981]
+      Rotation: [0, -90, 0]
+      Scale: [8.932, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop0_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop0_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop0_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop0_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [4, 1]}
+  "BldL3_sign":
+    Transform:
+      Position: [-6.93, 0.743, 35.981]
+      Rotation: [0, -90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_open.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL3_blade0":
+    Transform:
+      Position: [-5.9, 5.426, 31.225]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/hotel_v.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL3_bladeB0":
+    Transform:
+      Position: [-5.9, 5.426, 31.305]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/hotel_v.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL3_arm0":
+    Transform:
+      Position: [-6.9, 5.426, 31.265]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 2.779, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL3_blade1":
+    Transform:
+      Position: [-5.9, 11.017, 40.657]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/sake.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL3_bladeB1":
+    Transform:
+      Position: [-5.9, 11.017, 40.737]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/sake.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL3_arm1":
+    Transform:
+      Position: [-6.9, 11.017, 40.697]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 1.924, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL4":
+    Transform:
+      Position: [-17, 15.15, 56.067]
+      Rotation: [0, -90, 0]
+      Scale: [10.254, 20.15, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_concrete_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.6}
+      - {EmissiveBloom: 0}
+      - {UVScale: [3, 5]}
+  "BldL4_tube":
+    Transform:
+      Position: [-6.96, 3.484, 45.963]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 8.484, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.08, 1, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL4_band":
+    Transform:
+      Position: [-6.95, -1.3, 56.067]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 9.954]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL4_awn":
+    Transform:
+      Position: [-6.2, -1.6, 56.067]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 9.654]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL4_awnl":
+    Transform:
+      Position: [-5.42, -1.68, 56.067]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 9.554]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL4_shop":
+    Transform:
+      Position: [-6.98, -3.2, 56.067]
+      Rotation: [0, -90, 0]
+      Scale: [9.754, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop1_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop1_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop1_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop1_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [5, 1]}
+  "BldL4_sign":
+    Transform:
+      Position: [-6.93, 1.155, 56.067]
+      Rotation: [0, -90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_noodle.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL4_blade0":
+    Transform:
+      Position: [-5.9, 5.515, 50.9]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/yoichi.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL4_bladeB0":
+    Transform:
+      Position: [-5.9, 5.515, 50.98]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/yoichi.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL4_arm0":
+    Transform:
+      Position: [-6.9, 5.515, 50.94]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 1.924, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL5":
+    Transform:
+      Position: [-17, 22.72, 78.292]
+      Rotation: [0, -90, 0]
+      Scale: [11.571, 27.72, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_panel_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_metal.png", Type: "Metallic"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.53}
+      - {EmissiveBloom: 0}
+      - {UVScale: [3, 7]}
+  "BldL5_tube":
+    Transform:
+      Position: [-6.96, 10.21, 66.871]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 15.21, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL5_band":
+    Transform:
+      Position: [-6.95, -1.3, 78.292]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 11.271]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.5, 0.1, 1]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL5_awn":
+    Transform:
+      Position: [-6.2, -1.6, 78.292]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 10.971]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL5_awnl":
+    Transform:
+      Position: [-5.42, -1.68, 78.292]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 10.871]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL5_shop":
+    Transform:
+      Position: [-6.98, -3.2, 78.292]
+      Rotation: [0, -90, 0]
+      Scale: [11.071, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop2_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop2_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop2_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop2_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [6, 1]}
+  "BldL5_sign":
+    Transform:
+      Position: [-6.93, 1.254, 78.292]
+      Rotation: [0, -90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_arcade.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL5_blade0":
+    Transform:
+      Position: [-5.9, 6.074, 72.466]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 4.037, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/karaoke.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL5_bladeB0":
+    Transform:
+      Position: [-5.9, 6.074, 72.546]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 4.037, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/karaoke.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL5_arm0":
+    Transform:
+      Position: [-6.9, 6.074, 72.506]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 3.634, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL6":
+    Transform:
+      Position: [-17, 25.665, 98.635]
+      Rotation: [0, -90, 0]
+      Scale: [8.373, 30.665, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_panel_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_metal.png", Type: "Metallic"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.37}
+      - {EmissiveBloom: 0}
+      - {UVScale: [2, 8]}
+  "BldL6_tube":
+    Transform:
+      Position: [-6.96, 3.431, 90.412]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 8.431, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL6_band":
+    Transform:
+      Position: [-6.95, -1.3, 98.635]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 8.073]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL6_awn":
+    Transform:
+      Position: [-6.2, -1.6, 98.635]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 7.773]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL6_awnl":
+    Transform:
+      Position: [-5.42, -1.68, 98.635]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 7.673]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.5, 0.1, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL6_shop":
+    Transform:
+      Position: [-6.98, -3.2, 98.635]
+      Rotation: [0, -90, 0]
+      Scale: [7.873, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop0_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop0_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop0_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop0_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [4, 1]}
+  "BldL6_sign":
+    Transform:
+      Position: [-6.93, 0.886, 98.635]
+      Rotation: [0, -90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_data.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL6_blade0":
+    Transform:
+      Position: [-5.9, 4.058, 94.408]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/kusuri.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL6_bladeB0":
+    Transform:
+      Position: [-5.9, 4.058, 94.488]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/kusuri.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL6_arm0":
+    Transform:
+      Position: [-6.9, 4.058, 94.448]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 1.924, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL6_blade1":
+    Transform:
+      Position: [-5.9, 11.204, 102.781]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/gemu.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL6_bladeB1":
+    Transform:
+      Position: [-5.9, 11.204, 102.861]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/gemu.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL6_arm1":
+    Transform:
+      Position: [-6.9, 11.204, 102.821]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 2.779, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL7":
+    Transform:
+      Position: [-17, 8.552, 118.38]
+      Rotation: [0, -90, 0]
+      Scale: [10.973, 13.552, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_brick_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.49}
+      - {EmissiveBloom: 0}
+      - {UVScale: [3, 3]}
+  "BldL7_tube":
+    Transform:
+      Position: [-6.96, 7.104, 107.557]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 12.104, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.5, 0.1, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL7_band":
+    Transform:
+      Position: [-6.95, -1.3, 118.38]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 10.673]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.08, 1, 0.42]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL7_awn":
+    Transform:
+      Position: [-6.2, -1.6, 118.38]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 10.373]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL7_awnl":
+    Transform:
+      Position: [-5.42, -1.68, 118.38]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 10.273]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL7_shop":
+    Transform:
+      Position: [-6.98, -3.2, 118.38]
+      Rotation: [0, -90, 0]
+      Scale: [10.473, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop1_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop1_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop1_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop1_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [5, 1]}
+  "BldL7_sign":
+    Transform:
+      Position: [-6.93, 0.942, 118.38]
+      Rotation: [0, -90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_synth.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL7_blade0":
+    Transform:
+      Position: [-5.9, 6.962, 112.854]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 4.037, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/ramen.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL7_bladeB0":
+    Transform:
+      Position: [-5.9, 6.962, 112.934]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 4.037, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/ramen.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL7_arm0":
+    Transform:
+      Position: [-6.9, 6.962, 112.894]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 3.634, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL8":
+    Transform:
+      Position: [-17, 12.554, 140.093]
+      Rotation: [0, -90, 0]
+      Scale: [10.34, 17.554, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_glass_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_metal.png", Type: "Metallic"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.55}
+      - {EmissiveBloom: 0}
+      - {UVScale: [3, 4]}
+  "BldL8_tube":
+    Transform:
+      Position: [-6.96, 9.281, 129.904]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 14.281, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL8_band":
+    Transform:
+      Position: [-6.95, -1.3, 140.093]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 10.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL8_awn":
+    Transform:
+      Position: [-6.2, -1.6, 140.093]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 9.74]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL8_awnl":
+    Transform:
+      Position: [-5.42, -1.68, 140.093]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 9.64]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.08, 1, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL8_shop":
+    Transform:
+      Position: [-6.98, -3.2, 140.093]
+      Rotation: [0, -90, 0]
+      Scale: [9.84, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop2_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop2_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop2_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop2_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [5, 1]}
+  "BldL8_sign":
+    Transform:
+      Position: [-6.93, 1.948, 140.093]
+      Rotation: [0, -90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_nova.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL8_blade0":
+    Transform:
+      Position: [-5.9, 3.116, 134.883]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/izakaya.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL8_bladeB0":
+    Transform:
+      Position: [-5.9, 3.116, 134.963]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/izakaya.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldL8_arm0":
+    Transform:
+      Position: [-6.9, 3.116, 134.923]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 2.779, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR9":
+    Transform:
+      Position: [17, 23.927, -13.733]
+      Rotation: [0, 90, 0]
+      Scale: [10.267, 28.927, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_brick_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.63}
+      - {EmissiveBloom: 0}
+      - {UVScale: [3, 7]}
+  "BldR9_tube":
+    Transform:
+      Position: [6.96, 7.603, -23.85]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 12.603, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.08, 1, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR9_band":
+    Transform:
+      Position: [6.95, -1.3, -13.733]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 9.967]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR9_awn":
+    Transform:
+      Position: [6.2, -1.6, -13.733]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 9.667]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR9_awnl":
+    Transform:
+      Position: [5.42, -1.68, -13.733]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 9.567]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR9_shop":
+    Transform:
+      Position: [6.98, -3.2, -13.733]
+      Rotation: [0, 90, 0]
+      Scale: [9.767, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop0_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop0_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop0_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop0_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [5, 1]}
+  "BldR9_sign":
+    Transform:
+      Position: [6.93, 1.735, -13.733]
+      Rotation: [0, 90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_hotel.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR9_blade0":
+    Transform:
+      Position: [5.9, 6.522, -18.906]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/denno.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR9_bladeB0":
+    Transform:
+      Position: [5.9, 6.522, -18.826]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/denno.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR9_arm0":
+    Transform:
+      Position: [6.9, 6.522, -18.866]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 2.779, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR9_blade1":
+    Transform:
+      Position: [5.9, 8.79, -8.639]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/shinsei.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR9_bladeB1":
+    Transform:
+      Position: [5.9, 8.79, -8.559]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/shinsei.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR9_arm1":
+    Transform:
+      Position: [6.9, 8.79, -8.599]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 1.924, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR10":
+    Transform:
+      Position: [17, 17.118, 5.826]
+      Rotation: [0, 90, 0]
+      Scale: [8.892, 22.118, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_brick_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.64}
+      - {EmissiveBloom: 0}
+      - {UVScale: [2, 6]}
+  "BldR10_tube":
+    Transform:
+      Position: [6.96, 2.355, -2.916]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 7.355, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR10_band":
+    Transform:
+      Position: [6.95, -1.3, 5.826]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 8.592]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.5, 0.1, 1]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR10_awn":
+    Transform:
+      Position: [6.2, -1.6, 5.826]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 8.292]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR10_awnl":
+    Transform:
+      Position: [5.42, -1.68, 5.826]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 8.192]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR10_shop":
+    Transform:
+      Position: [6.98, -3.2, 5.826]
+      Rotation: [0, 90, 0]
+      Scale: [8.392, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop1_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop1_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop1_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop1_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [4, 1]}
+  "BldR10_sign":
+    Transform:
+      Position: [6.93, 2.768, 5.826]
+      Rotation: [0, 90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_bar.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR10_blade0":
+    Transform:
+      Position: [5.9, 4.69, 1.34]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/hotel_v.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR10_bladeB0":
+    Transform:
+      Position: [5.9, 4.69, 1.42]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/hotel_v.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR10_arm0":
+    Transform:
+      Position: [6.9, 4.69, 1.38]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 2.779, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR11":
+    Transform:
+      Position: [17, 22.721, 25.479]
+      Rotation: [0, 90, 0]
+      Scale: [10.36, 27.721, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_glass_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_metal.png", Type: "Metallic"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.41}
+      - {EmissiveBloom: 0}
+      - {UVScale: [3, 7]}
+  "BldR11_tube":
+    Transform:
+      Position: [6.96, 11, 15.268]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 16, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR11_band":
+    Transform:
+      Position: [6.95, -1.3, 25.479]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 10.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR11_awn":
+    Transform:
+      Position: [6.2, -1.6, 25.479]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 9.76]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR11_awnl":
+    Transform:
+      Position: [5.42, -1.68, 25.479]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 9.66]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.5, 0.1, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR11_shop":
+    Transform:
+      Position: [6.98, -3.2, 25.479]
+      Rotation: [0, 90, 0]
+      Scale: [9.86, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop2_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop2_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop2_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop2_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [5, 1]}
+  "BldR11_sign":
+    Transform:
+      Position: [6.93, 1.505, 25.479]
+      Rotation: [0, 90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_open.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR11_blade0":
+    Transform:
+      Position: [5.9, 5.004, 20.259]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/sake.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR11_bladeB0":
+    Transform:
+      Position: [5.9, 5.004, 20.339]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/sake.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR11_arm0":
+    Transform:
+      Position: [6.9, 5.004, 20.299]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 1.924, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR12":
+    Transform:
+      Position: [17, 40.131, 44.045]
+      Rotation: [0, 90, 0]
+      Scale: [7.805, 45.131, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_brick_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.45}
+      - {EmissiveBloom: 0}
+      - {UVScale: [2, 11]}
+  "BldR12_tube":
+    Transform:
+      Position: [6.96, 9.54, 36.389]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 14.54, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.5, 0.1, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR12_band":
+    Transform:
+      Position: [6.95, -1.3, 44.045]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 7.505]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.08, 1, 0.42]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR12_awn":
+    Transform:
+      Position: [6.2, -1.6, 44.045]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 7.205]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR12_awnl":
+    Transform:
+      Position: [5.42, -1.68, 44.045]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 7.105]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR12_shop":
+    Transform:
+      Position: [6.98, -3.2, 44.045]
+      Rotation: [0, 90, 0]
+      Scale: [7.305, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop0_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop0_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop0_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop0_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [4, 1]}
+  "BldR12_sign":
+    Transform:
+      Position: [6.93, 2.274, 44.045]
+      Rotation: [0, 90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_noodle.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR12_blade0":
+    Transform:
+      Position: [5.9, 3.377, 40.102]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/yoichi.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR12_bladeB0":
+    Transform:
+      Position: [5.9, 3.377, 40.182]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/yoichi.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR12_arm0":
+    Transform:
+      Position: [6.9, 3.377, 40.142]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 1.924, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR12_blade1":
+    Transform:
+      Position: [5.9, 12.928, 47.907]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 4.037, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/karaoke.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR12_bladeB1":
+    Transform:
+      Position: [5.9, 12.928, 47.987]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 4.037, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/karaoke.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR12_arm1":
+    Transform:
+      Position: [6.9, 12.928, 47.947]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 3.634, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR13":
+    Transform:
+      Position: [17, 21.813, 64.173]
+      Rotation: [0, 90, 0]
+      Scale: [11.923, 26.813, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_glass_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_metal.png", Type: "Metallic"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.33}
+      - {EmissiveBloom: 0}
+      - {UVScale: [3, 7]}
+  "BldR13_tube":
+    Transform:
+      Position: [6.96, 3.549, 52.4]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 8.549, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR13_band":
+    Transform:
+      Position: [6.95, -1.3, 64.173]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 11.623]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR13_awn":
+    Transform:
+      Position: [6.2, -1.6, 64.173]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 11.323]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR13_awnl":
+    Transform:
+      Position: [5.42, -1.68, 64.173]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 11.223]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.08, 1, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR13_shop":
+    Transform:
+      Position: [6.98, -3.2, 64.173]
+      Rotation: [0, 90, 0]
+      Scale: [11.423, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop1_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop1_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop1_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop1_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [6, 1]}
+  "BldR13_sign":
+    Transform:
+      Position: [6.93, 1.103, 64.173]
+      Rotation: [0, 90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_arcade.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR13_blade0":
+    Transform:
+      Position: [5.9, 2.485, 58.172]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/kusuri.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR13_bladeB0":
+    Transform:
+      Position: [5.9, 2.485, 58.252]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/kusuri.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR13_arm0":
+    Transform:
+      Position: [6.9, 2.485, 58.212]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 1.924, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR14":
+    Transform:
+      Position: [17, 6.537, 86.494]
+      Rotation: [0, 90, 0]
+      Scale: [9.998, 11.537, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_concrete_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.61}
+      - {EmissiveBloom: 0}
+      - {UVScale: [2, 3]}
+  "BldR14_tube":
+    Transform:
+      Position: [6.96, 6.537, 76.646]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 11.537, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.08, 1, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR14_band":
+    Transform:
+      Position: [6.95, -1.3, 86.494]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 9.698]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR14_awn":
+    Transform:
+      Position: [6.2, -1.6, 86.494]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 9.398]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR14_awnl":
+    Transform:
+      Position: [5.42, -1.68, 86.494]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 9.298]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR14_shop":
+    Transform:
+      Position: [6.98, -3.2, 86.494]
+      Rotation: [0, 90, 0]
+      Scale: [9.498, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop2_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop2_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop2_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop2_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [5, 1]}
+  "BldR14_sign":
+    Transform:
+      Position: [6.93, 0.675, 86.494]
+      Rotation: [0, 90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_data.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR14_blade0":
+    Transform:
+      Position: [5.9, 3.529, 81.455]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/gemu.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR14_bladeB0":
+    Transform:
+      Position: [5.9, 3.529, 81.535]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/gemu.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR14_arm0":
+    Transform:
+      Position: [6.9, 3.529, 81.495]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 2.779, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR15":
+    Transform:
+      Position: [17, 39.513, 108.528]
+      Rotation: [0, 90, 0]
+      Scale: [11.635, 44.513, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_panel_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_metal.png", Type: "Metallic"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_panel_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.64}
+      - {EmissiveBloom: 0}
+      - {UVScale: [3, 11]}
+  "BldR15_tube":
+    Transform:
+      Position: [6.96, 8.338, 97.043]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 13.338, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR15_band":
+    Transform:
+      Position: [6.95, -1.3, 108.528]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 11.335]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.5, 0.1, 1]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR15_awn":
+    Transform:
+      Position: [6.2, -1.6, 108.528]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 11.035]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR15_awnl":
+    Transform:
+      Position: [5.42, -1.68, 108.528]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 10.935]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR15_shop":
+    Transform:
+      Position: [6.98, -3.2, 108.528]
+      Rotation: [0, 90, 0]
+      Scale: [11.135, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop0_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop0_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop0_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop0_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [6, 1]}
+  "BldR15_sign":
+    Transform:
+      Position: [6.93, 2.419, 108.528]
+      Rotation: [0, 90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_synth.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR15_blade0":
+    Transform:
+      Position: [5.9, 4.08, 102.67]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 4.037, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/ramen.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR15_bladeB0":
+    Transform:
+      Position: [5.9, 4.08, 102.75]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 4.037, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/ramen.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR15_arm0":
+    Transform:
+      Position: [6.9, 4.08, 102.71]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 3.634, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR15_blade1":
+    Transform:
+      Position: [5.9, 9.147, 114.305]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/izakaya.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR15_bladeB1":
+    Transform:
+      Position: [5.9, 9.147, 114.385]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/izakaya.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR15_arm1":
+    Transform:
+      Position: [6.9, 9.147, 114.345]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 2.779, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR16":
+    Transform:
+      Position: [17, 16.366, 128.178]
+      Rotation: [0, 90, 0]
+      Scale: [7.615, 21.366, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_concrete_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.4}
+      - {EmissiveBloom: 0}
+      - {UVScale: [2, 5]}
+  "BldR16_tube":
+    Transform:
+      Position: [6.96, 7.418, 120.713]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 12.418, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR16_band":
+    Transform:
+      Position: [6.95, -1.3, 128.178]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 7.315]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR16_awn":
+    Transform:
+      Position: [6.2, -1.6, 128.178]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 7.015]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR16_awnl":
+    Transform:
+      Position: [5.42, -1.68, 128.178]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 6.915]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.5, 0.1, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR16_shop":
+    Transform:
+      Position: [6.98, -3.2, 128.178]
+      Rotation: [0, 90, 0]
+      Scale: [7.115, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop1_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop1_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop1_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop1_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [4, 1]}
+  "BldR16_sign":
+    Transform:
+      Position: [6.93, 1.173, 128.178]
+      Rotation: [0, 90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_nova.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR16_blade0":
+    Transform:
+      Position: [5.9, 4.607, 124.331]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/denno.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR16_bladeB0":
+    Transform:
+      Position: [5.9, 4.607, 124.411]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 3.087, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/denno.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR16_arm0":
+    Transform:
+      Position: [6.9, 4.607, 124.371]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 2.779, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR17":
+    Transform:
+      Position: [17, 6.248, 143.987]
+      Rotation: [0, 90, 0]
+      Scale: [7.793, 11.248, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_brick_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_brick_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.33}
+      - {EmissiveBloom: 0}
+      - {UVScale: [2, 3]}
+  "BldR17_tube":
+    Transform:
+      Position: [6.96, 6.248, 136.344]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 11.248, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.5, 0.1, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR17_band":
+    Transform:
+      Position: [6.95, -1.3, 143.987]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 0.05, 7.493]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.08, 1, 0.42]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR17_awn":
+    Transform:
+      Position: [6.2, -1.6, 143.987]
+      Rotation: [0, 0, 0]
+      Scale: [0.8, 0.06, 7.193]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.04, 0.04, 0.06]}
+      - {Metallic: 0.1}
+      - {Roughness: 0.18}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR17_awnl":
+    Transform:
+      Position: [5.42, -1.68, 143.987]
+      Rotation: [0, 0, 0]
+      Scale: [0.03, 0.03, 7.093]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldR17_shop":
+    Transform:
+      Position: [6.98, -3.2, 143.987]
+      Rotation: [0, 90, 0]
+      Scale: [7.293, 1.65, 0.02]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/shop2_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/shop2_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/shop2_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/shop2_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.7}
+      - {EmissiveBloom: 0.05}
+      - {UVScale: [4, 1]}
+  "BldR17_sign":
+    Transform:
+      Position: [6.93, 1.248, 143.987]
+      Rotation: [0, 90, 0]
+      Scale: [5.5, 1.375, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_hotel.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR17_blade0":
+    Transform:
+      Position: [5.9, 4.076, 140.05]
+      Rotation: [0, 0, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/shinsei.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR17_bladeB0":
+    Transform:
+      Position: [5.9, 4.076, 140.13]
+      Rotation: [0, 180, 0]
+      Scale: [0.95, 2.137, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/shinsei.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "BldR17_arm0":
+    Transform:
+      Position: [6.9, 4.076, 140.09]
+      Rotation: [0, 0, 0]
+      Scale: [0.12, 1.924, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "TowerEnd":
+    Transform:
+      Position: [0, 65, 176]
+      Rotation: [0, 0, 0]
+      Scale: [30, 70, 25]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_glass_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_metal.png", Type: "Metallic"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_glass_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.32}
+      - {EmissiveBloom: 0}
+      - {UVScale: [5, 11]}
+  "TowerBack":
+    Transform:
+      Position: [0, 40, -36]
+      Rotation: [0, 0, 0]
+      Scale: [30, 45, 10]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/fac_concrete_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_normal.png", Type: "Normal"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_rough.png", Type: "Roughness"}
+      - {Texture: "data/materials/cyberpunk/fac_concrete_emissive.png", Type: "Emissive"}
+      - {Albedo: [0, 0, 0]}
+      - {Metallic: 0}
+      - {Roughness: 0}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0.4}
+      - {EmissiveBloom: 0}
+      - {UVScale: [8, 12]}
+  "AdEnd":
+    Transform:
+      Position: [0, 29, 150.8]
+      Rotation: [0, 0, 0]
+      Scale: [20, 11.25, 0.1]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/ad_sun.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.2}
+      - {UVScale: [1, 1]}
+  "AdEndTop":
+    Transform:
+      Position: [0, 55, 150.8]
+      Rotation: [0, 0, 0]
+      Scale: [14, 7.875, 0.1]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/ad_kanji.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.2}
+      - {UVScale: [1, 1]}
+  "AdEndFrameT":
+    Transform:
+      Position: [0, 40.6, 150.7]
+      Rotation: [0, 0, 0]
+      Scale: [20.4, 0.12, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 5.4}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "AdEndFrameB":
+    Transform:
+      Position: [0, 17.4, 150.7]
+      Rotation: [0, 0, 0]
+      Scale: [20.4, 0.12, 0.12]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 5.4}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "AdWave":
+    Transform:
+      Position: [-6.9, 20, 36]
+      Rotation: [0, -90, 0]
+      Scale: [12, 6.75, 0.08]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/ad_wave.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 2.2}
+      - {EmissiveBloom: 0.15}
+      - {UVScale: [1, 1]}
+  "AdEye":
+    Transform:
+      Position: [6.9, 22, 62]
+      Rotation: [0, 90, 0]
+      Scale: [12, 6.75, 0.08]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/ad_eye.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 2.2}
+      - {EmissiveBloom: 0.15}
+      - {UVScale: [1, 1]}
+  "AdKanji2":
+    Transform:
+      Position: [-6.9, 25, 92]
+      Rotation: [0, -90, 0]
+      Scale: [12, 6.75, 0.08]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/ad_kanji.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 2.2}
+      - {EmissiveBloom: 0.15}
+      - {UVScale: [1, 1]}
+  "AdSun2":
+    Transform:
+      Position: [6.9, 21, 116]
+      Rotation: [0, 90, 0]
+      Scale: [12, 6.75, 0.08]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/ad_sun.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 2.2}
+      - {EmissiveBloom: 0.15}
+      - {UVScale: [1, 1]}
+  "Bridge0":
+    Transform:
+      Position: [0, 10, 58]
+      Rotation: [0, 0, 0]
+      Scale: [7, 1.1, 2.6]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.03, 0.03, 0.04]}
+      - {Metallic: 0.4}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Bridge0_rail":
+    Transform:
+      Position: [0, 11.6, 58]
+      Rotation: [0, 0, 0]
+      Scale: [7, 0.5, 2.5]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.03, 0.05]}
+      - {Metallic: 0.2}
+      - {Roughness: 0.08}
+      - {EmissiveColor: [0.05, 0.3, 0.5]}
+      - {EmissiveIntensity: 0.8}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Bridge0_s0":
+    Transform:
+      Position: [0, 8.87, 55.6]
+      Rotation: [0, 0, 0]
+      Scale: [7, 0.04, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 5.4}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Bridge0_s1":
+    Transform:
+      Position: [0, 8.87, 60.4]
+      Rotation: [0, 0, 0]
+      Scale: [7, 0.04, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 5.4}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Bridge0_sign":
+    Transform:
+      Position: [0, 13.9, 56]
+      Rotation: [0, 0, 0]
+      Scale: [7.5, 1.875, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_nova.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "Bridge0_signB":
+    Transform:
+      Position: [0, 13.9, 56.08]
+      Rotation: [0, 180, 0]
+      Scale: [7.5, 1.875, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_nova.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "Bridge1":
+    Transform:
+      Position: [0, 14, 108]
+      Rotation: [0, 0, 0]
+      Scale: [7, 1.1, 2.6]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.03, 0.03, 0.04]}
+      - {Metallic: 0.4}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Bridge1_rail":
+    Transform:
+      Position: [0, 15.6, 108]
+      Rotation: [0, 0, 0]
+      Scale: [7, 0.5, 2.5]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.03, 0.05]}
+      - {Metallic: 0.2}
+      - {Roughness: 0.08}
+      - {EmissiveColor: [0.05, 0.3, 0.5]}
+      - {EmissiveIntensity: 0.8}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Bridge1_s0":
+    Transform:
+      Position: [0, 12.87, 105.6]
+      Rotation: [0, 0, 0]
+      Scale: [7, 0.04, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 5.4}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Bridge1_s1":
+    Transform:
+      Position: [0, 12.87, 110.4]
+      Rotation: [0, 0, 0]
+      Scale: [7, 0.04, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 5.4}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Bridge1_sign":
+    Transform:
+      Position: [0, 17.9, 106]
+      Rotation: [0, 0, 0]
+      Scale: [7.5, 1.875, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_synth.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "Bridge1_signB":
+    Transform:
+      Position: [0, 17.9, 106.08]
+      Rotation: [0, 180, 0]
+      Scale: [7.5, 1.875, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_synth.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 4}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "Cable0":
+    Transform:
+      Position: [0, 3.6, 10]
+      Rotation: [0, 0, 0]
+      Scale: [7, 0.015, 0.015]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern0_0":
+    Transform:
+      Position: [-5.25, 2.931, 10]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern0_1":
+    Transform:
+      Position: [-3.5, 2.775, 10]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern0_2":
+    Transform:
+      Position: [-1.75, 2.681, 10]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern0_3":
+    Transform:
+      Position: [0, 2.65, 10]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern0_4":
+    Transform:
+      Position: [1.75, 2.681, 10]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern0_5":
+    Transform:
+      Position: [3.5, 2.775, 10]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern0_6":
+    Transform:
+      Position: [5.25, 2.931, 10]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Cable1":
+    Transform:
+      Position: [0, 4.8, 24]
+      Rotation: [0, 0, 0]
+      Scale: [7, 0.015, 0.015]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern1_0":
+    Transform:
+      Position: [-5.25, 4.131, 24]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern1_1":
+    Transform:
+      Position: [-3.5, 3.975, 24]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern1_2":
+    Transform:
+      Position: [-1.75, 3.881, 24]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern1_3":
+    Transform:
+      Position: [0, 3.85, 24]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern1_4":
+    Transform:
+      Position: [1.75, 3.881, 24]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern1_5":
+    Transform:
+      Position: [3.5, 3.975, 24]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern1_6":
+    Transform:
+      Position: [5.25, 4.131, 24]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Cable2":
+    Transform:
+      Position: [0, 3.6, 50]
+      Rotation: [0, 0, 0]
+      Scale: [7, 0.015, 0.015]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern2_0":
+    Transform:
+      Position: [-5.25, 2.931, 50]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern2_1":
+    Transform:
+      Position: [-3.5, 2.775, 50]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern2_2":
+    Transform:
+      Position: [-1.75, 2.681, 50]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern2_3":
+    Transform:
+      Position: [0, 2.65, 50]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern2_4":
+    Transform:
+      Position: [1.75, 2.681, 50]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern2_5":
+    Transform:
+      Position: [3.5, 2.775, 50]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern2_6":
+    Transform:
+      Position: [5.25, 2.931, 50]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Cable3":
+    Transform:
+      Position: [0, 4.8, 74]
+      Rotation: [0, 0, 0]
+      Scale: [7, 0.015, 0.015]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern3_0":
+    Transform:
+      Position: [-5.25, 4.131, 74]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern3_1":
+    Transform:
+      Position: [-3.5, 3.975, 74]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern3_2":
+    Transform:
+      Position: [-1.75, 3.881, 74]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern3_3":
+    Transform:
+      Position: [0, 3.85, 74]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern3_4":
+    Transform:
+      Position: [1.75, 3.881, 74]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern3_5":
+    Transform:
+      Position: [3.5, 3.975, 74]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern3_6":
+    Transform:
+      Position: [5.25, 4.131, 74]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Cable4":
+    Transform:
+      Position: [0, 3.6, 90]
+      Rotation: [0, 0, 0]
+      Scale: [7, 0.015, 0.015]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern4_0":
+    Transform:
+      Position: [-5.25, 2.931, 90]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern4_1":
+    Transform:
+      Position: [-3.5, 2.775, 90]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern4_2":
+    Transform:
+      Position: [-1.75, 2.681, 90]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern4_3":
+    Transform:
+      Position: [0, 2.65, 90]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern4_4":
+    Transform:
+      Position: [1.75, 2.681, 90]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern4_5":
+    Transform:
+      Position: [3.5, 2.775, 90]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Lantern4_6":
+    Transform:
+      Position: [5.25, 2.931, 90]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.38, 0.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.1, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL0":
+    Transform:
+      Position: [-5.25, -2.1, 4]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL0_arm":
+    Transform:
+      Position: [-4.55, 0.75, 4]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL0_bulb":
+    Transform:
+      Position: [-3.95, 0.62, 4]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR0":
+    Transform:
+      Position: [5.25, -2.1, 4]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR0_arm":
+    Transform:
+      Position: [4.55, 0.75, 4]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR0_bulb":
+    Transform:
+      Position: [3.95, 0.62, 4]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL1":
+    Transform:
+      Position: [-5.25, -2.1, 21]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL1_arm":
+    Transform:
+      Position: [-4.55, 0.75, 21]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL1_bulb":
+    Transform:
+      Position: [-3.95, 0.62, 21]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR1":
+    Transform:
+      Position: [5.25, -2.1, 21]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR1_arm":
+    Transform:
+      Position: [4.55, 0.75, 21]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR1_bulb":
+    Transform:
+      Position: [3.95, 0.62, 21]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL2":
+    Transform:
+      Position: [-5.25, -2.1, 38]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL2_arm":
+    Transform:
+      Position: [-4.55, 0.75, 38]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL2_bulb":
+    Transform:
+      Position: [-3.95, 0.62, 38]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR2":
+    Transform:
+      Position: [5.25, -2.1, 38]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR2_arm":
+    Transform:
+      Position: [4.55, 0.75, 38]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR2_bulb":
+    Transform:
+      Position: [3.95, 0.62, 38]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL3":
+    Transform:
+      Position: [-5.25, -2.1, 55]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL3_arm":
+    Transform:
+      Position: [-4.55, 0.75, 55]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL3_bulb":
+    Transform:
+      Position: [-3.95, 0.62, 55]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR3":
+    Transform:
+      Position: [5.25, -2.1, 55]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR3_arm":
+    Transform:
+      Position: [4.55, 0.75, 55]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR3_bulb":
+    Transform:
+      Position: [3.95, 0.62, 55]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL4":
+    Transform:
+      Position: [-5.25, -2.1, 72]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL4_arm":
+    Transform:
+      Position: [-4.55, 0.75, 72]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL4_bulb":
+    Transform:
+      Position: [-3.95, 0.62, 72]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR4":
+    Transform:
+      Position: [5.25, -2.1, 72]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR4_arm":
+    Transform:
+      Position: [4.55, 0.75, 72]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR4_bulb":
+    Transform:
+      Position: [3.95, 0.62, 72]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL5":
+    Transform:
+      Position: [-5.25, -2.1, 89]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL5_arm":
+    Transform:
+      Position: [-4.55, 0.75, 89]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL5_bulb":
+    Transform:
+      Position: [-3.95, 0.62, 89]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR5":
+    Transform:
+      Position: [5.25, -2.1, 89]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR5_arm":
+    Transform:
+      Position: [4.55, 0.75, 89]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR5_bulb":
+    Transform:
+      Position: [3.95, 0.62, 89]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL6":
+    Transform:
+      Position: [-5.25, -2.1, 106]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL6_arm":
+    Transform:
+      Position: [-4.55, 0.75, 106]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL6_bulb":
+    Transform:
+      Position: [-3.95, 0.62, 106]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR6":
+    Transform:
+      Position: [5.25, -2.1, 106]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR6_arm":
+    Transform:
+      Position: [4.55, 0.75, 106]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR6_bulb":
+    Transform:
+      Position: [3.95, 0.62, 106]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL7":
+    Transform:
+      Position: [-5.25, -2.1, 123]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL7_arm":
+    Transform:
+      Position: [-4.55, 0.75, 123]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL7_bulb":
+    Transform:
+      Position: [-3.95, 0.62, 123]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR7":
+    Transform:
+      Position: [5.25, -2.1, 123]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR7_arm":
+    Transform:
+      Position: [4.55, 0.75, 123]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR7_bulb":
+    Transform:
+      Position: [3.95, 0.62, 123]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL8":
+    Transform:
+      Position: [-5.25, -2.1, 140]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL8_arm":
+    Transform:
+      Position: [-4.55, 0.75, 140]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampL8_bulb":
+    Transform:
+      Position: [-3.95, 0.62, 140]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR8":
+    Transform:
+      Position: [5.25, -2.1, 140]
+      Rotation: [0, 0, 0]
+      Scale: [0.06, 2.9, 0.06]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR8_arm":
+    Transform:
+      Position: [4.55, 0.75, 140]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.04, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "LampR8_bulb":
+    Transform:
+      Position: [3.95, 0.62, 140]
+      Rotation: [0, 0, 0]
+      Scale: [0.28, 0.07, 0.14]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.2, 0.2]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Stall":
+    Transform:
+      Position: [-5.65, -4.3, 13]
+      Rotation: [0, 0, 0]
+      Scale: [0.85, 0.55, 3]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.2, 0.08, 0.035]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "StallTop":
+    Transform:
+      Position: [-5.5, -3.72, 13]
+      Rotation: [0, 0, 0]
+      Scale: [1.05, 0.04, 3.2]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.25, 0.26, 0.3]}
+      - {Metallic: 1}
+      - {Roughness: 0.3}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "StallRoof":
+    Transform:
+      Position: [-5.45, -1.75, 13]
+      Rotation: [0, 0, 0]
+      Scale: [1.5, 0.08, 3.5]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.6, 0.02, 0.04]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.3, 0, 0.02]}
+      - {EmissiveIntensity: 0.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "StallPost-3":
+    Transform:
+      Position: [-4.15, -2.9, 9.8]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 1.1, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "StallPost+3":
+    Transform:
+      Position: [-4.15, -2.9, 16.2]
+      Rotation: [0, 0, 0]
+      Scale: [0.05, 1.1, 0.05]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.012, 0.012, 0.018]}
+      - {Metallic: 0.6}
+      - {Roughness: 0.45}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "StallStrip":
+    Transform:
+      Position: [-3.93, -1.86, 13]
+      Rotation: [0, 0, 0]
+      Scale: [0.04, 0.04, 3.5]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.5, 0.04]}
+      - {EmissiveIntensity: 4.8}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "StallSign":
+    Transform:
+      Position: [-4.03, -2.18, 13]
+      Rotation: [0, -90, 0]
+      Scale: [2.4, 0.3, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/h_noodle.png", Type: "Emissive"}
+      - {Albedo: [0.01, 0.01, 0.015]}
+      - {Metallic: 0}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.4}
+      - {UVScale: [1, 1]}
+  "StallLantern0":
+    Transform:
+      Position: [-4.2, -2.5, 10.2]
+      Rotation: [0, 0, 0]
+      Scale: [0.2, 0.26, 0.2]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.2, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "StallLantern1":
+    Transform:
+      Position: [-4.2, -2.5, 11.6]
+      Rotation: [0, 0, 0]
+      Scale: [0.2, 0.26, 0.2]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.2, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "StallLantern2":
+    Transform:
+      Position: [-4.2, -2.5, 13]
+      Rotation: [0, 0, 0]
+      Scale: [0.2, 0.26, 0.2]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.2, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "StallLantern3":
+    Transform:
+      Position: [-4.2, -2.5, 14.4]
+      Rotation: [0, 0, 0]
+      Scale: [0.2, 0.26, 0.2]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.2, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "StallLantern4":
+    Transform:
+      Position: [-4.2, -2.5, 15.8]
+      Rotation: [0, 0, 0]
+      Scale: [0.2, 0.26, 0.2]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.2, 0.02, 0.01]}
+      - {Metallic: 0}
+      - {Roughness: 0.5}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 3.5}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Stool0":
+    Transform:
+      Position: [-3.7, -4.28, 10.7]
+      Rotation: [0, 0, 0]
+      Scale: [0.2, 0.035, 0.2]
+    MeshComponent: "data/models/basics/cylinder.fbx"
+    Material:
+      - {Albedo: [0.5, 0.03, 0.04]}
+      - {Metallic: 0}
+      - {Roughness: 0.3}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "StoolLeg0":
+    Transform:
+      Position: [-3.7, -4.64, 10.7]
+      Rotation: [0, 0, 0]
+      Scale: [0.035, 0.36, 0.035]
+    MeshComponent: "data/models/basics/cylinder.fbx"
+    Material:
+      - {Albedo: [0.25, 0.26, 0.3]}
+      - {Metallic: 1}
+      - {Roughness: 0.3}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Stool1":
+    Transform:
+      Position: [-3.7, -4.28, 12.2]
+      Rotation: [0, 0, 0]
+      Scale: [0.2, 0.035, 0.2]
+    MeshComponent: "data/models/basics/cylinder.fbx"
+    Material:
+      - {Albedo: [0.5, 0.03, 0.04]}
+      - {Metallic: 0}
+      - {Roughness: 0.3}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "StoolLeg1":
+    Transform:
+      Position: [-3.7, -4.64, 12.2]
+      Rotation: [0, 0, 0]
+      Scale: [0.035, 0.36, 0.035]
+    MeshComponent: "data/models/basics/cylinder.fbx"
+    Material:
+      - {Albedo: [0.25, 0.26, 0.3]}
+      - {Metallic: 1}
+      - {Roughness: 0.3}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Stool2":
+    Transform:
+      Position: [-3.7, -4.28, 13.7]
+      Rotation: [0, 0, 0]
+      Scale: [0.2, 0.035, 0.2]
+    MeshComponent: "data/models/basics/cylinder.fbx"
+    Material:
+      - {Albedo: [0.5, 0.03, 0.04]}
+      - {Metallic: 0}
+      - {Roughness: 0.3}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "StoolLeg2":
+    Transform:
+      Position: [-3.7, -4.64, 13.7]
+      Rotation: [0, 0, 0]
+      Scale: [0.035, 0.36, 0.035]
+    MeshComponent: "data/models/basics/cylinder.fbx"
+    Material:
+      - {Albedo: [0.25, 0.26, 0.3]}
+      - {Metallic: 1}
+      - {Roughness: 0.3}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Stool3":
+    Transform:
+      Position: [-3.7, -4.28, 15.2]
+      Rotation: [0, 0, 0]
+      Scale: [0.2, 0.035, 0.2]
+    MeshComponent: "data/models/basics/cylinder.fbx"
+    Material:
+      - {Albedo: [0.5, 0.03, 0.04]}
+      - {Metallic: 0}
+      - {Roughness: 0.3}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "StoolLeg3":
+    Transform:
+      Position: [-3.7, -4.64, 15.2]
+      Rotation: [0, 0, 0]
+      Scale: [0.035, 0.36, 0.035]
+    MeshComponent: "data/models/basics/cylinder.fbx"
+    Material:
+      - {Albedo: [0.25, 0.26, 0.3]}
+      - {Metallic: 1}
+      - {Roughness: 0.3}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Vending0":
+    Transform:
+      Position: [6.45, -3.7, 6.56504]
+      Rotation: [-0, 0, -0]
+      Scale: [0.45, 1.15, 0.65]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/vending.png", Type: "Emissive"}
+      - {Albedo: [0.02, 0.02, 0.03]}
+      - {Metallic: 0.2}
+      - {Roughness: 0.2}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 1.4}
+      - {EmissiveBloom: 0.2}
+      - {UVScale: [1, 1]}
+  "Vending1":
+    Transform:
+      Position: [6.45, -3.7, 10.5]
+      Rotation: [0, 0, 0]
+      Scale: [0.45, 1.15, 0.65]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/vending.png", Type: "Emissive"}
+      - {Albedo: [0.02, 0.02, 0.03]}
+      - {Metallic: 0.2}
+      - {Roughness: 0.2}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 1.4}
+      - {EmissiveBloom: 0.2}
+      - {UVScale: [1, 1]}
+  "Vending2":
+    Transform:
+      Position: [6.45, -3.7, 12]
+      Rotation: [0, 0, 0]
+      Scale: [0.45, 1.15, 0.65]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/vending.png", Type: "Emissive"}
+      - {Albedo: [0.02, 0.02, 0.03]}
+      - {Metallic: 0.2}
+      - {Roughness: 0.2}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 1.4}
+      - {EmissiveBloom: 0.2}
+      - {UVScale: [1, 1]}
+  "Vending3":
+    Transform:
+      Position: [6.45, -3.7, 30]
+      Rotation: [0, 0, 0]
+      Scale: [0.45, 1.15, 0.65]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/vending.png", Type: "Emissive"}
+      - {Albedo: [0.02, 0.02, 0.03]}
+      - {Metallic: 0.2}
+      - {Roughness: 0.2}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 1.4}
+      - {EmissiveBloom: 0.2}
+      - {UVScale: [1, 1]}
+  "Vending4":
+    Transform:
+      Position: [6.45, -3.7, 31.5]
+      Rotation: [0, 0, 0]
+      Scale: [0.45, 1.15, 0.65]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/cyberpunk/signs/vending.png", Type: "Emissive"}
+      - {Albedo: [0.02, 0.02, 0.03]}
+      - {Metallic: 0.2}
+      - {Roughness: 0.2}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 1.4}
+      - {EmissiveBloom: 0.2}
+      - {UVScale: [1, 1]}
+  "HoloBase":
+    Transform:
+      Position: [2.9, -4.75, 44]
+      Rotation: [0, 0, 0]
+      Scale: [1.8, 0.25, 1.8]
+    MeshComponent: "data/models/basics/cylinder.fbx"
+    Material:
+      - {Albedo: [0.03, 0.03, 0.04]}
+      - {Metallic: 0.8}
+      - {Roughness: 0.2}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "HoloRing":
+    Transform:
+      Position: [2.9, -4.47, 44]
+      Rotation: [0, 0, 0]
+      Scale: [1.9, 0.02, 1.9]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 5.4}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "HoloBust":
+    Transform:
+      Position: [2.9, -3.9, 44]
+      Rotation: [-90, 0, 180]
+      Scale: [22, 22, 22]
+    MeshComponent: "data/models/marble_bust_01/marble_bust_01.fbx"
+    Material:
+      - {Albedo: [0, 0.05, 0.07]}
+      - {Metallic: 0}
+      - {Roughness: 0.25}
+      - {EmissiveColor: [0.05, 0.55, 0.9]}
+      - {EmissiveIntensity: 0.75}
+      - {EmissiveBloom: 0.25}
+      - {UVScale: [1, 1]}
+  "CarBody":
+    Transform:
+      Position: [2.9, -4.25, 20]
+      Rotation: [0, 0, 0]
+      Scale: [1, 0.42, 2.3]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.4, 0.01, 0.06]}
+      - {Metallic: 0.9}
+      - {Roughness: 0.14}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "CarCabin":
+    Transform:
+      Position: [2.9, -3.86, 19.8]
+      Rotation: [0, 0, 0]
+      Scale: [0.68, 0.34, 1.05]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.01, 0.01, 0.02]}
+      - {Metallic: 0.9}
+      - {Roughness: 0.05}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "CarUnder":
+    Transform:
+      Position: [2.9, -4.8, 20]
+      Rotation: [0, 0, 0]
+      Scale: [0.72, 0.02, 1.9]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 3.6}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "CarTailA":
+    Transform:
+      Position: [2.3, -4.18, 17.82]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.035, 0.03]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 9.6}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "CarTailB":
+    Transform:
+      Position: [3.5, -4.18, 17.82]
+      Rotation: [0, 0, 0]
+      Scale: [0.3, 0.035, 0.03]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 9.6}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly0":
+    Transform:
+      Position: [-3.5, 7, 34]
+      Rotation: [0, 0, 0]
+      Scale: [0.9, 0.3, 2.1]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.02, 0.025, 0.04]}
+      - {Metallic: 0.9}
+      - {Roughness: 0.12}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly0_front":
+    Transform:
+      Position: [-3.5, 7, 36.05]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.03, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 13.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly0_back":
+    Transform:
+      Position: [-3.5, 7, 31.95]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.03, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 13.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly0_under":
+    Transform:
+      Position: [-3.5, 6.72, 34]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.02, 1.6]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly1":
+    Transform:
+      Position: [2.8, 15, 66]
+      Rotation: [0, 0, 0]
+      Scale: [0.9, 0.3, 2.1]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.02, 0.025, 0.04]}
+      - {Metallic: 0.9}
+      - {Roughness: 0.12}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly1_front":
+    Transform:
+      Position: [2.8, 15, 63.95]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.03, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 13.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly1_back":
+    Transform:
+      Position: [2.8, 15, 68.05]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.03, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 13.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly1_under":
+    Transform:
+      Position: [2.8, 14.72, 66]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.02, 1.6]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly2":
+    Transform:
+      Position: [-1.5, 22, 86]
+      Rotation: [0, 0, 0]
+      Scale: [0.9, 0.3, 2.1]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.02, 0.025, 0.04]}
+      - {Metallic: 0.9}
+      - {Roughness: 0.12}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly2_front":
+    Transform:
+      Position: [-1.5, 22, 88.05]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.03, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 13.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly2_back":
+    Transform:
+      Position: [-1.5, 22, 83.95]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.03, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 13.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly2_under":
+    Transform:
+      Position: [-1.5, 21.72, 86]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.02, 1.6]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly3":
+    Transform:
+      Position: [3.5, 25, 120]
+      Rotation: [0, 0, 0]
+      Scale: [0.9, 0.3, 2.1]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.02, 0.025, 0.04]}
+      - {Metallic: 0.9}
+      - {Roughness: 0.12}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly3_front":
+    Transform:
+      Position: [3.5, 25, 117.95]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.03, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 13.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly3_back":
+    Transform:
+      Position: [3.5, 25, 122.05]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.03, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 13.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly3_under":
+    Transform:
+      Position: [3.5, 24.72, 120]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.02, 1.6]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly4":
+    Transform:
+      Position: [-3, 29, 134]
+      Rotation: [0, 0, 0]
+      Scale: [0.9, 0.3, 2.1]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.02, 0.025, 0.04]}
+      - {Metallic: 0.9}
+      - {Roughness: 0.12}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly4_front":
+    Transform:
+      Position: [-3, 29, 136.05]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.03, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 13.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly4_back":
+    Transform:
+      Position: [-3, 29, 131.95]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.03, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 13.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly4_under":
+    Transform:
+      Position: [-3, 28.72, 134]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.02, 1.6]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.05, 0.42]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly5":
+    Transform:
+      Position: [0.8, 12, 26]
+      Rotation: [0, 0, 0]
+      Scale: [0.9, 0.3, 2.1]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.02, 0.025, 0.04]}
+      - {Metallic: 0.9}
+      - {Roughness: 0.12}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly5_front":
+    Transform:
+      Position: [0.8, 12, 23.95]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.03, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0.7, 0.85, 1]}
+      - {EmissiveIntensity: 13.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly5_back":
+    Transform:
+      Position: [0.8, 12, 28.05]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.03, 0.04]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [1, 0.07, 0.04]}
+      - {EmissiveIntensity: 13.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Fly5_under":
+    Transform:
+      Position: [0.8, 11.72, 26]
+      Rotation: [0, 0, 0]
+      Scale: [0.5, 0.02, 1.6]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.02, 0.02, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.4}
+      - {EmissiveColor: [0, 0.8, 1]}
+      - {EmissiveIntensity: 4.2}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Barrel0":
+    Transform:
+      Position: [-5.632, -4.35, 84.326]
+      Rotation: [0, 0, 0]
+      Scale: [0.32, 0.5, 0.32]
+    MeshComponent: "data/models/basics/cylinder.fbx"
+    Material:
+      - {Albedo: [0.1, 0.11, 0.13]}
+      - {Metallic: 1}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Crate1":
+    Transform:
+      Position: [6.311, -4.519, 35.762]
+      Rotation: [0, 16.229, 0]
+      Scale: [0.331, 0.331, 0.331]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.05, 0.035, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.7}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Crate2":
+    Transform:
+      Position: [-5.853, -4.55, 76.895]
+      Rotation: [0, 40.408, 0]
+      Scale: [0.3, 0.3, 0.3]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.05, 0.035, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.7}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Barrel3":
+    Transform:
+      Position: [5.995, -4.35, 4.164]
+      Rotation: [0, 0, 0]
+      Scale: [0.32, 0.5, 0.32]
+    MeshComponent: "data/models/basics/cylinder.fbx"
+    Material:
+      - {Albedo: [0.1, 0.11, 0.13]}
+      - {Metallic: 1}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Crate4":
+    Transform:
+      Position: [-5.869, -4.35, 23.773]
+      Rotation: [0, 29.55, 0]
+      Scale: [0.5, 0.5, 0.5]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.05, 0.035, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.7}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Crate5":
+    Transform:
+      Position: [6.219, -4.392, 83.912]
+      Rotation: [0, 6.545, 0]
+      Scale: [0.458, 0.458, 0.458]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.05, 0.035, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.7}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Barrel6":
+    Transform:
+      Position: [-5.813, -4.35, 93.23]
+      Rotation: [0, 0, 0]
+      Scale: [0.32, 0.5, 0.32]
+    MeshComponent: "data/models/basics/cylinder.fbx"
+    Material:
+      - {Albedo: [0.1, 0.11, 0.13]}
+      - {Metallic: 1}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Crate7":
+    Transform:
+      Position: [5.855, -4.539, 69.884]
+      Rotation: [0, 19.553, 0]
+      Scale: [0.311, 0.311, 0.311]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.05, 0.035, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.7}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Crate8":
+    Transform:
+      Position: [-5.85, -4.336, 102.9]
+      Rotation: [0, 18.315, 0]
+      Scale: [0.514, 0.514, 0.514]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.05, 0.035, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.7}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Barrel9":
+    Transform:
+      Position: [6.199, -4.35, 31.135]
+      Rotation: [0, 0, 0]
+      Scale: [0.32, 0.5, 0.32]
+    MeshComponent: "data/models/basics/cylinder.fbx"
+    Material:
+      - {Albedo: [0.1, 0.11, 0.13]}
+      - {Metallic: 1}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Crate10":
+    Transform:
+      Position: [-6.459, -4.534, 100.671]
+      Rotation: [0, 13.035, 0]
+      Scale: [0.316, 0.316, 0.316]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.05, 0.035, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.7}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Crate11":
+    Transform:
+      Position: [6.111, -4.47, 102.073]
+      Rotation: [0, 12.5, 0]
+      Scale: [0.38, 0.38, 0.38]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.05, 0.035, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.7}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Barrel12":
+    Transform:
+      Position: [-5.691, -4.35, 35.256]
+      Rotation: [0, 0, 0]
+      Scale: [0.32, 0.5, 0.32]
+    MeshComponent: "data/models/basics/cylinder.fbx"
+    Material:
+      - {Albedo: [0.1, 0.11, 0.13]}
+      - {Metallic: 1}
+      - {Roughness: 0.35}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "Crate13":
+    Transform:
+      Position: [5.809, -4.419, 122.493]
+      Rotation: [0, 19.121, 0]
+      Scale: [0.431, 0.431, 0.431]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.05, 0.035, 0.02]}
+      - {Metallic: 0}
+      - {Roughness: 0.7}
+      - {EmissiveColor: [0, 0, 0]}
+      - {EmissiveIntensity: 0}
+      - {EmissiveBloom: 0.5}
+      - {UVScale: [1, 1]}
+  "BldL0_L":
+    Transform:
+      Position: [-4.2, 1.044, -16.013]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [-4.2, 1.044, -16.013]
+      Color: [0, 0.8, 1]
+      Distance: 16
+      Intensity: 13.2
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "BldL2_B0":
+    Transform:
+      Position: [-4.2, 2.009, 12.562]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [-4.2, 2.009, 12.562]
+      Color: [0.08, 1, 0.42]
+      Distance: 14.4
+      Intensity: 12
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "BldL4_L":
+    Transform:
+      Position: [-4.2, 0.155, 56.067]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [-4.2, 0.155, 56.067]
+      Color: [1, 0.07, 0.04]
+      Distance: 16
+      Intensity: 13.2
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "BldL6_B0":
+    Transform:
+      Position: [-4.2, 2.989, 94.448]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [-4.2, 2.989, 94.448]
+      Color: [0.08, 1, 0.42]
+      Distance: 14.4
+      Intensity: 12
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "BldL8_L":
+    Transform:
+      Position: [-4.2, 0.948, 140.093]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [-4.2, 0.948, 140.093]
+      Color: [0, 0.8, 1]
+      Distance: 16
+      Intensity: 13.2
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "BldR10_B0":
+    Transform:
+      Position: [4.2, 3.146, 1.38]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [4.2, 3.146, 1.38]
+      Color: [0.5, 0.1, 1]
+      Distance: 14.4
+      Intensity: 12
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "BldR12_L":
+    Transform:
+      Position: [4.2, 1.274, 44.045]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [4.2, 1.274, 44.045]
+      Color: [1, 0.07, 0.04]
+      Distance: 16
+      Intensity: 13.2
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "BldR14_B0":
+    Transform:
+      Position: [4.2, 1.985, 81.495]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [4.2, 1.985, 81.495]
+      Color: [0, 0.8, 1]
+      Distance: 14.4
+      Intensity: 12
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "BldR16_L":
+    Transform:
+      Position: [4.2, 0.173, 128.178]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [4.2, 0.173, 128.178]
+      Color: [0, 0.8, 1]
+      Distance: 16
+      Intensity: 13.2
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "AdEndL":
+    Transform:
+      Position: [0, 11, 138]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [0, 11, 138]
+      Color: [1, 0.25, 0.5]
+      Distance: 48
+      Intensity: 48
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "AdWaveL":
+    Transform:
+      Position: [-2.5, 14, 36]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [-2.5, 14, 36]
+      Color: [0.75, 0.45, 1]
+      Distance: 27.2
+      Intensity: 27
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "AdEyeL":
+    Transform:
+      Position: [2.5, 16, 62]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [2.5, 16, 62]
+      Color: [0.3, 0.8, 1]
+      Distance: 27.2
+      Intensity: 27
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "AdKanji2L":
+    Transform:
+      Position: [-2.5, 19, 92]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [-2.5, 19, 92]
+      Color: [0.75, 0.45, 1]
+      Distance: 27.2
+      Intensity: 27
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "AdSun2L":
+    Transform:
+      Position: [2.5, 15, 116]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [2.5, 15, 116]
+      Color: [0.3, 0.8, 1]
+      Distance: 27.2
+      Intensity: 27
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "Bridge0_L":
+    Transform:
+      Position: [0, 7, 56]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [0, 7, 56]
+      Color: [0, 0.8, 1]
+      Distance: 17.6
+      Intensity: 18
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "Bridge1_L":
+    Transform:
+      Position: [0, 11, 106]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [0, 11, 106]
+      Color: [0, 0.8, 1]
+      Distance: 17.6
+      Intensity: 18
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "Lantern0_L":
+    Transform:
+      Position: [0, 2.4, 10]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [0, 2.4, 10]
+      Color: [1, 0.07, 0.04]
+      Distance: 12.8
+      Intensity: 9.6
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "Lantern1_L":
+    Transform:
+      Position: [0, 3.6, 24]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [0, 3.6, 24]
+      Color: [1, 0.5, 0.04]
+      Distance: 12.8
+      Intensity: 9.6
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "Lantern2_L":
+    Transform:
+      Position: [0, 2.4, 50]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [0, 2.4, 50]
+      Color: [1, 0.07, 0.04]
+      Distance: 12.8
+      Intensity: 9.6
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "Lantern3_L":
+    Transform:
+      Position: [0, 3.6, 74]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [0, 3.6, 74]
+      Color: [1, 0.5, 0.04]
+      Distance: 12.8
+      Intensity: 9.6
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "Lantern4_L":
+    Transform:
+      Position: [0, 2.4, 90]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [0, 2.4, 90]
+      Color: [1, 0.07, 0.04]
+      Distance: 12.8
+      Intensity: 9.6
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "LampL0":
+    Transform:
+      Position: [3.5, -0.4, 4]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [3.5, -0.4, 4]
+      Color: [0.7, 0.85, 1]
+      Distance: 10.4
+      Intensity: 3
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "LampL2":
+    Transform:
+      Position: [-3.5, -0.4, 38]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [-3.5, -0.4, 38]
+      Color: [0.7, 0.85, 1]
+      Distance: 10.4
+      Intensity: 3
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "LampL4":
+    Transform:
+      Position: [3.5, -0.4, 72]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [3.5, -0.4, 72]
+      Color: [0.7, 0.85, 1]
+      Distance: 10.4
+      Intensity: 3
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "LampL6":
+    Transform:
+      Position: [-3.5, -0.4, 106]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [-3.5, -0.4, 106]
+      Color: [0.7, 0.85, 1]
+      Distance: 10.4
+      Intensity: 3
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "LampL8":
+    Transform:
+      Position: [3.5, -0.4, 140]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [3.5, -0.4, 140]
+      Color: [0.7, 0.85, 1]
+      Distance: 10.4
+      Intensity: 3
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "StallL":
+    Transform:
+      Position: [-4.05, -2.6, 13]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [-4.05, -2.6, 13]
+      Color: [1, 0.55, 0.25]
+      Distance: 9.6
+      Intensity: 27
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "VendingL":
+    Transform:
+      Position: [5.2, -3.2, 10.5]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [5.2, -3.2, 10.5]
+      Color: [0.7, 0.85, 1]
+      Distance: 6.4
+      Intensity: 6
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "VendingL2":
+    Transform:
+      Position: [5.2, -3.2, 30.8]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [5.2, -3.2, 30.8]
+      Color: [0.7, 0.85, 1]
+      Distance: 6.4
+      Intensity: 6
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "HoloL":
+    Transform:
+      Position: [2.4, -2, 42]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [2.4, -2, 42]
+      Color: [0, 0.8, 1]
+      Distance: 11.2
+      Intensity: 14.4
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true
+  "CarL":
+    Transform:
+      Position: [2.9, -4.65, 20]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    Light:
+      Type: "Point"
+      Position: [2.9, -4.65, 20]
+      Color: [1, 0.05, 0.42]
+      Distance: 5.6
+      Intensity: 6
+      Attenuation: 1
+      FallOff: 7.5
+      FallStart: 0.4
+      Constant: 1
+      Linear: 0.14
+      Quadratic: 0.07
+      Enabled: true

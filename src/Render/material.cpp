@@ -23,6 +23,9 @@ Material::Material(const Material& other){
 	m_initialised = other.m_initialised;
 	m_emissive = other.m_emissive;
 	m_emissive_intensity = other.m_emissive_intensity;
+	m_emissive_bloom = other.m_emissive_bloom;
+	m_emissive_pulse_speed = other.m_emissive_pulse_speed;
+	m_emissive_pulse_min = other.m_emissive_pulse_min;
 	m_uv_scale = other.m_uv_scale;
 
 	m_color_value = other.m_color_value;
@@ -40,6 +43,9 @@ Material::Material(Material&& other){
 	m_texture_emissive = other.m_texture_emissive;
 	m_emissive = other.m_emissive;
 	m_emissive_intensity = other.m_emissive_intensity;
+	m_emissive_bloom = other.m_emissive_bloom;
+	m_emissive_pulse_speed = other.m_emissive_pulse_speed;
+	m_emissive_pulse_min = other.m_emissive_pulse_min;
 	m_uv_scale = other.m_uv_scale;
 
 	m_color_value = other.m_color_value;
@@ -86,6 +92,9 @@ Material& Material::operator=(const Material& other){
 		m_texture_emissive = other.m_texture_emissive;
 		m_emissive = other.m_emissive;
 		m_emissive_intensity = other.m_emissive_intensity;
+	m_emissive_bloom = other.m_emissive_bloom;
+	m_emissive_pulse_speed = other.m_emissive_pulse_speed;
+	m_emissive_pulse_min = other.m_emissive_pulse_min;
 		m_uv_scale = other.m_uv_scale;
 
 		m_color_value = other.m_color_value;
@@ -110,6 +119,9 @@ Material& Material::operator=(Material&& other){
 		m_texture_emissive = other.m_texture_emissive;
 		m_emissive = other.m_emissive;
 		m_emissive_intensity = other.m_emissive_intensity;
+	m_emissive_bloom = other.m_emissive_bloom;
+	m_emissive_pulse_speed = other.m_emissive_pulse_speed;
+	m_emissive_pulse_min = other.m_emissive_pulse_min;
 		m_uv_scale = other.m_uv_scale;
 
 		m_color_value = other.m_color_value;

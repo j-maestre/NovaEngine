@@ -29,7 +29,7 @@ Entities:
       Position: [0.0, 3.0, 0.0]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.0, 1.0, 1.0]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.1, 0.8, 0.1] }
       - {Metallic: 0.5}
@@ -39,7 +39,7 @@ Entities:
       Position: [-2.0, 3.0, 0.0]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.0, 1.0, 1.0]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Texture: "data/materials/rounded_metal/albedo.png", Type: "Albedo"}
       - {Texture: "data/materials/rounded_metal/normal.png", Type: "Normal"}
@@ -51,7 +51,7 @@ Entities:
       Position: [-4.0, 3.0, 0.0]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.0, 1.0, 1.0]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Texture: "data/materials/titanium/albedo.png", Type: "Albedo"}
       - {Texture: "data/materials/titanium/normal.png", Type: "Normal"}

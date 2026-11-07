@@ -17,13 +17,13 @@ cbuffer SSAOConstantBuffer : register(b0)
     float width;
     float height;
     float max_radius_px;
-    float2 padding;
+    float resolution_scale; // 1 = completa, 2 = media
+    float padding;
 };
 
-Texture2D positionTexture : register(t0); // ya no se usa: la posicion sale de la profundidad
-Texture2D normalTexture : register(t1);
-Texture2D noiseTexture : register(t2);
-Texture2D depthTexture : register(t3);
+Texture2D normalTexture : register(t0);
+Texture2D noiseTexture : register(t1);
+Texture2D depthTexture : register(t2);
 
 SamplerState samp : register(s0);
 SamplerState samp_clamp : register(s1);
@@ -62,23 +62,43 @@ float LoadDepth(float2 uv, float2 size)
     return depthTexture.Load(int3(p, 0)).r;
 }
 
-float PShader(VS_OUT input) : SV_TARGET
+// R: oclusion (1 = nada). G: distancia a la camara del punto usado, para el upsample del pase de luces.
+float2 PShader(VS_OUT input) : SV_TARGET
 {
     float2 size;
     depthTexture.GetDimensions(size.x, size.y);
-    int2 pixel = int2(input.position.xy);
+    int2 ssao_pixel = int2(input.position.xy);
 
+    // A media resolucion cada pixel cubre 2x2 de la profundidad: se usa el mas cercano a la camara,
+    // para que un objeto fino delante no desaparezca entre medias
+    int scale = int(resolution_scale);
+    int2 pixel = min(ssao_pixel * scale, int2(size) - 1);
     float pixel_depth = depthTexture.Load(int3(pixel, 0)).r;
+    for (int by = 0; by < scale; by++)
+    {
+        for (int bx = 0; bx < scale; bx++)
+        {
+            int2 p = min(ssao_pixel * scale + int2(bx, by), int2(size) - 1);
+            float d = depthTexture.Load(int3(p, 0)).r;
+            if (d < pixel_depth)
+            {
+                pixel_depth = d;
+                pixel = p;
+            }
+        }
+    }
     if (pixel_depth >= 1.0f)
-        return 1.0f;
+        return float2(1.0f, 60000.0f);
+
+    float2 pixel_uv = (float2(pixel) + 0.5f) / size;
 
     // Posicion reconstruida de la misma profundidad que las muestras: asi el
     // pixel y sus muestras tienen la misma precision (el G-buffer de posicion
     // es fp16 y no coincide con la profundidad R32 -> auto-oclusion y ruido).
-    float3 P = ViewSpaceFromDepth(pixel_depth, input.uv);
+    float3 P = ViewSpaceFromDepth(pixel_depth, pixel_uv);
 
     // Ruido 4x4 por pixel, sin filtrar y sin depender del tamano de ventana
-    float3 random_dir = noiseTexture.Load(int3(pixel % 4, 0)).xyz;
+    float3 random_dir = noiseTexture.Load(int3(ssao_pixel % 4, 0)).xyz;
 
     float3 normal = normalTexture.Load(int3(pixel, 0)).xyz;
     normal = normalize(mul(normal, (float3x3) view));
@@ -110,5 +130,5 @@ float PShader(VS_OUT input) : SV_TARGET
         occlusion += (sampleZ < samplePosView.z - BIAS ? rangeCheck : 0.0f);
     }
 
-    return 1.0f - occlusion / samples_float;
+    return float2(1.0f - occlusion / samples_float, length(P));
 }

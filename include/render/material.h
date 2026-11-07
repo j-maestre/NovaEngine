@@ -16,18 +16,26 @@ public:
 	Material& operator=(Material&&);
 
 	void init_material();
-	void set_texture_albedo(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); m_texture_albedo = t; m_color_value = { 0.0f, 0.0f, 0.0f, 0.0f }; }
-	void set_texture_normal(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); m_texture_normal = t; }
-	void set_texture_metallic(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); m_texture_metallic = t; m_metallic_value = 0.0f; }
-	void set_texture_roughness(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); m_texture_roughness = t; m_roughness_value = 0.0f; }
-	void set_texture_ao(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); m_texture_ao = t; }
-	void set_texture_emissive(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); m_texture_emissive = t; }
+	// Una textura que no se pudo cargar llega como nullptr: se conserva la que hubiera
+	void set_texture_albedo(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); if (!t) return; m_texture_albedo = t; m_color_value = { 0.0f, 0.0f, 0.0f, 0.0f }; }
+	void set_texture_normal(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); if (!t) return; m_texture_normal = t; }
+	void set_texture_metallic(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); if (!t) return; m_texture_metallic = t; m_metallic_value = 0.0f; }
+	void set_texture_roughness(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); if (!t) return; m_texture_roughness = t; m_roughness_value = 0.0f; }
+	void set_texture_ao(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); if (!t) return; m_texture_ao = t; }
+	void set_texture_emissive(Texture* t) { assert(m_initialised && "Forget to call init_material() ?"); if (!t) return; m_texture_emissive = t; }
 
 	void set_metallic_value(float value) { m_metallic_value = value; }
 	void set_roughness_value(float value) { m_roughness_value = value; }
 	void set_color_value(Vec4 value) { m_color_value = value; }
 	void set_emissive_value(Vec3 value) { m_emissive = value; }
 	void set_emissive_intensity(float value) { m_emissive_intensity = value; }
+	// Cuanto del emisivo entra en el bloom: 0 = solo se ve el color, 1 = todo
+	void set_emissive_bloom(float value) { m_emissive_bloom = value; }
+	// Pulso del emisivo: radianes por segundo (0 = fijo) y la fraccion de intensidad en el punto mas bajo
+	void set_emissive_pulse(float speed, float minimum) { m_emissive_pulse_speed = speed; m_emissive_pulse_min = minimum; }
+	// Intensidad de este frame. La base (get_emissive_intensity) es la que se edita y se guarda.
+	void update_emissive_pulse(float time) { m_current_emissive_intensity = m_emissive_intensity * pulse_factor(time, m_emissive_pulse_speed, m_emissive_pulse_min); }
+	float get_current_emissive_intensity() const { return m_current_emissive_intensity; }
 	void set_uv_scale(Vec2 value) { m_uv_scale = value; }
 
 	inline Texture* get_albedo() { return m_texture_albedo; }
@@ -43,6 +51,9 @@ public:
 	Vec4 get_color_value() { return m_color_value; }
 	Vec3 get_emissive_value() { return m_emissive; }
 	float get_emissive_intensity() { return m_emissive_intensity; }
+	float get_emissive_bloom() { return m_emissive_bloom; }
+	float get_emissive_pulse_speed() { return m_emissive_pulse_speed; }
+	float get_emissive_pulse_min() { return m_emissive_pulse_min; }
 	Vec2 get_uv_scale() { return m_uv_scale; }
 
 	// TODO: anade emissive_intensity, guardalo en el gbuffer en el alpha de la textura de emissivo, anade imgui tambien
@@ -59,13 +70,17 @@ private:
 	Vec4 m_color_value;
 	Vec3 m_emissive;
 	float m_emissive_intensity = 1.0f;
+	float m_emissive_bloom = 1.0f;
+	float m_emissive_pulse_speed = 0.0f;
+	float m_emissive_pulse_min = 0.0f;
+	float m_current_emissive_intensity = 0.0f;
 	Vec2 m_uv_scale = { 1.0f, 1.0f };
 
-	Texture* m_texture_albedo;
-	Texture* m_texture_normal;
-	Texture* m_texture_metallic;
-	Texture* m_texture_roughness;
-	Texture* m_texture_ao;
-	Texture* m_texture_emissive;
-	Texture* m_texture_specular;
+	Texture* m_texture_albedo = nullptr;
+	Texture* m_texture_normal = nullptr;
+	Texture* m_texture_metallic = nullptr;
+	Texture* m_texture_roughness = nullptr;
+	Texture* m_texture_ao = nullptr;
+	Texture* m_texture_emissive = nullptr;
+	Texture* m_texture_specular = nullptr;
 };

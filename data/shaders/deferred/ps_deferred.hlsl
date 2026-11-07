@@ -13,15 +13,15 @@ struct PS_INPUT
     float roughness_value : ROUGHNESS;
     float3 emissive_value : EMISSIVE;
     float emissive_intensity : EMISSIVE_INTENSITY;
+    float emissive_bloom : EMISSIVE_BLOOM;
 };
 
 struct PS_OUT
 {
     float4 out_albedo : SV_Target0;
-    float4 out_position : SV_Target1;
-    float4 out_normal : SV_Target2;
-    float4 out_material : SV_Target3;
-    float4 out_emissive : SV_Target4;
+    float4 out_normal : SV_Target1;
+    float4 out_material : SV_Target2;
+    float4 out_emissive : SV_Target3;
 };
 
 
@@ -35,6 +35,20 @@ Texture2D emissive_tex : register(t5);
 
 SamplerState mySampler : register(s0);
 
+
+// Antialiasing del especular: donde la normal cambia mucho de un pixel al siguiente, un brillo
+// estrecho aparece y desaparece. Se sube la rugosidad en proporcion a ese cambio.
+static const float SPECULAR_AA_VARIANCE = 0.25f;
+static const float SPECULAR_AA_MAX = 0.18f;
+
+float FilterRoughness(float3 normal, float roughness)
+{
+    float3 dx = ddx(normal);
+    float3 dy = ddy(normal);
+    float kernel = min(2.0f * SPECULAR_AA_VARIANCE * (dot(dx, dx) + dot(dy, dy)), SPECULAR_AA_MAX);
+    float alpha = roughness * roughness;
+    return pow(saturate(alpha * alpha + kernel), 0.25f);
+}
 
 float3 getNormalFromMap(float3 normal_texture, float3 normal, float4 tangent)
 {
@@ -77,11 +91,15 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     
     PS_OUT out_textures;
     out_textures.out_albedo = texture_color;
-    out_textures.out_position = float4(input.world_position, 1.0);
     //out_textures.out_position = float4(input.position.rgb, 1.0);
     out_textures.out_normal = float4(normal_procesed, 1.0);
-    out_textures.out_material = float4(texture_metallic, texture_roughness, texture_ao, 1.0); // Last parameter is for specular map or brithness
-    out_textures.out_emissive = float4(max(input.emissive_value.rgb, texture_emissive), input.emissive_intensity); // Also add object's brithness
+    // Horizonte: el mapa de normales puede mandar el reflejo por debajo de la superficie real.
+    // Va aqui porque es donde se conoce la normal de la malla; desde la posicion del G-Buffer no hay precision.
+    const float horizon = saturate(1.0f + dot(reflect(-view_dir, normal_procesed), normalize(input.normal)));
+
+    out_textures.out_material = float4(texture_metallic, FilterRoughness(normal_procesed, texture_roughness), texture_ao, horizon * horizon); // Last parameter is for specular map or brithness
+    // RGB: emisivo con su intensidad. A: cuanto de el entra en el bloom.
+    out_textures.out_emissive = float4(max(input.emissive_value.rgb, texture_emissive) * input.emissive_intensity, input.emissive_bloom);
 
     return out_textures;
 }

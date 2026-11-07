@@ -109,6 +109,7 @@ const char* GpuProfiler::get_pass_name(int pass) {
 		"Skybox",
 		"Bloom",
 		"Composite",
+		"FXAA",
 	};
 	return names[pass];
 }

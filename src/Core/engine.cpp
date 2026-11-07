@@ -1,3 +1,4 @@
+#include <filesystem>
 #include "Core/engine.h"
 #include <Core/defines.h>
 #include <Core/input.h>
@@ -28,6 +29,7 @@ Engine::~Engine(){
 void Engine::init(Window* window){
 	
 	assert(window != nullptr);
+	m_window = window;
 
 	//window_used->window_handle
 
@@ -195,6 +197,7 @@ void Engine::update(){
 	m_resource.check_textures_to_load();
 
 #ifdef ENABLE_IMGUI
+	ImguiManager::get_instance()->process_pending_scene();
 	ImguiManager::get_instance()->m_draw_calls = 0;
 #endif
 
@@ -233,8 +236,14 @@ Scene* Engine::get_scene(){
 }
 
 Scene* Engine::create_scene(std::string path){
-	Scene* new_scene = new Scene(path.c_str());
+	// La anterior se borra aqui. Quien llama garantiza que no hay modelos cargando: apuntan a sus componentes.
+	for (Scene* scene : m_all_scenes) {
+		delete scene;
+	}
 	m_all_scenes.clear();
+	m_current_scene = nullptr;
+
+	Scene* new_scene = new Scene(path.c_str());
 	m_all_scenes.push_back(new_scene);
 	//m_current_scene = new_scene;
 
@@ -243,6 +252,14 @@ Scene* Engine::create_scene(std::string path){
 
 void Engine::set_scene(Scene* s){
 	m_current_scene = s;
+	update_window_title();
+}
+
+void Engine::update_window_title(){
+
+	if (m_window && m_current_scene) {
+		m_window->set_title(std::filesystem::path(m_current_scene->get_path()).filename().string());
+	}
 }
 
 float Engine::get_delta_time(){
@@ -297,8 +314,8 @@ void Engine::load_default_textures(){
 	m_default_material.set_roughness_value(DEFAULT_ROUGHNESS);
 
 	//m_resource.load_cube_map("data/textures/sky.dds");
-	m_resource.load_cube_map("data/textures/cubemap/pruebaEnvHDR.dds");
-	m_resource.load_irradiance_map("data/textures/cubemap/pruebaDiffuseHDR.dds");
+	const SceneEnvironment environment;
+	m_resource.set_environment(environment.skybox, environment.irradiance, environment.specular);
 	// m_resource.load_cube_map("data/textures/clouds.dds");
 
 	m_resource.check_textures_to_load();
@@ -349,6 +366,10 @@ void Engine::init_geometries(){
 		this->m_resource.load_mesh("data/models/basics/sphere_high_resolution.fbx", true);
 	};
 
+	auto task9 = [this]() {
+		this->m_resource.load_mesh("data/models/basics/sphere_low.obj", true);
+	};
+
 	//tasks.push_back(task1);
 	tasks.push_back(task2);
 	tasks.push_back(task3);
@@ -357,6 +378,7 @@ void Engine::init_geometries(){
 	tasks.push_back(task6);
 	tasks.push_back(task7);
 	tasks.push_back(task8);
+	tasks.push_back(task9);
 
 	m_resource.m_job_system.add_task(tasks);
 	m_resource.m_job_system.wait_until_finish();
@@ -377,6 +399,7 @@ void Engine::init_geometries(){
 	m_sphere_model = m_resource.load_mesh("data/models/basics/sphere.fbx");
 	m_sphere_medium_model = m_resource.load_mesh("data/models/basics/sphere_medium_resolution.fbx");
 	m_sphere_high_model = m_resource.load_mesh("data/models/basics/sphere_high_resolution.fbx");
+	m_sphere_low_model = m_resource.load_mesh("data/models/basics/sphere_low.obj");
 
 	m_cylinder_model->m_engine_default = true;
 	m_cylinder_high_model->m_engine_default = true;
@@ -385,6 +408,7 @@ void Engine::init_geometries(){
 	m_sphere_model->m_engine_default = true;
 	m_sphere_medium_model->m_engine_default = true;
 	m_sphere_high_model->m_engine_default = true;
+	m_sphere_low_model->m_engine_default = true;
 
 #ifndef MULTI_THREAD
 	auto end = std::chrono::high_resolution_clock::now();
@@ -396,7 +420,7 @@ void Engine::init_geometries(){
 	
 	/*
 	*/
-	std::vector<Model*> tmp = { m_cube_model , m_cylinder_model, m_cylinder_high_model,m_cone_model,m_cone_high_model,m_sphere_model,m_sphere_medium_model,m_sphere_high_model };
+	std::vector<Model*> tmp = { m_cube_model , m_cylinder_model, m_cylinder_high_model,m_cone_model,m_cone_high_model,m_sphere_model,m_sphere_medium_model,m_sphere_high_model,m_sphere_low_model };
 	
 	for (auto& model : tmp) {
 

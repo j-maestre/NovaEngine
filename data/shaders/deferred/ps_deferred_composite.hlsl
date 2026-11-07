@@ -1,6 +1,6 @@
 #include "color_common.hlsli"
 
-// Ultimo paso: de HDR lineal a lo que muestra el backbuffer
+// De HDR lineal a sRGB. El FXAA y el dithering van despues, en ps_deferred_fxaa.
 
 struct VS_OUT
 {
@@ -38,11 +38,5 @@ float4 PShader(VS_OUT input) : SV_TARGET
     else
         color = 1.0f - exp(-color);
 
-    float3 output_color = LinearToSRGB(color);
-
-    // Dithering: menos de un nivel de ruido antes de pasar a 8 bits, para que no se vean bandas
-    float noise = frac(52.9829189f * frac(dot(input.position.xy, float2(0.06711056f, 0.00583715f))));
-    output_color += (noise - 0.5f) / 255.0f;
-
-    return float4(output_color, 1.0f);
+    return float4(LinearToSRGB(color), 1.0f);
 }

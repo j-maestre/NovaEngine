@@ -12,6 +12,7 @@ enum class GpuPass : int {
 	Skybox,
 	Bloom,
 	Composite,
+	Fxaa,
 	Count,
 };
 

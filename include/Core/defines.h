@@ -51,6 +51,13 @@ constexpr unsigned int ssao_noise_dim = 4;
 
 #include <stdio.h>
 #include <string>
+#include <cmath>
+
+// Seno entre el minimo y 1. Con la misma velocidad, emisivos y luces van a la vez.
+inline float pulse_factor(float time, float speed, float minimum) {
+	if (speed == 0.0f) return 1.0f;
+	return minimum + (1.0f - minimum) * (0.5f + 0.5f * sinf(time * speed));
+}
 
 struct ShaderFiles {
 	// Forward shaders
@@ -68,6 +75,7 @@ struct ShaderFiles {
 	// Light pass
 	ID3D11VertexShader* VS_deferred_common = nullptr;
 	ID3D11PixelShader* PS_deferred_composite = nullptr;
+	ID3D11PixelShader* PS_deferred_fxaa = nullptr;
 	ID3D11PixelShader* PS_deferred_lights = nullptr;
 
 	// Emissive downsample
@@ -78,7 +86,8 @@ struct ShaderFiles {
 	ID3D11PixelShader* PS_deferred_skybox = nullptr;
 
 	// Depth Pre pass: no tiene pixel shader
-	ID3D11VertexShader* VS_depth_prepass = nullptr;
+	ID3D11VertexShader* VS_depth_prepass = nullptr;		// Un objeto por draw: lo usa la seleccion con clic
+	ID3D11VertexShader* VS_depth_batch = nullptr;		// Toda la escena en un draw
 
 	// Seleccion con clic
 	ID3D11PixelShader* PS_entity_id = nullptr;
@@ -96,6 +105,7 @@ enum class ShaderType {
 	GeometryPass,
 	DeferredLights,
 	DeferredComposite,
+	Fxaa,
 	BloomDownsample,
 	Skybox,
 	Depth,
@@ -149,7 +159,8 @@ struct CameraConstantBuffer {
 	float emissive_intensity;
 	Mat4 normal_matrix;
 	Vec2 uv_scale;
-	Vec2 uv_padding;
+	float emissive_bloom;
+	float padding_object;
 };
 
 struct CameraDeferredConstantBuffer {
@@ -186,7 +197,8 @@ struct SSAOConstantBuffer {
 	float width;
 	float height;
 	float max_radius_px;
-	Vec2 padding;
+	float resolution_scale;		// 1 = resolucion completa, 2 = media
+	float padding_ssao;
 };
 
 
@@ -237,6 +249,12 @@ struct CompositeConstantBuffer {
 	Vec2 padding;
 };
 
+struct FxaaConstantBuffer {
+	Vec2 texel_size;
+	int enabled;
+	float padding;
+};
+
 struct Color {
 	float rgba[4];
 };
@@ -259,9 +277,6 @@ struct DeferredResources {
 	ID3D11ShaderResourceView* gbuffer_albedo_shader_resource_view;
 
 	// Position
-	ID3D11RenderTargetView* gbuffer_position_render_target_view;
-	ID3D11Texture2D* gbuffer_position_texture;
-	ID3D11ShaderResourceView* gbuffer_position_shader_resource_view;
 
 	// Normals
 	ID3D11RenderTargetView* gbuffer_normals_render_target_view;
@@ -292,6 +307,11 @@ struct DeferredResources {
 	ID3D11Texture2D* postprocess_texture;
 	ID3D11ShaderResourceView* postprocess_resource_view;
 
+	// Imagen final ya en sRGB, antes del FXAA
+	ID3D11RenderTargetView* fxaa_input_render_target_view;
+	ID3D11Texture2D* fxaa_input_texture;
+	ID3D11ShaderResourceView* fxaa_input_shader_resource_view;
+
 	// SSAO
 	ID3D11RenderTargetView* ssao_render_target_view;
 	ID3D11Texture2D* ssao_texture;
@@ -321,9 +341,12 @@ struct RenderInfo {
 	float ssao_direct = 0.5f;
 	float exposure = 1.0f;
 	Tonemapper tonemapper = Tonemapper::ACES;
-	float ambient_intensity = 1.0f;
+	float ambient_intensity = 0.1f;
 	bool ssao_active = true;
+	bool ssao_half_res = true;
 	bool bloom_active = true;
+	bool fxaa_active = true;
+	bool frustum_culling = true;
 	DrawMode draw_mode = DrawMode::Solid;
 };
 

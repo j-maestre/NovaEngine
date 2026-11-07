@@ -20,6 +20,13 @@ enum class EntityTemplate {
 };
 
 
+// Cubemaps de una escena. Sin seccion Environment en el yaml se usan estos.
+struct SceneEnvironment {
+	std::string skybox = "data/textures/cubemap/pruebaEnvHDR.dds";
+	std::string irradiance = "data/textures/cubemap/pruebaDiffuseHDR.dds";
+	std::string specular = "data/textures/cubemap/pruebaSpecularHDR.dds";
+};
+
 class Scene {
 
 public:
@@ -69,6 +76,7 @@ private:
 	std::string unique_name(const std::string& base);
 
 	Entity m_selected_entity;
+	SceneEnvironment m_environment;
 	std::string m_full_path;
 	std::string m_path;
 

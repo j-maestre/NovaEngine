@@ -5,16 +5,8 @@
 #include "render/imgui/imgui_manager.h"
 
 
-static inline bool  CheckShaderError(HRESULT hr, ID3DBlob* error_msg = nullptr) {
-	if (FAILED(hr)) {
-		if (error_msg != nullptr) {
-			OutputDebugStringA((char*)error_msg->GetBufferPointer());
-			error_msg->Release();
-		}
-			return false;
-	}
-
-	return true;
+static inline bool CheckShaderError(HRESULT hr) {
+	return SUCCEEDED(hr);
 }
 
 Renderer::Renderer() : m_shader_files(), m_sampler_desc{} {
@@ -45,12 +37,19 @@ Renderer::~Renderer(){
 	if (m_light_buffer) m_light_buffer->Release();
 	if (m_pVBuffer_light_pass) m_pVBuffer_light_pass->Release();
 	if (m_pVBuffer_composite) m_pVBuffer_composite->Release();
+	if (m_pVBuffer_fxaa) m_pVBuffer_fxaa->Release();
+	if (m_depth_vertex_buffer) m_depth_vertex_buffer->Release();
+	if (m_depth_index_buffer) m_depth_index_buffer->Release();
+	if (m_depth_matrix_buffer) m_depth_matrix_buffer->Release();
+	if (m_depth_matrix_srv) m_depth_matrix_srv->Release();
+	if (m_pLayout_depth_batch) m_pLayout_depth_batch->Release();
 	if (m_pVBuffer_entity_id) m_pVBuffer_entity_id->Release();
 	if (m_entity_id_staging) m_entity_id_staging->Release();
 
 	m_pLayout->Release();
 	m_sampler_state->Release();
 	m_depth_stencil_state->Release();
+	release();
 
 }
 
@@ -59,34 +58,39 @@ bool Renderer::init_pipeline(Window* win){
 	m_engine_ptr = Engine::get_instance();
 	m_window = win;
 
-	ID3DBlob* VS = nullptr;
-	ID3DBlob* VS_deferred = nullptr;
-	ID3DBlob* VS_skybox = nullptr;
-	ID3DBlob* VS_depth = nullptr;
-	ID3DBlob* PS = nullptr;
-	ID3DBlob* error_msg = nullptr;
+	// ComPtr: cada blob se libera al compilar otro en la misma variable y al salir de esta funcion
+	ComPtr<ID3DBlob> VS;
+	ComPtr<ID3DBlob> VS_deferred;
+	ComPtr<ID3DBlob> VS_skybox;
+	ComPtr<ID3DBlob> VS_depth;
+	ComPtr<ID3DBlob> VS_depth_batch;
+	ComPtr<ID3DBlob> PS;
+	HRESULT hr = S_OK;
+
+	const auto compile = [&](const wchar_t* path, const char* entry, const std::string& model, ComPtr<ID3DBlob>& blob) {
+		ComPtr<ID3DBlob> error_msg;
+		hr = D3DCompileFromFile(path, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, entry, model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, blob.ReleaseAndGetAddressOf(), error_msg.GetAddressOf());
+		m_isInitialized = SUCCEEDED(hr);
+		if (!m_isInitialized && error_msg) {
+			OutputDebugStringA(static_cast<const char*>(error_msg->GetBufferPointer()));
+			printf("%s\n", static_cast<const char*>(error_msg->GetBufferPointer()));
+		}
+		return m_isInitialized;
+	};
 	
 	// Forward rendering shaders
 
-	HRESULT hr = D3DCompileFromFile(L"data/shaders/forward/vs_common.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/forward/vs_common.hlsl", "VShader", m_vertex_shader_model, VS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(), NULL, &m_shader_files.VS_common);
 
 
-	hr = D3DCompileFromFile(L"data/shaders/forward/ps_directional.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/forward/ps_directional.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_directional);
 
-	hr = D3DCompileFromFile(L"data/shaders/forward/ps_point.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/forward/ps_point.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_point);
 
-	hr = D3DCompileFromFile(L"data/shaders/forward/ps_spot.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/forward/ps_spot.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_spot);
 	
 
@@ -95,85 +99,67 @@ bool Renderer::init_pipeline(Window* win){
 
 	
 	// Vertex shader geometry pass
-	hr = D3DCompileFromFile(L"data/shaders/deferred/vs_deferred.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/deferred/vs_deferred.hlsl", "VShader", m_vertex_shader_model, VS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS->GetBufferPointer(), VS->GetBufferSize(),NULL, &m_shader_files.VS_deferred);
 	
 	// Pixel shader geometry pass
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/deferred/ps_deferred.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred);
 
 	// Light pass vertex shader
-	hr = D3DCompileFromFile(L"data/shaders/deferred/vs_deferred_common.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS_deferred, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/deferred/vs_deferred_common.hlsl", "VShader", m_vertex_shader_model, VS_deferred)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS_deferred->GetBufferPointer(), VS_deferred->GetBufferSize(), NULL, &m_shader_files.VS_deferred_common);
 
 	// Light pass pixel shader (todas las luces en un solo draw)
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_lights.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/deferred/ps_deferred_lights.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_lights);
 
 	// Composite: tonemapping y gamma
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_composite.hlsl", nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/deferred/ps_deferred_composite.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_composite);
 
+	// FXAA y dithering, lo ultimo antes del backbuffer
+	if (!compile(L"data/shaders/deferred/ps_deferred_fxaa.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_fxaa);
+
 	// Bloom downscaling
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_post_process_bloom_downscaling.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/deferred/ps_deferred_post_process_bloom_downscaling.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_emissive_downsample);
 	
 	
 	
 	// Skybox VS
-	hr = D3DCompileFromFile(L"data/shaders/deferred/vs_deferred_skybox.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS_skybox, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/deferred/vs_deferred_skybox.hlsl", "VShader", m_vertex_shader_model, VS_skybox)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS_skybox->GetBufferPointer(), VS_skybox->GetBufferSize(), NULL, &m_shader_files.VS_deferred_skybox);
 
 	// Skybox PS
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_skybox.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/deferred/ps_deferred_skybox.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_deferred_skybox);
 
 	// SSAO PS
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_ssao.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/deferred/ps_deferred_ssao.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_SSAO);
 
 	// SSAO VS
-	hr = D3DCompileFromFile(L"data/shaders/deferred/vs_deferred_ssao.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS_deferred, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/deferred/vs_deferred_ssao.hlsl", "VShader", m_vertex_shader_model, VS_deferred)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS_deferred->GetBufferPointer(), VS_deferred->GetBufferSize(), NULL, &m_shader_files.VS_SSAO);
 
 
 	// SSAO Blur
-	hr = D3DCompileFromFile(L"data/shaders/deferred/ps_deferred_ssao_blur.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/deferred/ps_deferred_ssao_blur.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_SSAO_Blur_blend);
 
 	// Seleccion con clic
-	hr = D3DCompileFromFile(L"data/shaders/ps_entity_id.hlsl", nullptr, nullptr, "PShader", m_pixel_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &PS, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/ps_entity_id.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_entity_id);
 
 	// Depth prepass VS
-	hr = D3DCompileFromFile(L"data/shaders/vs_depth_prepass.hlsl", nullptr, nullptr, "VShader", m_vertex_shader_model.c_str(), D3DCOMPILE_OPTIMIZATION_LEVEL3, 0, &VS_depth, &error_msg);
-	m_isInitialized = CheckShaderError(hr, error_msg);
-	if (!m_isInitialized)return m_isInitialized;
+	if (!compile(L"data/shaders/vs_depth_prepass.hlsl", "VShader", m_vertex_shader_model, VS_depth)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS_depth->GetBufferPointer(), VS_depth->GetBufferSize(), NULL, &m_shader_files.VS_depth_prepass);
+
+	// Depth prepass VS, toda la escena en un draw
+	if (!compile(L"data/shaders/vs_depth_batch.hlsl", "VShader", m_vertex_shader_model, VS_depth_batch)) return false;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateVertexShader(VS_depth_batch->GetBufferPointer(), VS_depth_batch->GetBufferSize(), NULL, &m_shader_files.VS_depth_batch);
 
 	
 	
@@ -244,6 +230,13 @@ bool Renderer::init_pipeline(Window* win){
 	composite_desc.ByteWidth = sizeof(CompositeConstantBuffer);
 	composite_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&composite_desc, NULL, &m_pVBuffer_composite);
+
+	// FXAA constant buffer creation
+	D3D11_BUFFER_DESC fxaa_desc = {};
+	fxaa_desc.Usage = D3D11_USAGE_DEFAULT;
+	fxaa_desc.ByteWidth = sizeof(FxaaConstantBuffer);
+	fxaa_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreateBuffer(&fxaa_desc, NULL, &m_pVBuffer_fxaa);
 
 	// Seleccion con clic: constant buffer del ID y textura de 1 pixel para leer el resultado en la CPU
 	D3D11_BUFFER_DESC entity_id_desc = {};
@@ -384,7 +377,7 @@ bool Renderer::init_pipeline(Window* win){
 
 	m_blend_state_overwrite = nullptr;
 	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateBlendState(&blend_overwrite_desc, &m_blend_state_overwrite);
-	CheckShaderError(hr, error_msg);
+	CheckShaderError(hr);
 
 	D3D11_BLEND_DESC blend_additive_desc{
 		.AlphaToCoverageEnable = false,
@@ -409,7 +402,7 @@ bool Renderer::init_pipeline(Window* win){
 	
 	m_blend_state_additive = nullptr;
 	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateBlendState(&blend_additive_desc, &m_blend_state_additive);
-	CheckShaderError(hr, error_msg);
+	CheckShaderError(hr);
 
 
 	// Skybox buffer
@@ -463,6 +456,15 @@ bool Renderer::init_pipeline(Window* win){
 
 	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateInputLayout(ied_depth_pass, 1, VS_depth->GetBufferPointer(), VS_depth->GetBufferSize(), &m_pLayout_depth);
 	CheckShaderError(hr);
+
+	D3D11_INPUT_ELEMENT_DESC ied_depth_batch[] =
+	{
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{"OBJECT_INDEX", 0, DXGI_FORMAT_R32_UINT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	};
+	hr = m_engine_ptr->get_engine_props()->deviceInterface->CreateInputLayout(ied_depth_batch, 2, VS_depth_batch->GetBufferPointer(), VS_depth_batch->GetBufferSize(), &m_pLayout_depth_batch);
+	CheckShaderError(hr);
+
 	m_sampler_desc.Filter = D3D11_FILTER_ANISOTROPIC;
 	m_sampler_desc.MaxAnisotropy = 8;
 
@@ -532,6 +534,10 @@ void Renderer::active_shader(ShaderType type){
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_composite, nullptr, 0);
 		break;
+	case ShaderType::Fxaa:
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_deferred_fxaa, nullptr, 0);
+		break;
 	case ShaderType::DirectionalLight:
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_directional, nullptr, 0);
@@ -557,7 +563,7 @@ void Renderer::active_shader(ShaderType type){
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_entity_id, nullptr, 0);
 		break;
 	case ShaderType::Depth:
-		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_depth_prepass, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_depth_batch, nullptr, 0);
 		// Sin pixel shader: solo se escribe el depth buffer
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(nullptr, nullptr, 0);
 		break;
@@ -698,6 +704,9 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	clear_depth();
 	m_gpu_profiler.mark(gpu_context, GpuPass::Clear);
 
+	m_time += m_engine_ptr->get_delta_time();
+	update_visible_meshes(ecs);
+
 #ifdef DEPTH_PREPASS
 	depth_pass(ecs);
 	m_gpu_profiler.mark(gpu_context, GpuPass::Depth);
@@ -714,7 +723,6 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 
 	ID3D11RenderTargetView* gbuffer_rtv[] = {
 		m_deferred_resources.gbuffer_albedo_render_target_view,
-		m_deferred_resources.gbuffer_position_render_target_view,
 		m_deferred_resources.gbuffer_normals_render_target_view,
 		m_deferred_resources.gbuffer_material_render_target_view,
 		m_deferred_resources.gbuffer_emissive_render_target_view,
@@ -746,8 +754,6 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 
 
 
-	auto transforms = ecs.viewComponents<TransformComponent, MeshComponent>();
-
 	const Mat4* view = m_cam->get_view();
 	const Mat4* proj = m_cam->get_projection();
 	const Mat4* proj_inverse = m_cam->get_projection_inverse();
@@ -759,11 +765,8 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	cam_buffer.camera_position = m_cam->get_position();
 	
 
-	for (auto [entity, trans, mesh] : transforms.each()) {
-
-		for (Mesh& m : mesh.get_model()->meshes) {
-			render_mesh_internal(&cam_buffer, trans, m);
-		}
+	for (VisibleMesh& visible : m_visible_meshes) {
+		render_mesh_internal(&cam_buffer, *visible.transform, *visible.mesh);
 	}
 	// Unbind render targets
 	clear_shader_reources();
@@ -791,7 +794,8 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 		m_deferred_resources.postprocess_render_target_view, // Final color
 		m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[0]	// first mipmap level
 	};
-	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(light_pass_rtvs), light_pass_rtvs, m_depth_stencil_view); // no m_depth_stencil_view, is a full screen triangle 
+	// Sin depth: este pase lo lee como textura para reconstruir la posicion, y no se puede leer y escribir a la vez
+	props->inmediateDeviceContext->OMSetRenderTargets(ARRAYSIZE(light_pass_rtvs), light_pass_rtvs, nullptr);
 	props->inmediateDeviceContext->IASetInputLayout(m_pLayout_deferred);
 
 	UINT stride = sizeof(VertexQuad);
@@ -801,11 +805,11 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 
 	ID3D11ShaderResourceView* srvs[] = {
 		m_deferred_resources.gbuffer_albedo_shader_resource_view,
-		m_deferred_resources.gbuffer_position_shader_resource_view,
+		m_deferred_resources.depth_srv,
 		m_deferred_resources.gbuffer_normals_shader_resource_view,
 		m_deferred_resources.gbuffer_material_shader_resource_view,
 		m_deferred_resources.gbuffer_emissive_shader_resource_view,
-		m_engine_ptr->m_resource.get_skybox_srv(),
+		m_engine_ptr->m_resource.get_specular_srv(),
 		m_engine_ptr->m_resource.get_brdf_srv(),
 		m_light_buffer_srv,
 		m_engine_ptr->m_resource.get_irradiance_srv(),
@@ -818,7 +822,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	Mat4 view_proj = (*view) * (*proj);
 	cam_buffer_light.inv_view_proj = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, view_proj));;
 	cam_buffer_light.camera_position = m_cam->get_position();
-	cam_buffer_light.cubemap_max_mip_level = m_engine_ptr->m_resource.get_skybox_max_miplevel();
+	cam_buffer_light.cubemap_max_mip_level = m_engine_ptr->m_resource.get_specular_max_miplevel();
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferDeferredConstantCamera, 0, nullptr, &cam_buffer_light, 0, 0);
 
 
@@ -855,10 +859,9 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 
 	clear_srv(2);
 
-	// Draw in the back buffer
+	// La imagen final va a una textura intermedia: el FXAA la lee para escribir en el backbuffer
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
-	// Sin depth: el panel G-Buffer lo va a leer como textura al dibujar ImGui
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->backbuffer, nullptr);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.fxaa_input_render_target_view, nullptr);
 
 	// Setear textura resultado (SRV)
 	if (m_render_info_parameters.bloom_active) {
@@ -869,7 +872,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 
 	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
 
-	// Dibujar quad: de HDR lineal al backbuffer
+	// Dibujar quad: de HDR lineal a sRGB
 	CompositeConstantBuffer composite_constants{};
 	composite_constants.exposure = m_render_info_parameters.exposure;
 	composite_constants.tonemapper = m_render_info_parameters.tonemapper;
@@ -884,6 +887,27 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	add_draw_call();
 
 	m_gpu_profiler.mark(gpu_context, GpuPass::Composite);
+
+	// Draw in the back buffer
+	// Sin depth: el panel G-Buffer lo va a leer como textura al dibujar ImGui
+	props->inmediateDeviceContext->OMSetRenderTargets(1, &m_window->get_window_info()->backbuffer, nullptr);
+	props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.fxaa_input_shader_resource_view);
+	// Bilineal y sin repetir: el FXAA lee entre pixeles y no debe coger el lado contrario de la pantalla
+	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
+
+	D3D11_TEXTURE2D_DESC fxaa_input_desc;
+	m_deferred_resources.fxaa_input_texture->GetDesc(&fxaa_input_desc);
+	FxaaConstantBuffer fxaa_constants{};
+	fxaa_constants.texel_size = { 1.0f / fxaa_input_desc.Width, 1.0f / fxaa_input_desc.Height };
+	fxaa_constants.enabled = m_render_info_parameters.fxaa_active ? 1 : 0;
+	props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_fxaa, 0, nullptr, &fxaa_constants, 0, 0);
+	props->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_fxaa);
+
+	active_shader(ShaderType::Fxaa);
+	props->inmediateDeviceContext->Draw(3, 0);
+	add_draw_call();
+
+	m_gpu_profiler.mark(gpu_context, GpuPass::Fxaa);
 	m_gpu_profiler.end_frame(gpu_context);
 
 #ifdef ENABLE_IMGUI
@@ -963,7 +987,8 @@ void Renderer::update_light_buffer(EntityComponentSystem& ecs){
 		gpu.type = GPULightType::Point;
 		gpu.position = light.get_position();
 		gpu.color = light.get_color();
-		gpu.intensity = light.get_intensity();
+		light.update_pulse(m_time);
+		gpu.intensity = light.get_current_intensity();
 		gpu.range = light.get_distance();
 		gpu.fall_start = light.get_fall_start();
 		gpu.constant_att = light.get_constant_attenuation();
@@ -1066,10 +1091,31 @@ DrawMode Renderer::get_current_draw_mode(){
 }
 
 void Renderer::release(){
-	m_shader_files.VS_common->Release();
-	m_shader_files.PS_directional->Release();
-	m_shader_files.PS_point->Release();
-	m_shader_files.PS_spot->Release();
+
+	const auto free_shader = [](auto*& shader) {
+		if (shader) shader->Release();
+		shader = nullptr;
+	};
+
+	free_shader(m_shader_files.VS_common);
+	free_shader(m_shader_files.PS_directional);
+	free_shader(m_shader_files.PS_point);
+	free_shader(m_shader_files.PS_spot);
+	free_shader(m_shader_files.VS_deferred);
+	free_shader(m_shader_files.PS_deferred);
+	free_shader(m_shader_files.VS_deferred_common);
+	free_shader(m_shader_files.PS_deferred_composite);
+	free_shader(m_shader_files.PS_deferred_fxaa);
+	free_shader(m_shader_files.PS_deferred_lights);
+	free_shader(m_shader_files.PS_deferred_emissive_downsample);
+	free_shader(m_shader_files.VS_deferred_skybox);
+	free_shader(m_shader_files.PS_deferred_skybox);
+	free_shader(m_shader_files.VS_depth_prepass);
+	free_shader(m_shader_files.VS_depth_batch);
+	free_shader(m_shader_files.PS_entity_id);
+	free_shader(m_shader_files.PS_SSAO);
+	free_shader(m_shader_files.VS_SSAO);
+	free_shader(m_shader_files.PS_SSAO_Blur_blend);
 }
 
 void Renderer::render_mesh_internal(CameraConstantBuffer* camera_buffer, TransformComponent& trans, Mesh& m){
@@ -1087,7 +1133,9 @@ void Renderer::render_mesh_internal(CameraConstantBuffer* camera_buffer, Transfo
 	camera_buffer->roughness = m.material.get_roughness_value();
 	camera_buffer->color = m.material.get_color_value();
 	camera_buffer->emissive = m.material.get_emissive_value();
-	camera_buffer->emissive_intensity = m.material.get_emissive_intensity();
+	m.material.update_emissive_pulse(m_time);
+	camera_buffer->emissive_intensity = m.material.get_current_emissive_intensity();
+	camera_buffer->emissive_bloom = m.material.get_emissive_bloom();
 	
 	// Buffer de la camara con la model del objeto
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, camera_buffer, 0, 0);
@@ -1215,6 +1263,7 @@ void Renderer::draw_emissive_downsample(){
 		set_viewport(desc.Width, desc.Height);
 
 
+		props->inmediateDeviceContext->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
 		props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[i + 1]);		// This texture has the emissive texture (and brightness)
 		props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.emissive_dowscaling_render_target_view[i + 1], nullptr);			// Disable dpeth stencil, not needed here
 		props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state_emissive);
@@ -1259,8 +1308,11 @@ void Renderer::draw_emissive_downsample(){
 
 			props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs), srvs);
 			emissive_buffer2.blend = 1;
+			emissive_buffer2.bloom_intensity = 1.0f / (NUM_MIPMAPS_EMISSIVE - 1);	// Media de los niveles sumados
 		}else {
 			props->inmediateDeviceContext->PSSetShaderResources(0, 1, &m_deferred_resources.emissive_dowscaling_shader_resource_view[i + 1]);
+			// Se suma a lo que este nivel guardo al bajar: asi se conserva el brillo ajustado de los niveles grandes
+			props->inmediateDeviceContext->OMSetBlendState(m_blend_state_additive, nullptr, 0xffffffff);
 		}
 
 		props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_emissive_constant_buffer, 0, nullptr, &emissive_buffer2, 0, 0);
@@ -1280,6 +1332,13 @@ void Renderer::draw_ssao(Mat4* projection, Mat4* view, Mat4* projection_inverse)
 
 	auto props = m_engine_ptr->get_instance()->get_engine_props();
 
+	// Al cambiar la opcion en el panel, las texturas se rehacen con el tamano nuevo
+	if (m_render_info_parameters.ssao_half_res != m_ssao_half_built) create_ssao_targets();
+
+	D3D11_TEXTURE2D_DESC ssao_desc;
+	m_deferred_resources.ssao_texture->GetDesc(&ssao_desc);
+	set_viewport(ssao_desc.Width, ssao_desc.Height);
+
 	active_shader(ShaderType::SSAO);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->RSSetState(m_engine_ptr->m_raster_state);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->OMSetDepthStencilState(m_depth_stencil_ssao, 0);
@@ -1294,7 +1353,6 @@ void Renderer::draw_ssao(Mat4* projection, Mat4* view, Mat4* projection_inverse)
 
 	// Position, Normals, SSAO Noise
 	ID3D11ShaderResourceView* gbuffer_srv[] = {
-		m_deferred_resources.gbuffer_position_shader_resource_view,
 		m_deferred_resources.gbuffer_normals_shader_resource_view,
 		m_noise_srv,
 		m_deferred_resources.depth_srv,
@@ -1312,6 +1370,7 @@ void Renderer::draw_ssao(Mat4* projection, Mat4* view, Mat4* projection_inverse)
 	m_constant_buffer_ssao.samples_float = static_cast<float>(m_render_info_parameters.ssao_samples);
 	m_constant_buffer_ssao.ssao_base_radius = m_render_info_parameters.ssao_base_radius;
 	m_constant_buffer_ssao.max_radius_px = m_render_info_parameters.ssao_max_radius_px;
+	m_constant_buffer_ssao.resolution_scale = m_ssao_half_built ? 2.0f : 1.0f;
 	m_constant_buffer_ssao.inv_projection = *projection_inverse;
 	props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_ssao, 0, nullptr, &m_constant_buffer_ssao, 0, 0);
 	props->inmediateDeviceContext->PSSetConstantBuffers(0, 1, &m_pVBuffer_ssao);
@@ -1338,6 +1397,8 @@ void Renderer::draw_ssao(Mat4* projection, Mat4* view, Mat4* projection_inverse)
 	draw_ssao_blur();
 	m_gpu_profiler.mark(props->inmediateDeviceContext, GpuPass::SSAOBlur);
 
+	props->inmediateDeviceContext->RSSetViewports(1, &m_engine_ptr->m_viewport);
+
 }
 
 void Renderer::draw_ssao_blur(){
@@ -1360,6 +1421,146 @@ void Renderer::draw_ssao_blur(){
 	clear_rtv(1);
 }
 
+void Renderer::update_visible_meshes(EntityComponentSystem& ecs){
+
+	using namespace DirectX;
+
+	m_visible_meshes.clear();
+	m_depth_all_meshes.clear();
+	m_depth_matrices.clear();
+	unsigned int total = 0;
+	unsigned long long visible_triangles = 0;
+	unsigned long long total_triangles = 0;
+	size_t key = 14695981039346656037ull;
+
+	// Los 6 planos del frustum, en mundo. Las filas de la traspuesta son las columnas de view * proj:
+	// en DirectX el vector multiplica por la izquierda. La Z de clip va de 0 a 1, por eso cerca es solo r[2].
+	const Mat4 clip = XMMatrixTranspose((*m_cam->get_view()) * (*m_cam->get_projection()));
+	const FVector planes[6] = {
+		XMPlaneNormalize(XMVectorAdd(clip.r[3], clip.r[0])),		// Izquierda
+		XMPlaneNormalize(XMVectorSubtract(clip.r[3], clip.r[0])),	// Derecha
+		XMPlaneNormalize(XMVectorAdd(clip.r[3], clip.r[1])),		// Abajo
+		XMPlaneNormalize(XMVectorSubtract(clip.r[3], clip.r[1])),	// Arriba
+		XMPlaneNormalize(clip.r[2]),								// Cerca
+		XMPlaneNormalize(XMVectorSubtract(clip.r[3], clip.r[2])),	// Lejos
+	};
+
+	auto transforms = ecs.viewComponents<TransformComponent, MeshComponent>();
+	for (auto [entity, trans, mesh] : transforms.each()) {
+
+		const Mat4 world = trans.get_transform();
+
+		// La esfera crece con la mayor escala de mundo, que ya incluye la de los padres
+		const float scale_x = XMVectorGetX(XMVector3LengthSq(world.r[0]));
+		const float scale_y = XMVectorGetX(XMVector3LengthSq(world.r[1]));
+		const float scale_z = XMVectorGetX(XMVector3LengthSq(world.r[2]));
+		const float max_scale = sqrtf(std::max(scale_x, std::max(scale_y, scale_z)));
+
+		XMFLOAT4X4 world_transposed;
+		XMStoreFloat4x4(&world_transposed, XMMatrixTranspose(world));
+
+		for (Mesh& m : mesh.get_model()->meshes) {
+			const unsigned int slot = total++;
+			total_triangles += m.num_indices / 3;
+			m_depth_all_meshes.push_back(&m);
+			m_depth_matrices.push_back(world_transposed);
+			key = (key ^ reinterpret_cast<size_t>(m.buffer)) * 1099511628211ull;
+			key = (key ^ m.vertices.size()) * 1099511628211ull;
+
+			bool visible = true;
+			if (m_render_info_parameters.frustum_culling && m.bounds_radius >= 0.0f) {
+				const FVector center = XMVector3TransformCoord(XMLoadFloat3(&m.bounds_center), world);
+				const float radius = m.bounds_radius * max_scale;
+				for (const FVector& plane : planes) {
+					if (XMVectorGetX(XMPlaneDotCoord(plane, center)) < -radius) {
+						visible = false;
+						break;
+					}
+				}
+			}
+			if (visible) {
+				m_visible_meshes.push_back({ &trans, &m, slot });
+				visible_triangles += m.num_indices / 3;
+			}
+		}
+	}
+	m_depth_geometry_key = key;
+
+#ifdef ENABLE_IMGUI
+	ImguiManager::get_instance()->m_visible_meshes = static_cast<unsigned int>(m_visible_meshes.size());
+	ImguiManager::get_instance()->m_total_meshes = total;
+	ImguiManager::get_instance()->m_visible_triangles = visible_triangles;
+	ImguiManager::get_instance()->m_total_triangles = total_triangles;
+#endif
+}
+
+void Renderer::rebuild_depth_geometry(){
+
+	auto device = m_engine_ptr->get_engine_props()->deviceInterface;
+
+	if (m_depth_vertex_buffer) m_depth_vertex_buffer->Release();
+	if (m_depth_index_buffer) m_depth_index_buffer->Release();
+	if (m_depth_matrix_buffer) m_depth_matrix_buffer->Release();
+	if (m_depth_matrix_srv) m_depth_matrix_srv->Release();
+	m_depth_vertex_buffer = nullptr;
+	m_depth_index_buffer = nullptr;
+	m_depth_matrix_buffer = nullptr;
+	m_depth_matrix_srv = nullptr;
+	m_depth_uploaded_slots.clear();
+	m_depth_index_count = 0;
+	m_depth_built_key = m_depth_geometry_key;
+
+	std::vector<DepthVertex> vertices;
+	m_depth_indices.clear();
+	m_depth_ranges.clear();
+
+	for (unsigned int slot = 0; slot < m_depth_all_meshes.size(); slot++) {
+		const Mesh& m = *m_depth_all_meshes[slot];
+		const unsigned int base_vertex = static_cast<unsigned int>(vertices.size());
+
+		for (const Vertex& v : m.vertices) {
+			vertices.push_back({ v.pos_x, v.pos_y, v.pos_z, slot });
+		}
+
+		m_depth_ranges.push_back({ static_cast<unsigned int>(m_depth_indices.size()), static_cast<unsigned int>(m.indices.size()) });
+		for (unsigned int index : m.indices) {
+			m_depth_indices.push_back(base_vertex + index);
+		}
+	}
+
+	if (vertices.empty() || m_depth_indices.empty()) return;
+
+	D3D11_BUFFER_DESC vertex_desc = {};
+	vertex_desc.Usage = D3D11_USAGE_IMMUTABLE;
+	vertex_desc.ByteWidth = static_cast<UINT>(vertices.size() * sizeof(DepthVertex));
+	vertex_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	D3D11_SUBRESOURCE_DATA vertex_data = {};
+	vertex_data.pSysMem = vertices.data();
+	device->CreateBuffer(&vertex_desc, &vertex_data, &m_depth_vertex_buffer);
+
+	D3D11_BUFFER_DESC index_desc = {};
+	index_desc.Usage = D3D11_USAGE_DYNAMIC;
+	index_desc.ByteWidth = static_cast<UINT>(m_depth_indices.size() * sizeof(unsigned int));
+	index_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	index_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	device->CreateBuffer(&index_desc, nullptr, &m_depth_index_buffer);
+
+	D3D11_BUFFER_DESC matrix_desc = {};
+	matrix_desc.Usage = D3D11_USAGE_DYNAMIC;
+	matrix_desc.ByteWidth = static_cast<UINT>(m_depth_all_meshes.size() * sizeof(DirectX::XMFLOAT4X4));
+	matrix_desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	matrix_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	matrix_desc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	matrix_desc.StructureByteStride = sizeof(DirectX::XMFLOAT4X4);
+	device->CreateBuffer(&matrix_desc, nullptr, &m_depth_matrix_buffer);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc = {};
+	srv_desc.Format = DXGI_FORMAT_UNKNOWN;
+	srv_desc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+	srv_desc.Buffer.NumElements = static_cast<UINT>(m_depth_all_meshes.size());
+	device->CreateShaderResourceView(m_depth_matrix_buffer, &srv_desc, &m_depth_matrix_srv);
+}
+
 void Renderer::depth_pass(EntityComponentSystem& ecs){
 	
 	active_shader(ShaderType::Depth);
@@ -1368,7 +1569,6 @@ void Renderer::depth_pass(EntityComponentSystem& ecs){
 	props->inmediateDeviceContext->OMSetDepthStencilState(m_depth_only_state, 1);
 	props->inmediateDeviceContext->RSSetState(m_current_raster);
 
-	props->inmediateDeviceContext->IASetInputLayout(m_pLayout_depth);
 	props->inmediateDeviceContext->VSSetConstantBuffers(0, 1, &m_pVBuffer_constant_camera_depth_only);
 	const Mat4* view = m_cam->get_view();
 	const Mat4* proj = m_cam->get_projection();
@@ -1377,12 +1577,51 @@ void Renderer::depth_pass(EntityComponentSystem& ecs){
 	cam_buffer.view = DirectX::XMMatrixTranspose(*view);
 	cam_buffer.projection = DirectX::XMMatrixTranspose(*proj);
 
-	auto transforms = ecs.viewComponents<TransformComponent, MeshComponent>();
-	for (auto [entity, trans, mesh] : transforms.each()) {
-		for (Mesh& m : mesh.get_model()->meshes) {
-			render_mesh_depth_only(&cam_buffer, trans, m); // versión simplificada sin materiales
+	props->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_constant_camera_depth_only, 0, nullptr, &cam_buffer, 0, 0);
+
+	if (m_depth_geometry_key != m_depth_built_key) rebuild_depth_geometry();
+	if (!m_depth_vertex_buffer || m_depth_all_meshes.empty()) return;
+
+	// Indices: solo si ha cambiado lo que se ve. Son copias de rangos, sin recorrer cada indice.
+	bool same_slots = m_depth_uploaded_slots.size() == m_visible_meshes.size();
+	for (size_t i = 0; same_slots && i < m_visible_meshes.size(); i++) {
+		same_slots = m_depth_uploaded_slots[i] == m_visible_meshes[i].slot;
+	}
+	if (!same_slots) {
+		D3D11_MAPPED_SUBRESOURCE mapped;
+		if (SUCCEEDED(props->inmediateDeviceContext->Map(m_depth_index_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped))) {
+			unsigned int* destination = static_cast<unsigned int*>(mapped.pData);
+			m_depth_index_count = 0;
+			m_depth_uploaded_slots.clear();
+			for (const VisibleMesh& visible : m_visible_meshes) {
+				const DepthRange& range = m_depth_ranges[visible.slot];
+				if (range.index_count > 0) memcpy(destination + m_depth_index_count, m_depth_indices.data() + range.first_index, range.index_count * sizeof(unsigned int));
+				m_depth_index_count += range.index_count;
+				m_depth_uploaded_slots.push_back(visible.slot);
+			}
+			props->inmediateDeviceContext->Unmap(m_depth_index_buffer, 0);
 		}
 	}
+	if (m_depth_index_count == 0) return;
+
+	D3D11_MAPPED_SUBRESOURCE mapped_matrices;
+	if (FAILED(props->inmediateDeviceContext->Map(m_depth_matrix_buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped_matrices))) return;
+	memcpy(mapped_matrices.pData, m_depth_matrices.data(), m_depth_matrices.size() * sizeof(DirectX::XMFLOAT4X4));
+	props->inmediateDeviceContext->Unmap(m_depth_matrix_buffer, 0);
+
+	UINT stride = sizeof(DepthVertex);
+	UINT offset = 0;
+	props->inmediateDeviceContext->IASetInputLayout(m_pLayout_depth_batch);
+	props->inmediateDeviceContext->IASetVertexBuffers(0, 1, &m_depth_vertex_buffer, &stride, &offset);
+	props->inmediateDeviceContext->IASetIndexBuffer(m_depth_index_buffer, DXGI_FORMAT_R32_UINT, 0);
+	props->inmediateDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	props->inmediateDeviceContext->VSSetShaderResources(0, 1, &m_depth_matrix_srv);
+
+	props->inmediateDeviceContext->DrawIndexed(m_depth_index_count, 0, 0);
+	add_draw_call();
+
+	ID3D11ShaderResourceView* null_srv = nullptr;
+	props->inmediateDeviceContext->VSSetShaderResources(0, 1, &null_srv);
 
 	//clear_rtv(1);
 }
@@ -1536,9 +1775,42 @@ void Renderer::create_backbuffers(){
 	
 }
 
+void Renderer::create_ssao_targets(){
+
+	auto device = Engine::get_instance()->get_engine_props()->deviceInterface;
+	const bool half = m_render_info_parameters.ssao_half_res;
+	const unsigned int width = half ? (m_target_width + 1) / 2 : m_target_width;
+	const unsigned int height = half ? (m_target_height + 1) / 2 : m_target_height;
+
+	// R: oclusion. G: distancia a la camara, para que el pase de luces sepa de que superficie viene cada valor
+	auto create = [&](ID3D11Texture2D** texture, ID3D11RenderTargetView** rtv, ID3D11ShaderResourceView** srv) {
+		if (*texture) (*texture)->Release();
+		if (*rtv) (*rtv)->Release();
+		if (*srv) (*srv)->Release();
+
+		D3D11_TEXTURE2D_DESC desc{};
+		desc.Width = width;
+		desc.Height = height;
+		desc.MipLevels = 1;
+		desc.ArraySize = 1;
+		desc.Format = DXGI_FORMAT_R16G16_FLOAT;
+		desc.SampleDesc.Count = 1;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		device->CreateTexture2D(&desc, nullptr, texture);
+		device->CreateRenderTargetView(*texture, nullptr, rtv);
+		device->CreateShaderResourceView(*texture, nullptr, srv);
+	};
+	create(&m_deferred_resources.ssao_texture, &m_deferred_resources.ssao_render_target_view, &m_deferred_resources.ssao_shader_resource_view);
+	create(&m_deferred_resources.ssao_blur_texture, &m_deferred_resources.ssao_blur_render_target_view, &m_deferred_resources.ssao_blur_shader_resource_view);
+	m_ssao_half_built = half;
+}
+
 void Renderer::create_deferred_resources(unsigned int width, unsigned int height){
 	Engine* e = Engine::get_instance();
 	auto device = e->get_engine_props()->deviceInterface;
+	m_target_width = width;
+	m_target_height = height;
 
 	auto create_render_target = [&](DXGI_FORMAT format, ID3D11Texture2D** outTex, ID3D11RenderTargetView** outRTV, ID3D11ShaderResourceView** outSRV, unsigned int width_tmp = 0, unsigned int height_tmp = 0) {
 		D3D11_TEXTURE2D_DESC desc{};
@@ -1568,13 +1840,6 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 		&m_deferred_resources.gbuffer_albedo_shader_resource_view
 	);
 	
-	// Position
-	create_render_target(DXGI_FORMAT_R16G16B16A16_FLOAT,
-		&m_deferred_resources.gbuffer_position_texture,
-		&m_deferred_resources.gbuffer_position_render_target_view,
-		&m_deferred_resources.gbuffer_position_shader_resource_view
-	);
-
 	// Normals (use a high-precision format for better quality)
 	create_render_target(DXGI_FORMAT_R16G16B16A16_FLOAT,
 		&m_deferred_resources.gbuffer_normals_texture,
@@ -1628,19 +1893,15 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 		&m_deferred_resources.postprocess_resource_view
 	);
 
-	// SSAO
-	create_render_target(DXGI_FORMAT_R16_FLOAT,
-		&m_deferred_resources.ssao_texture,
-		&m_deferred_resources.ssao_render_target_view,
-		&m_deferred_resources.ssao_shader_resource_view
+	// Entrada del FXAA: guarda los valores ya en sRGB, por eso el formato no es _SRGB
+	create_render_target(DXGI_FORMAT_R8G8B8A8_UNORM,
+		&m_deferred_resources.fxaa_input_texture,
+		&m_deferred_resources.fxaa_input_render_target_view,
+		&m_deferred_resources.fxaa_input_shader_resource_view
 	);
 
-	// SSAO blur
-	create_render_target(DXGI_FORMAT_R16_FLOAT,
-		&m_deferred_resources.ssao_blur_texture,
-		&m_deferred_resources.ssao_blur_render_target_view,
-		&m_deferred_resources.ssao_blur_shader_resource_view
-	);
+	// SSAO y su blur, a resolucion completa o a la mitad
+	create_ssao_targets();
 	
 	// IDs de entidad, para seleccionar con clic
 	create_render_target(DXGI_FORMAT_R32_UINT,
@@ -1662,7 +1923,6 @@ void Renderer::release_deferred_resources(){
 	};
 
 	func(&m_deferred_resources.gbuffer_albedo_texture, &m_deferred_resources.gbuffer_albedo_render_target_view, &m_deferred_resources.gbuffer_albedo_shader_resource_view);
-	func(&m_deferred_resources.gbuffer_position_texture, &m_deferred_resources.gbuffer_position_render_target_view, &m_deferred_resources.gbuffer_position_shader_resource_view);
 	func(&m_deferred_resources.gbuffer_normals_texture, &m_deferred_resources.gbuffer_normals_render_target_view, &m_deferred_resources.gbuffer_normals_shader_resource_view);
 	func(&m_deferred_resources.gbuffer_material_texture, &m_deferred_resources.gbuffer_material_render_target_view, &m_deferred_resources.gbuffer_material_shader_resource_view);
 	func(&m_deferred_resources.gbuffer_emissive_texture, &m_deferred_resources.gbuffer_emissive_render_target_view, &m_deferred_resources.gbuffer_emissive_shader_resource_view);
@@ -1673,6 +1933,7 @@ void Renderer::release_deferred_resources(){
 	}
 
 	func(&m_deferred_resources.postprocess_texture, &m_deferred_resources.postprocess_render_target_view,&m_deferred_resources.postprocess_resource_view);
+	func(&m_deferred_resources.fxaa_input_texture, &m_deferred_resources.fxaa_input_render_target_view, &m_deferred_resources.fxaa_input_shader_resource_view);
 	func(&m_deferred_resources.ssao_texture, &m_deferred_resources.ssao_render_target_view,&m_deferred_resources.ssao_shader_resource_view);
 	func(&m_deferred_resources.ssao_blur_texture, &m_deferred_resources.ssao_blur_render_target_view, &m_deferred_resources.ssao_blur_shader_resource_view);
 	func(&m_deferred_resources.entity_id_texture, &m_deferred_resources.entity_id_rtv, &m_deferred_resources.entity_id_srv);
@@ -1779,7 +2040,6 @@ void Renderer::clear_render_target(){
 	
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_material_render_target_view, m_clear_emissive_color);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_normals_render_target_view, m_clear_emissive_color);
-	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_position_render_target_view, m_clear_emissive_color);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_albedo_render_target_view, m_clear_emissive_color);
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.ssao_render_target_view, m_clear_emissive_color);

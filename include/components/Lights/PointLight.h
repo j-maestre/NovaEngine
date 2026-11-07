@@ -33,6 +33,13 @@ public:
 	// entt no mueve este componente al borrar otros: los punteros a el siguen siendo validos
 	static constexpr bool in_place_delete = true;
 
+private:
+	float m_pulse_speed = 0.0f;
+	float m_pulse_min = 0.0f;
+	float m_current_intensity = 0.0f;
+
+public:
+
 	PointLight();
 	PointLight(float aspect_ratio);
 	PointLight(const PointLight&);
@@ -43,6 +50,13 @@ public:
 
     Vec3 get_position() { return m_buffer.position; }
     float get_enabled() { return m_buffer.enabled > 0.0f; }
+    // Pulso de la intensidad: radianes por segundo (0 = fija) y fraccion en el punto mas bajo
+    float get_pulse_speed() const { return m_pulse_speed; }
+    float get_pulse_min() const { return m_pulse_min; }
+    void set_pulse(float speed, float minimum) { m_pulse_speed = speed; m_pulse_min = minimum; }
+    // Intensidad de este frame. La base (get_intensity) es la que se edita y se guarda.
+    void update_pulse(float time) { m_current_intensity = get_intensity() * pulse_factor(time, m_pulse_speed, m_pulse_min); }
+    float get_current_intensity() const { return m_current_intensity; }
     Vec3  get_color() { return m_buffer.diffuse_color; }
     float get_specular_strenght() { return m_buffer.specular_strength; }
     Vec3  get_specular_color() { return m_buffer.specular_color; }

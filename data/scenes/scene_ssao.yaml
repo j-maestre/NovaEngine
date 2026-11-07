@@ -10,7 +10,7 @@ Entities:
       Position: [1.0, 1.7, 0.0]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.0, 1.0, 1.0]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.1, 0.8, 0.1] }
       - {Metallic: 0.5}
@@ -20,7 +20,7 @@ Entities:
       Position: [3.0, 1.7, 0.0]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.0, 1.0, 1.0]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.1, 0.8, 0.1] }
       - {Metallic: 0.5}
@@ -30,7 +30,7 @@ Entities:
       Position: [5.0, 1.7, 0.0]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.0, 1.0, 1.0]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.1, 0.8, 0.1] }
       - {Metallic: 0.5}
@@ -40,7 +40,7 @@ Entities:
       Position: [7.0, 1.7, 0.0]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.0, 1.0, 1.0]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.1, 0.8, 0.1] }
       - {Metallic: 0.5}
@@ -50,7 +50,7 @@ Entities:
       Position: [0.0, 0.0, 0.0]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.0, 1.0, 1.0]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.1, 0.8, 0.1] }
       - {Metallic: 0.5}
@@ -60,7 +60,7 @@ Entities:
       Position: [2.0, 0.0, 0.0]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.0, 1.0, 1.0]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.1, 0.8, 0.1] }
       - {Metallic: 0.5}
@@ -70,7 +70,7 @@ Entities:
       Position: [4.0, 0.0, 0.0]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.0, 1.0, 1.0]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.1, 0.8, 0.1] }
       - {Metallic: 0.5}
@@ -80,7 +80,7 @@ Entities:
       Position: [6.0, 0.0, 0.0]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.0, 1.0, 1.0]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.1, 0.8, 0.1] }
       - {Metallic: 0.5}

@@ -296,6 +296,11 @@ void Window::release(){
 	//}
 }
 
+void Window::set_title(const std::string& title){
+
+	SetWindowTextA(m_window_info->window_handle, title.c_str());
+}
+
 WindowInfo* Window::get_window_info(){
 
 	return m_window_info.get();
@@ -381,6 +386,11 @@ void Window::set_windowed()
 
 void Window::resize(){
 	Engine* e = Engine::get_instance();
+
+	// Al minimizar el area es 0x0 y no se pueden crear texturas de ese tamano: se conservan las que hay
+	RECT client_rect;
+	GetClientRect(m_window_info->window_handle, &client_rect);
+	if (client_rect.right - client_rect.left < 2 || client_rect.bottom - client_rect.top < 2) return;
 
 	if (e->get_engine_props()->inmediateDeviceContext) {
 

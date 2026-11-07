@@ -36,6 +36,8 @@ public:
 	void process_mouse_button(Key::Mouse btn, Key::KeyState state);
 	void process_mouse_wheel(bool up);
 	
+	void set_title(const std::string& title);
+	bool is_minimized() const { return IsIconic(m_window_info->window_handle) != 0; }
 	void set_full_screen();
 	void set_windowed();
 	void resize();

@@ -31,6 +31,24 @@ ResourceManager::~ResourceManager(){
 	release();
 }
 
+void ResourceManager::set_environment(const std::string& skybox, const std::string& irradiance, const std::string& specular){
+
+	const std::string paths = skybox + "|" + irradiance + "|" + specular;
+	if (paths == m_environment_paths) return;
+	m_environment_paths = paths;
+
+	if (m_skybox_srv) m_skybox_srv->Release();
+	if (m_irradiance_srv) m_irradiance_srv->Release();
+	if (m_specular_srv) m_specular_srv->Release();
+	m_skybox_srv = nullptr;
+	m_irradiance_srv = nullptr;
+	m_specular_srv = nullptr;
+
+	load_cube_map(skybox);
+	load_irradiance_map(irradiance);
+	load_specular_map(specular);
+}
+
 void ResourceManager::load_irradiance_map(std::string path){
 
 	std::wstring path_tmp(path.begin(), path.end());
@@ -44,6 +62,26 @@ void ResourceManager::load_irradiance_map(std::string path){
 	if (FAILED(hr)) {
 		printf("\n*** Error loading %s ***\n", path.c_str());
 	}
+}
+
+void ResourceManager::load_specular_map(std::string path){
+
+	std::wstring path_tmp(path.begin(), path.end());
+	HRESULT hr = DirectX::CreateDDSTextureFromFile(
+		m_engine->get_engine_props()->deviceInterface,
+		path_tmp.c_str(),
+		nullptr,
+		&m_specular_srv
+	);
+
+	if (FAILED(hr)) {
+		printf("\n*** Error loading %s ***\n", path.c_str());
+		return;
+	}
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC desc;
+	m_specular_srv->GetDesc(&desc);
+	m_specular_max_mip_level = desc.TextureCube.MipLevels - 1;
 }
 
 void ResourceManager::load_cube_map(std::string path){
@@ -62,20 +100,10 @@ void ResourceManager::load_cube_map(std::string path){
 		return;
 	}
 
-	ID3D11Resource* resource = nullptr;
-	m_skybox_srv->GetResource(&resource);
-
-	ID3D11Texture2D* texture = nullptr;
-	hr = resource->QueryInterface(__uuidof(ID3D11Texture2D), (void**)&texture);
-	resource->Release();
-	if (SUCCEEDED(hr) && texture){
-		D3D11_TEXTURE2D_DESC desc;
-		texture->GetDesc(&desc);
-		m_cubemap_max_mip_level = desc.MipLevels - 1;
-		texture->Release();
-	}
 	// Load pre calculed brdf
-	Texture* t = load_texture_with_flip("data/textures/BRDF_lut.png", 0u);
+	// El png tiene la rugosidad 0 en la fila de abajo; el shader la busca en v = 0
+	Texture* t = load_texture_with_flip("data/textures/BRDF_lut.png", 1u);
+	t->m_engine_default = true;		// Se usa siempre: no se libera al cambiar de escena
 	m_brdf_srv = t->m_data.texture_view;
 
 
@@ -279,6 +307,7 @@ Texture* ResourceManager::load_texture(std::string path, bool async, bool srgb){
 	Texture texture_class(hash);
 	texture_class = *default_texture;
 	texture_class.m_id = hash;
+	texture_class.m_engine_default = false;	// La copia de la textura por defecto no es del motor: se libera y se guarda como las demas
 
 	ImageData* data = texture_class.get_data();
 
@@ -374,6 +403,8 @@ Model* ResourceManager::load_mesh(std::string path){
 	for (Mesh& m : model.meshes) {
 
 		// Vertex buffer
+		m.compute_bounds();
+
 		D3D11_BUFFER_DESC buffer_desc{};
 		ZeroMemory(&buffer_desc, sizeof(buffer_desc));
 		buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;					// Solo la GPU, y nunca cambia
@@ -821,7 +852,7 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 			}else {
 				t = load_texture(tmp);
 			}
-			mesh->material.set_texture_albedo(t);
+			mesh->material.set_texture_metallic(t);
 		}
 
 		// Get roughness texture
@@ -838,7 +869,7 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 			}else {
 				t = load_texture(tmp);
 			}
-			mesh->material.set_texture_albedo(t);
+			mesh->material.set_texture_roughness(t);
 		}
 
 		// Get ambient oclusion texture
@@ -855,7 +886,7 @@ void ResourceManager::ProcessMesh(Mesh* mesh, aiMesh* assimp_mesh, const aiScene
 			}else {
 				t = load_texture(tmp);
 			}
-			mesh->material.set_texture_albedo(t);
+			mesh->material.set_texture_ao(t);
 		}
 
 	}
@@ -874,6 +905,8 @@ void ResourceManager::check_models_to_load(){
 			for (Mesh& m : model->meshes_copy) {
 
 				// Vertex buffer
+				m.compute_bounds();
+
 				D3D11_BUFFER_DESC buffer_desc{};
 				ZeroMemory(&buffer_desc, sizeof(buffer_desc));
 				buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;					// Solo la GPU, y nunca cambia
@@ -924,6 +957,8 @@ void ResourceManager::check_models_to_load(){
 			for (Mesh& m : pair.model->meshes_copy) {
 
 				// Vertex buffer
+				m.compute_bounds();
+
 				D3D11_BUFFER_DESC buffer_desc{};
 				ZeroMemory(&buffer_desc, sizeof(buffer_desc));
 				buffer_desc.Usage = D3D11_USAGE_IMMUTABLE;					// Solo la GPU, y nunca cambia

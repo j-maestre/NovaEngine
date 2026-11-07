@@ -247,6 +247,9 @@
     <None Include="data\shaders\vs_depth_prepass.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="data\shaders\vs_depth_batch.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="data\shaders\deferred\color_common.hlsli">
       <Filter>Shaders\Deferred</Filter>
     </None>
@@ -257,6 +260,9 @@
       <Filter>Shaders\Deferred</Filter>
     </None>
     <None Include="data\shaders\deferred\ps_deferred_composite.hlsl">
+      <Filter>Shaders\Deferred</Filter>
+    </None>
+    <None Include="data\shaders\deferred\ps_deferred_fxaa.hlsl">
       <Filter>Shaders\Deferred</Filter>
     </None>
     <None Include="data\shaders\deferred\ps_deferred_lights.hlsl">

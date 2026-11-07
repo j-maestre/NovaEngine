@@ -1,0 +1,689 @@
+# Habitacion gamer. Generada por script.
+Camera:
+  Position: [-0.250, 1.500, -0.350]
+  Pitch: -13.0
+  Yaw: 271.0
+Environment:
+  Skybox: "data/textures/cubemap/studioDarkEnv.dds"
+  Irradiance: "data/textures/cubemap/studioDarkDiffuse.dds"
+  Specular: "data/textures/cubemap/studioDarkSpecular.dds"
+Entities:
+  Sun:
+    Light:
+      Type: "Directional"
+      Direction: [0.3, -0.9, 0.3]
+      Color: [1.0, 1.0, 1.0]
+      Intensity: 0.0
+      Enabled: false
+  Floor:
+    Transform:
+      Position: [0.000, -0.050, 0.900]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [2.600, 0.050, 2.500]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/wood_floor/albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/materials/wood_floor/normal.jpg", Type: "Normal"}
+      - {Texture: "data/materials/wood_floor/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/materials/wood_floor/ao.jpg", Type: "AO"}
+      - {Metallic: 0.00}
+      - {Roughness: 0.00}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.00}
+      - {UVScale: [3.000, 3.000]}
+  Ceiling:
+    Transform:
+      Position: [0.000, 2.750, 0.900]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [2.600, 0.050, 2.500]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.120, 0.120, 0.130]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.90}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  BackWall:
+    Transform:
+      Position: [0.000, 1.350, 3.450]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [2.600, 1.350, 0.050]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.050, 0.055, 0.075]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.85}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  LeftWall:
+    Transform:
+      Position: [-2.650, 1.350, 0.900]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.050, 1.350, 2.500]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.050, 0.055, 0.075]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.85}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  RightWall:
+    Transform:
+      Position: [2.650, 1.350, 0.900]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.050, 1.350, 2.500]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.050, 0.055, 0.075]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.85}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  FrontWall:
+    Transform:
+      Position: [0.000, 1.350, -1.650]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [2.600, 1.350, 0.050]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.050, 0.055, 0.075]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.85}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  Rug:
+    Transform:
+      Position: [0.000, 0.006, 2.000]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [1.150, 0.006, 0.850]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Texture: "data/materials/gamer_room/rug_albedo.png", Type: "Albedo"}
+      - {Metallic: 0.00}
+      - {Roughness: 1.00}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.00}
+      - {UVScale: [1.000, 1.000]}
+  DeskTop:
+    Transform:
+      Position: [0.000, 0.740, 3.000]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.950, 0.020, 0.360]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.020, 0.020, 0.025]}
+      - {Metallic: 0.20}
+      - {Roughness: 0.35}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  DeskLegL:
+    Transform:
+      Position: [-0.900, 0.360, 3.000]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.030, 0.360, 0.320]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.030, 0.030, 0.035]}
+      - {Metallic: 0.80}
+      - {Roughness: 0.40}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  DeskLegR:
+    Transform:
+      Position: [0.900, 0.360, 3.000]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.030, 0.360, 0.320]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.030, 0.030, 0.035]}
+      - {Metallic: 0.80}
+      - {Roughness: 0.40}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  DeskLed:
+    Transform:
+      Position: [0.000, 0.712, 2.645]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.930, 0.005, 0.005]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.100, 0.100, 0.100]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.40}
+      - {EmissiveColor: [0.550, 0.120, 1.000]}
+      - {EmissiveIntensity: 6.00}
+      - {EmissiveBloom: 0.50}
+  MonitorMain_Bezel:
+    Transform:
+      Position: [0.000, 1.130, 3.212]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.322, 0.192, 0.012]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.015, 0.015, 0.018]}
+      - {Metallic: 0.30}
+      - {Roughness: 0.30}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  MonitorMain_Screen:
+    Transform:
+      Position: [0.000, 1.130, 3.199]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.310, 0.180, 1.000]
+    MeshComponent: "data/models/gamer_room/panel_monitormain_screen.obj"
+    Material:
+      - {Texture: "data/materials/gamer_room/screen_game.png", Type: "Emissive"}
+      - {Albedo: [0.000, 0.000, 0.000]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.12}
+      - {EmissiveIntensity: 1.60}
+      - {EmissiveBloom: 0.08}
+      - {UVScale: [1.000, 1.000]}
+  MonitorMain_Neck:
+    Transform:
+      Position: [0.000, 1.060, 3.250]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.020, 0.150, 0.015]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.030, 0.030, 0.035]}
+      - {Metallic: 0.90}
+      - {Roughness: 0.30}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  MonitorMain_Base:
+    Transform:
+      Position: [0.000, 0.765, 3.230]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.120, 0.007, 0.080]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.030, 0.030, 0.035]}
+      - {Metallic: 0.90}
+      - {Roughness: 0.30}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  MonitorSide_Bezel:
+    Transform:
+      Position: [-0.666, 1.100, 3.091]
+      Rotation: [0.000, -28.000, 0.000]
+      Scale: [0.272, 0.162, 0.012]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.015, 0.015, 0.018]}
+      - {Metallic: 0.30}
+      - {Roughness: 0.30}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  MonitorSide_Screen:
+    Transform:
+      Position: [-0.660, 1.100, 3.079]
+      Rotation: [0.000, -28.000, 0.000]
+      Scale: [0.260, 0.150, 1.000]
+    MeshComponent: "data/models/gamer_room/panel_monitorside_screen.obj"
+    Material:
+      - {Texture: "data/materials/gamer_room/screen_chat.png", Type: "Emissive"}
+      - {Albedo: [0.000, 0.000, 0.000]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.12}
+      - {EmissiveIntensity: 1.60}
+      - {EmissiveBloom: 0.08}
+      - {UVScale: [1.000, 1.000]}
+  MonitorSide_Neck:
+    Transform:
+      Position: [-0.683, 1.045, 3.124]
+      Rotation: [0.000, -28.000, 0.000]
+      Scale: [0.020, 0.150, 0.015]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.030, 0.030, 0.035]}
+      - {Metallic: 0.90}
+      - {Roughness: 0.30}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  MonitorSide_Base:
+    Transform:
+      Position: [-0.674, 0.765, 3.106]
+      Rotation: [0.000, -28.000, 0.000]
+      Scale: [0.120, 0.007, 0.080]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.030, 0.030, 0.035]}
+      - {Metallic: 0.90}
+      - {Roughness: 0.30}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  Mousepad:
+    Transform:
+      Position: [0.100, 0.762, 2.820]
+      Rotation: [90.000, 0.000, 0.000]
+      Scale: [0.450, 0.190, 1.000]
+    MeshComponent: "data/models/gamer_room/panel_mousepad.obj"
+    Material:
+      - {Texture: "data/materials/gamer_room/mousepad_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/gamer_room/mousepad_emissive.png", Type: "Emissive"}
+      - {Metallic: 0.00}
+      - {Roughness: 0.90}
+      - {EmissiveIntensity: 2.20}
+      - {EmissiveBloom: 0.35}
+      - {UVScale: [1.000, 1.000]}
+  Keyboard:
+    Transform:
+      Position: [-0.020, 0.775, 2.830]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.220, 0.012, 0.070]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.015, 0.015, 0.018]}
+      - {Metallic: 0.30}
+      - {Roughness: 0.40}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  KeyboardKeys:
+    Transform:
+      Position: [-0.020, 0.788, 2.830]
+      Rotation: [90.000, 0.000, 0.000]
+      Scale: [0.215, 0.065, 1.000]
+    MeshComponent: "data/models/gamer_room/panel_keyboardkeys.obj"
+    Material:
+      - {Texture: "data/materials/gamer_room/keyboard_albedo.png", Type: "Albedo"}
+      - {Texture: "data/materials/gamer_room/keyboard_emissive.png", Type: "Emissive"}
+      - {Metallic: 0.00}
+      - {Roughness: 0.50}
+      - {EmissiveIntensity: 1.60}
+      - {EmissiveBloom: 0.30}
+      - {UVScale: [1.000, 1.000]}
+  Mouse:
+    Transform:
+      Position: [0.380, 0.778, 2.830]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.030, 0.014, 0.055]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.015, 0.015, 0.018]}
+      - {Metallic: 0.20}
+      - {Roughness: 0.25}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  MouseLed:
+    Transform:
+      Position: [0.380, 0.786, 2.865]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.006, 0.004, 0.018]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.100, 0.100, 0.100]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.40}
+      - {EmissiveColor: [0.000, 0.850, 1.000]}
+      - {EmissiveIntensity: 6.00}
+      - {EmissiveBloom: 0.40}
+  PC_Case:
+    Transform:
+      Position: [0.680, 1.000, 3.050]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.110, 0.240, 0.230]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.020, 0.020, 0.024]}
+      - {Metallic: 0.60}
+      - {Roughness: 0.30}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  PC_Glass:
+    Transform:
+      Position: [0.569, 1.000, 3.050]
+      Rotation: [0.000, 90.000, 0.000]
+      Scale: [0.220, 0.230, 1.000]
+    MeshComponent: "data/models/gamer_room/panel_pc_glass.obj"
+    Material:
+      - {Texture: "data/materials/gamer_room/pc_glass_emissive.png", Type: "Emissive"}
+      - {Albedo: [0.000, 0.000, 0.000]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.05}
+      - {EmissiveIntensity: 2.00}
+      - {EmissiveBloom: 0.40}
+      - {UVScale: [1.000, 1.000]}
+  PC_Fan0:
+    Transform:
+      Position: [0.680, 1.140, 2.818]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.065, 0.065, 0.065]
+    MeshComponent: "data/models/gamer_room/fan_ring_pc_fan0.obj"
+    Material:
+      - {Albedo: [0.100, 0.100, 0.100]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.40}
+      - {EmissiveColor: [1.000, 0.100, 0.600]}
+      - {EmissiveIntensity: 4.50}
+      - {EmissiveBloom: 0.45}
+  PC_Fan1:
+    Transform:
+      Position: [0.680, 1.000, 2.818]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.065, 0.065, 0.065]
+    MeshComponent: "data/models/gamer_room/fan_ring_pc_fan1.obj"
+    Material:
+      - {Albedo: [0.100, 0.100, 0.100]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.40}
+      - {EmissiveColor: [0.600, 0.150, 1.000]}
+      - {EmissiveIntensity: 4.50}
+      - {EmissiveBloom: 0.45}
+  PC_Fan2:
+    Transform:
+      Position: [0.680, 0.860, 2.818]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.065, 0.065, 0.065]
+    MeshComponent: "data/models/gamer_room/fan_ring_pc_fan2.obj"
+    Material:
+      - {Albedo: [0.100, 0.100, 0.100]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.40}
+      - {EmissiveColor: [0.000, 0.800, 1.000]}
+      - {EmissiveIntensity: 4.50}
+      - {EmissiveBloom: 0.45}
+  Chair:
+    Transform:
+      Position: [0.620, 0.000, 2.050]
+      Rotation: [0.000, -38.000, 0.000]
+      Scale: [1.000, 1.000, 1.000]
+    MeshComponent: "data/models/gamer_room/chair_black.obj"
+    Material:
+      - {Albedo: [0.025, 0.025, 0.028]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.55}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  ChairAccent:
+    Transform:
+      Position: [0.620, 0.000, 2.050]
+      Rotation: [0.000, -38.000, 0.000]
+      Scale: [1.000, 1.000, 1.000]
+    MeshComponent: "data/models/gamer_room/chair_accent.obj"
+    Material:
+      - {Albedo: [0.600, 0.040, 0.070]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.50}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  Shelves:
+    Transform:
+      Position: [-2.400, 0.000, 1.600]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [1.000, 1.000, 1.000]
+    MeshComponent: "data/models/wooden_display_shelves_01/wooden_display_shelves_01.gltf"
+    Material:
+      - {Texture: "data/models/wooden_display_shelves_01/albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/models/wooden_display_shelves_01/normal.jpg", Type: "Normal"}
+      - {Texture: "data/models/wooden_display_shelves_01/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/models/wooden_display_shelves_01/ao.jpg", Type: "AO"}
+      - {Metallic: 0.00}
+      - {Roughness: 0.00}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.00}
+      - {UVScale: [1.000, 1.000]}
+  Console:
+    Transform:
+      Position: [-2.400, 1.170, 1.580]
+      Rotation: [0.000, 90.000, 0.000]
+      Scale: [0.900, 0.900, 0.900]
+    MeshComponent: "data/models/gaming_console/gaming_console.gltf"
+    Material:
+      - {Texture: "data/models/gaming_console/albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/models/gaming_console/normal.jpg", Type: "Normal"}
+      - {Texture: "data/models/gaming_console/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/models/gaming_console/metallic.jpg", Type: "Metallic"}
+      - {Texture: "data/models/gaming_console/ao.jpg", Type: "AO"}
+      - {Texture: "data/models/gaming_console/emissive.jpg", Type: "Emissive"}
+      - {Metallic: 0.00}
+      - {Roughness: 0.00}
+      - {EmissiveIntensity: 3.00}
+      - {EmissiveBloom: 0.30}
+      - {UVScale: [1.000, 1.000]}
+  ShelfLed:
+    Transform:
+      Position: [-2.210, 1.560, 1.600]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.005, 0.005, 0.530]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.100, 0.100, 0.100]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.40}
+      - {EmissiveColor: [1.000, 0.550, 0.200]}
+      - {EmissiveIntensity: 4.00}
+      - {EmissiveBloom: 0.35}
+  DeskPlant:
+    Transform:
+      Position: [-0.820, 0.760, 3.200]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [1.100, 1.100, 1.100]
+    MeshComponent: "data/models/potted_plant_04/potted_plant_04.gltf"
+    Material:
+      - {Texture: "data/models/potted_plant_04/albedo.jpg", Type: "Albedo"}
+      - {Texture: "data/models/potted_plant_04/normal.jpg", Type: "Normal"}
+      - {Texture: "data/models/potted_plant_04/roughness.jpg", Type: "Roughness"}
+      - {Texture: "data/models/potted_plant_04/ao.jpg", Type: "AO"}
+      - {Metallic: 0.00}
+      - {Roughness: 0.00}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.00}
+      - {UVScale: [1.000, 1.000]}
+  Hex0:
+    Transform:
+      Position: [1.200, 1.750, 3.390]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.150, 0.150, 0.150]
+    MeshComponent: "data/models/gamer_room/hex_panel_hex0.obj"
+    Material:
+      - {Albedo: [0.050, 0.050, 0.050]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.50}
+      - {EmissiveColor: [0.000, 0.850, 1.000]}
+      - {EmissiveIntensity: 1.40}
+      - {EmissiveBloom: 0.30}
+  Hex1:
+    Transform:
+      Position: [1.490, 1.918, 3.390]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.150, 0.150, 0.150]
+    MeshComponent: "data/models/gamer_room/hex_panel_hex1.obj"
+    Material:
+      - {Albedo: [0.050, 0.050, 0.050]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.50}
+      - {EmissiveColor: [0.450, 0.200, 1.000]}
+      - {EmissiveIntensity: 1.40}
+      - {EmissiveBloom: 0.30}
+  Hex2:
+    Transform:
+      Position: [1.780, 1.750, 3.390]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.150, 0.150, 0.150]
+    MeshComponent: "data/models/gamer_room/hex_panel_hex2.obj"
+    Material:
+      - {Albedo: [0.050, 0.050, 0.050]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.50}
+      - {EmissiveColor: [0.900, 0.100, 0.500]}
+      - {EmissiveIntensity: 1.40}
+      - {EmissiveBloom: 0.30}
+  Hex3:
+    Transform:
+      Position: [1.490, 1.582, 3.390]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.150, 0.150, 0.150]
+    MeshComponent: "data/models/gamer_room/hex_panel_hex3.obj"
+    Material:
+      - {Albedo: [0.050, 0.050, 0.050]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.50}
+      - {EmissiveColor: [0.000, 0.850, 1.000]}
+      - {EmissiveIntensity: 1.40}
+      - {EmissiveBloom: 0.30}
+  Hex4:
+    Transform:
+      Position: [2.070, 1.918, 3.390]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.150, 0.150, 0.150]
+    MeshComponent: "data/models/gamer_room/hex_panel_hex4.obj"
+    Material:
+      - {Albedo: [0.050, 0.050, 0.050]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.50}
+      - {EmissiveColor: [0.450, 0.200, 1.000]}
+      - {EmissiveIntensity: 1.40}
+      - {EmissiveBloom: 0.30}
+  Hex5:
+    Transform:
+      Position: [1.780, 2.086, 3.390]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.150, 0.150, 0.150]
+    MeshComponent: "data/models/gamer_room/hex_panel_hex5.obj"
+    Material:
+      - {Albedo: [0.050, 0.050, 0.050]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.50}
+      - {EmissiveColor: [0.900, 0.100, 0.500]}
+      - {EmissiveIntensity: 1.40}
+      - {EmissiveBloom: 0.30}
+  NeonSign:
+    Transform:
+      Position: [-1.550, 1.800, 3.388]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.420, 0.105, 1.000]
+    MeshComponent: "data/models/gamer_room/panel_neonsign.obj"
+    Material:
+      - {Texture: "data/materials/gamer_room/neon_gameon.png", Type: "Emissive"}
+      - {Albedo: [0.010, 0.010, 0.012]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.50}
+      - {EmissiveIntensity: 3.00}
+      - {EmissiveBloom: 0.45}
+      - {UVScale: [1.000, 1.000]}
+  CeilingLed:
+    Transform:
+      Position: [0.000, 2.660, 3.380]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [2.550, 0.008, 0.008]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.100, 0.100, 0.100]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.40}
+      - {EmissiveColor: [0.500, 0.150, 1.000]}
+      - {EmissiveIntensity: 5.00}
+      - {EmissiveBloom: 0.45}
+  MonitorBias:
+    Light:
+      Type: "Point"
+      Position: [0.000, 1.200, 3.360]
+      Color: [0.600, 0.200, 1.000]
+      Distance: 4.0
+      Intensity: 2.50
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.6
+      Constant: 1.0
+      Linear: 0.35
+      Quadratic: 0.44
+      Enabled: true
+  MonitorGlow:
+    Light:
+      Type: "Point"
+      Position: [0.000, 1.100, 2.750]
+      Color: [0.700, 0.600, 1.000]
+      Distance: 3.5
+      Intensity: 1.20
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.6
+      Constant: 1.0
+      Linear: 0.35
+      Quadratic: 0.44
+      Enabled: true
+  HexLight:
+    Light:
+      Type: "Point"
+      Position: [1.600, 1.800, 3.100]
+      Color: [0.300, 0.600, 1.000]
+      Distance: 4.5
+      Intensity: 2.20
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.6
+      Constant: 1.0
+      Linear: 0.35
+      Quadratic: 0.44
+      Enabled: true
+  NeonLight:
+    Light:
+      Type: "Point"
+      Position: [-1.550, 1.800, 3.100]
+      Color: [1.000, 0.250, 0.600]
+      Distance: 4.5
+      Intensity: 2.00
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.6
+      Constant: 1.0
+      Linear: 0.35
+      Quadratic: 0.44
+      Enabled: true
+  PCLight:
+    Light:
+      Type: "Point"
+      Position: [0.500, 1.000, 2.800]
+      Color: [1.000, 0.250, 0.800]
+      Distance: 2.5
+      Intensity: 0.90
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.6
+      Constant: 1.0
+      Linear: 0.35
+      Quadratic: 0.44
+      Enabled: true
+  CeilingCove:
+    Light:
+      Type: "Point"
+      Position: [0.000, 2.500, 3.100]
+      Color: [0.550, 0.200, 1.000]
+      Distance: 6.0
+      Intensity: 2.00
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.6
+      Constant: 1.0
+      Linear: 0.35
+      Quadratic: 0.44
+      Enabled: true
+  ShelfLight:
+    Light:
+      Type: "Point"
+      Position: [-2.150, 1.450, 1.600]
+      Color: [1.000, 0.550, 0.250]
+      Distance: 3.0
+      Intensity: 1.40
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.6
+      Constant: 1.0
+      Linear: 0.35
+      Quadratic: 0.44
+      Enabled: true
+  RoomFill:
+    Light:
+      Type: "Point"
+      Position: [0.300, 2.300, 0.400]
+      Color: [0.750, 0.720, 0.950]
+      Distance: 7.0
+      Intensity: 1.60
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.6
+      Constant: 1.0
+      Linear: 0.35
+      Quadratic: 0.44
+      Enabled: true

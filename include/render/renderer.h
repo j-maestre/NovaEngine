@@ -41,6 +41,8 @@ private:
 	__forceinline void draw_ssao_blur();
 	/*******************************/
 
+	void update_visible_meshes(EntityComponentSystem& ecs);
+	void rebuild_depth_geometry();
 	void depth_pass(EntityComponentSystem& ecs);
 	void pick_entity(EntityComponentSystem& ecs, int x, int y);
 	void update_light_buffer(EntityComponentSystem& ecs);
@@ -55,6 +57,7 @@ private:
 
 	void create_backbuffers();
 	void create_deferred_resources(unsigned int width, unsigned int height);
+	void create_ssao_targets();
 	void release_deferred_resources();
 
 	void init_ssao();
@@ -106,6 +109,7 @@ private:
 	ID3D11ShaderResourceView* m_light_buffer_srv = nullptr;
 	ID3D11Buffer* m_pVBuffer_light_pass = nullptr;
 	ID3D11Buffer* m_pVBuffer_composite = nullptr;
+	ID3D11Buffer* m_pVBuffer_fxaa = nullptr;
 
 	// Seleccion con clic
 	ID3D11Buffer* m_pVBuffer_entity_id = nullptr;
@@ -113,6 +117,39 @@ private:
 
 	GpuProfiler m_gpu_profiler;
 	std::vector<GPULight> m_gpu_lights;
+	float m_time = 0.0f;	// Segundos desde el arranque, para lo que se anima en el render
+
+	// Lo que se dibuja este frame: se calcula una vez y lo usan el prepass y el G-Buffer
+	struct VisibleMesh {
+		TransformComponent* transform;
+		Mesh* mesh;
+		unsigned int slot;		// Posicion de la malla en la geometria del prepass
+	};
+	std::vector<VisibleMesh> m_visible_meshes;
+
+	// Prepass en un solo draw call. Cada malla de cada entidad copia sus posiciones en un buffer comun,
+	// y cada frame el index buffer se rellena solo con los rangos de las mallas visibles.
+	struct DepthVertex {
+		float x, y, z;
+		uint32 object_index;
+	};
+	struct DepthRange {
+		unsigned int first_index;
+		unsigned int index_count;
+	};
+	std::vector<Mesh*> m_depth_all_meshes;					// Todas, en orden de slot
+	std::vector<DirectX::XMFLOAT4X4> m_depth_matrices;		// Una por slot
+	std::vector<unsigned int> m_depth_indices;				// Todas, con el offset ya sumado
+	std::vector<DepthRange> m_depth_ranges;					// Una por slot
+	std::vector<unsigned int> m_depth_uploaded_slots;		// Lo que hay ahora mismo en el index buffer
+	size_t m_depth_geometry_key = 0;						// Si cambia, hay que reconstruir la geometria
+	size_t m_depth_built_key = 0;
+	unsigned int m_depth_index_count = 0;
+	ID3D11Buffer* m_depth_vertex_buffer = nullptr;
+	ID3D11Buffer* m_depth_index_buffer = nullptr;
+	ID3D11Buffer* m_depth_matrix_buffer = nullptr;
+	ID3D11ShaderResourceView* m_depth_matrix_srv = nullptr;
+	ID3D11InputLayout* m_pLayout_depth_batch = nullptr;
 	unsigned int m_light_buffer_capacity = 0;
 
 	ID3D11InputLayout* m_pLayout;
@@ -140,6 +177,9 @@ private:
 	D3D11_BUFFER_DESC m_buffer_description_full_triangle;
 
 	RenderInfo m_render_info_parameters;
+	unsigned int m_target_width = 0;
+	unsigned int m_target_height = 0;
+	bool m_ssao_half_built = false;		// A que resolucion estan creadas ahora las texturas del SSAO
 	bool m_isInitialized;
 	std::string m_pixel_shader_model;
 	std::string m_vertex_shader_model;

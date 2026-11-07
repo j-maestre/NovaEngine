@@ -16,6 +16,10 @@
 
 
 bool load_transform_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
+Vec3 vec3FromYAML(const ryml::ConstNodeRef& node);
+template <typename T> T get_value_from_yaml(c4::yml::ConstNodeRef entity_node);
+static std::string format_float(float value);
+static std::string format_vec3(const Vec3& v);
 bool load_mesh_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
 bool load_material_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
 bool load_light_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
@@ -98,7 +102,24 @@ bool Scene::load_scene(std::string path){
 
     std::stringstream buffer;
     buffer << file.rdbuf();
-    load_text(buffer.str());
+    m_environment = SceneEnvironment();
+    const std::string text = buffer.str();
+    load_text(text);
+
+    // Solo al abrir el archivo: los estados del historial no la incluyen, para que deshacer no mueva la camara
+    CameraComponent* camera = Engine::get_instance()->get_camera();
+    if (camera) {
+        std::string yaml_copy = text;
+        ryml::Tree tree = ryml::parse_in_arena(ryml::to_csubstr(yaml_copy));
+        ryml::ConstNodeRef root = tree.rootref();
+        if (root.has_child("Camera")) {
+            ryml::ConstNodeRef node = root["Camera"];
+            if (node.has_child("Position")) camera->set_position(vec3FromYAML(node["Position"]));
+            if (node.has_child("Pitch")) camera->set_pitch(get_value_from_yaml<float>(node["Pitch"]));
+            if (node.has_child("Yaw")) camera->set_yaw(get_value_from_yaml<float>(node["Yaw"]));
+        }
+    }
+    Engine::get_instance()->m_resource.set_environment(m_environment.skybox, m_environment.irradiance, m_environment.specular);
 
     return true;
 }
@@ -113,6 +134,19 @@ void Scene::load_text(const std::string& text){
     // Acceder a nodos
     ryml::NodeRef root = tree.rootref();
     ryml::NodeRef entities = root["Entities"];
+
+    if (root.has_child("Environment")) {
+        const auto read_path = [&](const char* key, std::string& path) {
+            const ryml::csubstr name = ryml::to_csubstr(key);
+            if (root["Environment"].has_child(name)) {
+                const ryml::csubstr value = root["Environment"][name].val();
+                path = std::string(value.data(), value.size());
+            }
+        };
+        read_path("Skybox", m_environment.skybox);
+        read_path("Irradiance", m_environment.irradiance);
+        read_path("Specular", m_environment.specular);
+    }
 
     bool succes = true;
 
@@ -260,6 +294,11 @@ static Material parse_material(ryml::ConstNodeRef properties){
             }
 
             if (t.has_child("EmissiveIntensity")) material.set_emissive_intensity(get_value_from_yaml<float>(t["EmissiveIntensity"]));
+            if (t.has_child("EmissiveBloom")) material.set_emissive_bloom(get_value_from_yaml<float>(t["EmissiveBloom"]));
+            if (t.has_child("EmissivePulse")) {
+                Vec3 pulse = vec3FromYAML(t["EmissivePulse"]);
+                material.set_emissive_pulse(pulse.x, pulse.y);
+            }
             if (t.has_child("EmissiveColor")) {
                 Vec3 c = vec3FromYAML(t["EmissiveColor"]);
                 material.set_emissive_value({ c.x, c.y, c.z });
@@ -378,6 +417,10 @@ bool load_light_component(const ryml::NodeRef& entity_node, Entity& entity, Enti
             read_optional(light_component, "Constant", [&](float v) { light.set_constant_attenuation(v); });
             read_optional(light_component, "Linear", [&](float v) { light.set_linear_attenuation(v); });
             read_optional(light_component, "Quadratic", [&](float v) { light.set_quadratic_attenuation(v); });
+            if (light_component.has_child("Pulse")) {
+                Vec3 pulse = vec3FromYAML(light_component["Pulse"]);
+                light.set_pulse(pulse.x, pulse.y);
+            }
         }
 
         if (light_type == "Spot") {
@@ -470,6 +513,8 @@ static void write_material(std::string& out, Material& m, const std::string& fir
     lines += "{Roughness: " + format_float(m.get_roughness_value()) + "}\n";
     lines += "{EmissiveColor: " + format_vec3(m.get_emissive_value()) + "}\n";
     lines += "{EmissiveIntensity: " + format_float(m.get_emissive_intensity()) + "}\n";
+    if (m.get_emissive_bloom() != 1.0f) lines += "{EmissiveBloom: " + format_float(m.get_emissive_bloom()) + "}\n";
+    if (m.get_emissive_pulse_speed() != 0.0f) lines += "{EmissivePulse: [" + format_float(m.get_emissive_pulse_speed()) + ", " + format_float(m.get_emissive_pulse_min()) + "]}\n";
     lines += "{UVScale: [" + format_float(uv.x) + ", " + format_float(uv.y) + "]}\n";
 
     std::stringstream stream(lines);
@@ -543,6 +588,7 @@ void Scene::write_entity(std::string& out, Entity& e, const std::string& name, c
         out += "      Attenuation: " + format_float(l->get_attenuation()) + "\n";
         out += "      FallOff: " + format_float(l->get_fall_off()) + "\n";
         out += "      FallStart: " + format_float(l->get_fall_start()) + "\n";
+        if (l->get_pulse_speed() != 0.0f) out += "      Pulse: [" + format_float(l->get_pulse_speed()) + ", " + format_float(l->get_pulse_min()) + "]\n";
         out += "      Constant: " + format_float(l->get_constant_attenuation()) + "\n";
         out += "      Linear: " + format_float(l->get_linear_attenuation()) + "\n";
         out += "      Quadratic: " + format_float(l->get_quadratic_attenuation()) + "\n";
@@ -580,7 +626,15 @@ void Scene::write_subtree(std::string& out, Entity& e, const std::string& parent
 
 std::string Scene::serialize(){
 
-    std::string out = "Entities:\n";
+    std::string out;
+    const SceneEnvironment default_environment;
+    if (m_environment.skybox != default_environment.skybox || m_environment.irradiance != default_environment.irradiance || m_environment.specular != default_environment.specular) {
+        out += "Environment:\n";
+        out += "  Skybox: \"" + m_environment.skybox + "\"\n";
+        out += "  Irradiance: \"" + m_environment.irradiance + "\"\n";
+        out += "  Specular: \"" + m_environment.specular + "\"\n";
+    }
+    out += "Entities:\n";
     const auto name_of = [](Entity& e) { return e.get_name(); };
 
     for (Entity* e : children_of(nullptr)) {
@@ -591,7 +645,10 @@ std::string Scene::serialize(){
 
 bool Scene::save(const std::string& path){
 
-    if (!path.empty()) m_path = path;
+    if (!path.empty()) {
+        m_path = path;
+        Engine::get_instance()->update_window_title();
+    }
 
     std::ofstream file(m_path, std::ios::binary);
     if (!file) {
@@ -599,6 +656,20 @@ bool Scene::save(const std::string& path){
         return false;
     }
 
+    // Los materiales que vienen del archivo del modelo tambien se guardan. Con modelos cargando
+    // aun se ve el cubo provisional, y sus materiales no son los que tocan.
+    if (!Engine::get_instance()->m_resource.is_loading_models()) {
+        for (auto [entity, mesh] : m_ecs.viewComponents<MeshComponent>().each()) {
+            if (!mesh.has_own_materials()) mesh.store_materials_from_model();
+        }
+    }
+
+    if (CameraComponent* camera = Engine::get_instance()->get_camera()) {
+        file << "Camera:\n";
+        file << "  Position: " << format_vec3(camera->get_position()) << "\n";
+        file << "  Pitch: " << format_float(camera->get_pitch()) << "\n";
+        file << "  Yaw: " << format_float(camera->get_yaw()) << "\n";
+    }
     file << serialize();
     printf("Scene saved: %s\n", m_path.c_str());
     return file.good();
@@ -642,7 +713,7 @@ void Scene::create_entity_from_template(EntityTemplate type, Vec3 position){
         switch (type) {
         case EntityTemplate::Empty: base = "Empty"; break;
         case EntityTemplate::Cube: base = "Cube"; body = mesh("cube.fbx"); break;
-        case EntityTemplate::Sphere: base = "Sphere"; body = mesh("sphere_high_resolution.fbx"); break;
+        case EntityTemplate::Sphere: base = "Sphere"; body = mesh("sphere_low.obj"); break;
         case EntityTemplate::Cylinder: base = "Cylinder"; body = mesh("cylinder_high.fbx"); break;
         case EntityTemplate::Cone: base = "Cone"; body = mesh("cone_high.fbx"); break;
         case EntityTemplate::PointLight:

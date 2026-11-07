@@ -41,8 +41,12 @@ public:
 	ResourceManager(ResourceManager&&);
 	~ResourceManager();
 
+	// Cubemaps de la escena: cielo, irradiancia y reflejos. Si ya estan cargados no hace nada.
+	void set_environment(const std::string& skybox, const std::string& irradiance, const std::string& specular);
+
 	void load_cube_map(std::string path = "");
 	void load_irradiance_map(std::string path);
+	void load_specular_map(std::string path);
 
 	Texture* load_texture(std::string path);
 	// Para texturas de color (albedo, emissive): la GPU las convierte a lineal al leerlas y al generar mips
@@ -61,9 +65,10 @@ public:
 
 	__forceinline ID3D11ShaderResourceView* get_skybox_srv() { return m_skybox_srv; }
 	__forceinline ID3D11Resource** get_skybox_texture() { return m_skybox_texture; }
-	unsigned int get_skybox_max_miplevel() { return m_cubemap_max_mip_level; }
+	unsigned int get_specular_max_miplevel() { return m_specular_max_mip_level; }
 	__forceinline ID3D11ShaderResourceView* get_brdf_srv() { return m_brdf_srv; }
 	__forceinline ID3D11ShaderResourceView* get_irradiance_srv() { return m_irradiance_srv; }
+	__forceinline ID3D11ShaderResourceView* get_specular_srv() { return m_specular_srv; }
 	__forceinline ID3D11Resource** get_brdf_texture() { return m_brdf_texture; }
 
 	void release();
@@ -95,10 +100,12 @@ private:
 	JobSystem m_job_system;
 	ID3D11ShaderResourceView* m_skybox_srv = nullptr;
 	ID3D11Resource** m_skybox_texture = nullptr;
-	unsigned int m_cubemap_max_mip_level;
 
 	ID3D11ShaderResourceView* m_brdf_srv = nullptr;
 	ID3D11ShaderResourceView* m_irradiance_srv = nullptr;
+	ID3D11ShaderResourceView* m_specular_srv = nullptr;		// Entorno prefiltrado: cada mip corresponde a una rugosidad
+	unsigned int m_specular_max_mip_level = 0;
+	std::string m_environment_paths;
 	ID3D11Resource** m_brdf_texture = nullptr;
 
 	std::mutex m_mutex_textures;

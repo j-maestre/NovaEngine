@@ -37,7 +37,10 @@ JobSystem::JobSystem() {
 }
 
 JobSystem::~JobSystem() {
-	m_stop = true;
+	{
+		std::lock_guard<std::mutex> locked{ m_mutex_tasks };
+		m_stop = true;
+	}
 	m_condition_variable.notify_all();
 	int count = 1;
 
@@ -53,14 +56,11 @@ JobSystem::~JobSystem() {
 
 void JobSystem::wait_until_finish() {
 
-	/*
+	// Cada tarea cuenta desde antes de entrar en la cola: a cero, la cola esta vacia y nada se ejecuta
 	std::unique_lock<std::mutex> locked{ m_mutex_tasks };
-	m_condition_variable.wait(locked, [this]() {
-		return m_tasks_queue.empty() && m_active_tasks == 0;
+	m_condition_finished.wait(locked, [this]() {
+		return m_active_tasks == 0;
 	});
-	*/
-
-	while (!m_tasks_queue.empty() || m_active_tasks > 0);
 }
 
 

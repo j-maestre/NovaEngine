@@ -86,7 +86,7 @@ float4 PShader(PS_INPUT input) : SV_TARGET
     if (blend == 1){
         
         // Normal bloom
-        final_color += lightTexture.Sample(samp, input.uv).rgb;
+        final_color = final_color * bloom_intensity + lightTexture.Sample(samp, input.uv).rgb;
 
         // Bloom + darkness
         

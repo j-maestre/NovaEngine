@@ -31,6 +31,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	CameraComponent cam(engine->get_input(), &win);
 
 	render.set_camera(&cam);
+	engine->set_camera(&cam);
 
 
 	float scale = 1.0f;
@@ -52,6 +53,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	while (true) {
 
+		// Minimizada no hay nada que pintar: solo se atienden los mensajes
+		if (win.is_minimized()) {
+			if (!win.update()) break;
+			Sleep(16);
+			continue;
+		}
+
 		win.begin_frame();
 
 		// if true no execute game code?
@@ -69,7 +77,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		
 		engine->get_scene()->update();
 		//render.render_forward(scene->m_ecs);
-		render.render_deferred(scene->m_ecs);
+		render.render_deferred(engine->get_scene()->m_ecs);
 
 		win.end_frame();
 		

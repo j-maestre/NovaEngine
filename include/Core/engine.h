@@ -15,6 +15,8 @@
 struct EngineProps;
 
 
+class CameraComponent;
+
 class Engine final {
 
 private:
@@ -38,6 +40,12 @@ public:
 
 	Scene* create_scene(std::string path);
 	void set_scene(Scene *s);
+	// La ventana muestra el nombre del archivo de la escena actual
+	void update_window_title();
+
+	// Camara del editor: cada escena puede traer su posicion y orientacion
+	void set_camera(CameraComponent* camera) { m_camera = camera; }
+	CameraComponent* get_camera() { return m_camera; }
 	Scene* get_scene();
 
 
@@ -58,6 +66,7 @@ public:
 	Model* get_sphere() { return m_sphere_model; }
 	Model* get_sphere_medium() { return m_sphere_medium_model; }
 	Model* get_sphere_high() { return m_sphere_high_model; }
+	Model* get_sphere_low() { return m_sphere_low_model; }
 	//const std::vector<Vertex>& get_cube();
 	//const std::vector<Vertex>& get_sphere();
 
@@ -108,10 +117,13 @@ private:
 	Model* m_sphere_model;
 	Model* m_sphere_medium_model;
 	Model* m_sphere_high_model;
+	Model* m_sphere_low_model;
 
 	Material m_default_material;
 
 	Scene* m_current_scene;
+	Window* m_window = nullptr;
+	CameraComponent* m_camera = nullptr;
 	std::vector<Scene*> m_all_scenes;
 
 	std::chrono::high_resolution_clock::time_point m_last_time;

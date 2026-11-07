@@ -24,6 +24,11 @@ public:
 	Material material;
 	unsigned int material_slot = 0;	// Material del archivo original al que pertenece esta malla
 
+	// Esfera que envuelve la malla, en espacio local. Radio negativo: sin calcular, nunca se descarta.
+	Vec3 bounds_center = { 0.0f, 0.0f, 0.0f };
+	float bounds_radius = -1.0f;
+	void compute_bounds();
+
 private:
 
 };

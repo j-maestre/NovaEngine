@@ -76,7 +76,14 @@ private:
 
 	void main_menu();
 	void build_default_layout(unsigned int dockspace_id);
+public:
+	// Abrir escena: se pide desde el menu y se hace al empezar el frame, cuando nadie esta usando la anterior
+	void request_open_scene(const std::string& filename) { m_pending_scene = filename; }
+	void process_pending_scene();
+
+private:
 	void open_scene(const std::string& filename);
+	std::string m_pending_scene;
 	void system_info();
 
 	void show_hierarchy(Scene* scene);
@@ -123,6 +130,10 @@ private:
 	int m_dt_history_index;
 
 	unsigned int m_draw_calls = 0;
+	unsigned int m_visible_meshes = 0;
+	unsigned int m_total_meshes = 0;
+	unsigned long long m_visible_triangles = 0;
+	unsigned long long m_total_triangles = 0;
 
 	float m_mouse_delta_x = 0.0f;
 	float m_mouse_delta_y = 0.0f;

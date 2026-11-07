@@ -59,7 +59,7 @@ Entities:
       Position: [-7.80, -5.00, 8.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.700, 0.050, 0.050] }
       - {Metallic: 0.00}
@@ -71,7 +71,7 @@ Entities:
       Position: [-5.20, -5.00, 8.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.700, 0.050, 0.050] }
       - {Metallic: 0.00}
@@ -83,7 +83,7 @@ Entities:
       Position: [-2.60, -5.00, 8.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.700, 0.050, 0.050] }
       - {Metallic: 0.00}
@@ -95,7 +95,7 @@ Entities:
       Position: [0.00, -5.00, 8.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.700, 0.050, 0.050] }
       - {Metallic: 0.00}
@@ -107,7 +107,7 @@ Entities:
       Position: [2.60, -5.00, 8.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.700, 0.050, 0.050] }
       - {Metallic: 0.00}
@@ -119,7 +119,7 @@ Entities:
       Position: [5.20, -5.00, 8.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.700, 0.050, 0.050] }
       - {Metallic: 0.00}
@@ -131,7 +131,7 @@ Entities:
       Position: [7.80, -5.00, 8.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.700, 0.050, 0.050] }
       - {Metallic: 0.00}
@@ -143,7 +143,7 @@ Entities:
       Position: [-7.80, -5.00, 11.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [1.000, 0.720, 0.330] }
       - {Metallic: 1.00}
@@ -155,7 +155,7 @@ Entities:
       Position: [-5.20, -5.00, 11.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [1.000, 0.720, 0.330] }
       - {Metallic: 1.00}
@@ -167,7 +167,7 @@ Entities:
       Position: [-2.60, -5.00, 11.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [1.000, 0.720, 0.330] }
       - {Metallic: 1.00}
@@ -179,7 +179,7 @@ Entities:
       Position: [0.00, -5.00, 11.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [1.000, 0.720, 0.330] }
       - {Metallic: 1.00}
@@ -191,7 +191,7 @@ Entities:
       Position: [2.60, -5.00, 11.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [1.000, 0.720, 0.330] }
       - {Metallic: 1.00}
@@ -203,7 +203,7 @@ Entities:
       Position: [5.20, -5.00, 11.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [1.000, 0.720, 0.330] }
       - {Metallic: 1.00}
@@ -215,7 +215,7 @@ Entities:
       Position: [7.80, -5.00, 11.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [1.000, 0.720, 0.330] }
       - {Metallic: 1.00}
@@ -236,10 +236,11 @@ Entities:
       - {EmissiveIntensity: 0.00}
   Sphere_RoundedMetal:
     Transform:
-      Position: [-7.50, -2.60, 16.00]
-      Rotation: [0.0, 0.0, 0.0]
-      Scale: [1.40, 1.40, 1.40]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+      Position: [0, 2.4, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1.07692, 1.4, 1.07692]
+      Parent: "Pedestal_RoundedMetal"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Texture: "data/materials/rounded_metal/albedo.png", Type: "Albedo"}
       - {Texture: "data/materials/rounded_metal/normal.png", Type: "Normal"}
@@ -260,10 +261,11 @@ Entities:
       - {EmissiveIntensity: 0.00}
   Sphere_RustedMetal:
     Transform:
-      Position: [-2.50, -2.60, 16.00]
-      Rotation: [0.0, 0.0, 0.0]
-      Scale: [1.40, 1.40, 1.40]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+      Position: [0, 2.4, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1.07692, 1.4, 1.07692]
+      Parent: "Pedestal_RustedMetal"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Texture: "data/materials/rusted_metal/albedo.png", Type: "Albedo"}
       - {Texture: "data/materials/rusted_metal/normal.png", Type: "Normal"}
@@ -284,10 +286,11 @@ Entities:
       - {EmissiveIntensity: 0.00}
   Sphere_Titanium:
     Transform:
-      Position: [2.50, -2.60, 16.00]
-      Rotation: [0.0, 0.0, 0.0]
-      Scale: [1.40, 1.40, 1.40]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+      Position: [-0, 2.4, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1.07692, 1.4, 1.07692]
+      Parent: "Pedestal_Titanium"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Texture: "data/materials/titanium/albedo.png", Type: "Albedo"}
       - {Texture: "data/materials/titanium/normal.png", Type: "Normal"}
@@ -307,10 +310,11 @@ Entities:
       - {EmissiveIntensity: 0.00}
   Sphere_Lava:
     Transform:
-      Position: [7.50, -2.60, 16.00]
-      Rotation: [0.0, 0.0, 0.0]
-      Scale: [1.40, 1.40, 1.40]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+      Position: [-0, 2.4, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1.07692, 1.4, 1.07692]
+      Parent: "Pedestal_Lava"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Texture: "data/materials/lava/albedo.png", Type: "Albedo"}
       - {Texture: "data/materials/lava/normal.png", Type: "Normal"}
@@ -331,9 +335,10 @@ Entities:
       - {EmissiveIntensity: 0.00}
   Helmet:
     Transform:
-      Position: [0.00, -0.80, 24.00]
-      Rotation: [-90.0, 180.0, 0.0]
-      Scale: [2.20, 2.20, 2.20]
+      Position: [0, 2.46667, 0]
+      Rotation: [-90, 180, 0]
+      Scale: [0.91667, 0.91667, 1.46667]
+      Parent: "HelmetPedestal"
     MeshComponent: "data/models/helmet/DamagedHelmet.gltf"
     Material:
       - {Texture: "data/models/helmet/Default_albedo.jpg", Type: "Albedo"}
@@ -371,7 +376,7 @@ Entities:
       Position: [-10.40, -2.00, 26.50]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.750, 0.750, 0.750] }
       - {Metallic: 0.00}
@@ -383,7 +388,7 @@ Entities:
       Position: [-8.50, -5.00, 28.30]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [1.00, 1.00, 1.00]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.750, 0.750, 0.750] }
       - {Metallic: 0.00}
@@ -395,7 +400,7 @@ Entities:
       Position: [-10.70, -5.20, 24.40]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [0.80, 0.80, 0.80]
-    MeshComponent: "data/models/basics/sphere_medium_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.750, 0.750, 0.750] }
       - {Metallic: 0.00}
@@ -452,9 +457,10 @@ Entities:
       - {EmissiveIntensity: 0.00}
   Prop_marble_bust_01:
     Transform:
-      Position: [-11.00, -3.33, 21.00]
-      Rotation: [-90.0, 0.0, 180.0]
-      Scale: [9.70, 9.70, 9.70]
+      Position: [-0, 1.225, 0]
+      Rotation: [-90, 0, 180]
+      Scale: [5.10526, 5.10526, 8.08333]
+      Parent: "Stand_marble_bust_01"
     MeshComponent: "data/models/marble_bust_01/marble_bust_01.fbx"
     Material:
       - {Texture: "data/models/marble_bust_01/albedo.jpg", Type: "Albedo"}
@@ -475,9 +481,10 @@ Entities:
       - {EmissiveIntensity: 0.00}
   Prop_carved_wooden_elephant:
     Transform:
-      Position: [-6.50, -3.57, 21.00]
-      Rotation: [-90.0, 0.0, 150.0]
-      Scale: [26.00, 26.00, 26.00]
+      Position: [0, 1.025, 0]
+      Rotation: [-90, 0, 150]
+      Scale: [13.68421, 13.68421, 21.66667]
+      Parent: "Stand_carved_wooden_elephant"
     MeshComponent: "data/models/carved_wooden_elephant/carved_wooden_elephant.fbx"
     Material:
       - {Texture: "data/models/carved_wooden_elephant/albedo.jpg", Type: "Albedo"}
@@ -498,9 +505,10 @@ Entities:
       - {EmissiveIntensity: 0.00}
   Prop_brass_vase_04:
     Transform:
-      Position: [6.50, -3.60, 21.00]
-      Rotation: [-90.0, 0.0, 0.0]
-      Scale: [18.00, 18.00, 18.00]
+      Position: [0, 1, 0]
+      Rotation: [-90, 0, 0]
+      Scale: [9.47368, 9.47368, 15]
+      Parent: "Stand_brass_vase_04"
     MeshComponent: "data/models/brass_vase_04/brass_vase_04.fbx"
     Material:
       - {Texture: "data/models/brass_vase_04/albedo.jpg", Type: "Albedo"}
@@ -522,9 +530,10 @@ Entities:
       - {EmissiveIntensity: 0.00}
   Prop_wooden_stool_02:
     Transform:
-      Position: [11.00, -3.60, 21.00]
-      Rotation: [-90.0, 0.0, 30.0]
-      Scale: [12.00, 12.00, 12.00]
+      Position: [0, 1, 0]
+      Rotation: [-90, 0, 30]
+      Scale: [6.31579, 6.31579, 10]
+      Parent: "Stand_wooden_stool_02"
     MeshComponent: "data/models/wooden_stool_02/wooden_stool_02.fbx"
     Material:
       - {Texture: "data/models/wooden_stool_02/albedo.jpg", Type: "Albedo"}
@@ -545,9 +554,10 @@ Entities:
       - {EmissiveIntensity: 0.00}
   Prop_cannon_01:
     Transform:
-      Position: [5.80, -2.62, 30.36]
-      Rotation: [-90.0, 0.0, 90.0]
-      Scale: [2.50, 2.50, 2.50]
+      Position: [0, 1.1125, 0.71579]
+      Rotation: [-90, 0, 90]
+      Scale: [1.31579, 0.78125, 1.5625]
+      Parent: "Stand_cannon"
     MeshComponent: "data/models/cannon_01/cannon_01.fbx"
     Material:
       - {Texture: "data/models/cannon_01/albedo.jpg", Type: "Albedo"}
@@ -569,9 +579,10 @@ Entities:
       - {EmissiveIntensity: 0.00}
   Prop_brass_pot_01:
     Transform:
-      Position: [-5.50, -2.79, 29.00]
-      Rotation: [-90.0, 0.0, 0.0]
-      Scale: [8.00, 8.00, 8.00]
+      Position: [-0, 1.00625, 0]
+      Rotation: [-90, 0, 0]
+      Scale: [4.21053, 4.21053, 5]
+      Parent: "Stand_brass_pot"
     MeshComponent: "data/models/brass_pot_01/brass_pot_01.fbx"
     Material:
       - {Texture: "data/models/brass_pot_01/albedo.jpg", Type: "Albedo"}
@@ -603,13 +614,39 @@ Entities:
       Position: [-12.50, -5.40, 13.00]
       Rotation: [0.0, 0.0, 0.0]
       Scale: [2.20, 0.60, 1.20]
-    MeshComponent: "data/models/basics/sphere_high_resolution.fbx"
+    MeshComponent: "data/models/basics/sphere_low.obj"
     Material:
       - {Albedo: [0.850, 0.850, 0.850] }
       - {Metallic: 0.00}
       - {Roughness: 0.25}
       - {EmissiveColor: [0.00, 0.00, 0.00]}
       - {EmissiveIntensity: 0.00}
+  Sign_NovaEngine:
+    Transform:
+      Position: [0.00, 4.70, 31.85]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    MeshComponent: "data/models/novaengine_text/novaengine_text.obj"
+    Material:
+      - {Albedo: [0.020, 0.020, 0.030]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.30}
+      - {EmissiveColor: [0.05, 0.75, 1.00]}
+      - {EmissiveIntensity: 5.00}
+      - {EmissiveBloom: 0.60}
+      - {EmissivePulse: [1.50, 0.10]}
+  Light_Sign:
+    Light:
+      Type: "Point"
+      Position: [0.00, 4.70, 30.00]
+      Color: [0.05, 0.75, 1.00]
+      Distance: 16.0
+      Intensity: 6.0
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.4
+      Pulse: [1.50, 0.10]
+      Enabled: true
   Light_Warm:
     Light:
       Type: "Point"

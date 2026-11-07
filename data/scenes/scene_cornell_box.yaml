@@ -1,89 +1,208 @@
+# Cornell box. Generada por script.
+Camera:
+  Position: [0.000, 5.000, -7.600]
+  Pitch: 0.0
+  Yaw: 270.0
+Environment:
+  Skybox: "data/textures/cubemap/studioDarkEnv.dds"
+  Irradiance: "data/textures/cubemap/studioDarkDiffuse.dds"
+  Specular: "data/textures/cubemap/studioDarkSpecular.dds"
 Entities:
-  
-  Floor0:
+  Sun:
+    Light:
+      Type: "Directional"
+      Direction: [0.3, -0.9, 0.3]
+      Color: [1.0, 1.0, 1.0]
+      Intensity: 0.0
+      Enabled: false
+  Floor:
     Transform:
-      Position: [0.0, 0.0, 0.0]
-      Rotation: [0.0, 0.0, 0.0]
-      Scale: [10.0, 1.0, 10.0]
+      Position: [0.000, -0.100, 5.000]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [5.200, 0.100, 5.200]
     MeshComponent: "data/models/basics/cube.fbx"
     Material:
-      - {Albedo: [0.8, 0.8, 0.8] }
-      - {Metallic: 0.8}
-      - {Roughness: 0.9}
-      - {EmissiveColor: [0.0, 0.0, 0.0]}
-      - {EmissiveIntensity: 0.0}
-  Floor1:
+      - {Albedo: [0.730, 0.710, 0.680]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.92}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  Ceiling:
     Transform:
-      Position: [0.0, 18.0, 0.0]
-      Rotation: [0.0, 0.0, 0.0]
-      Scale: [10.0, 1.0, 10.0]
+      Position: [0.000, 10.100, 5.000]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [5.200, 0.100, 5.200]
     MeshComponent: "data/models/basics/cube.fbx"
     Material:
-      - {Albedo: [0.8, 0.8, 0.8] }
-      - {Metallic: 0.8}
-      - {Roughness: 0.9}
-      - {EmissiveColor: [0.0, 0.0, 0.0]}
-      - {EmissiveIntensity: 0.0}
-  Wall0:
+      - {Albedo: [0.730, 0.710, 0.680]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.92}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  BackWall:
     Transform:
-      Position: [-11.0, 9.0, 0.0]
-      Rotation: [0.0, 0.0, 0.0]
-      Scale: [1.0, 10.0, 10.0]
+      Position: [0.000, 5.000, 10.100]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [5.200, 5.200, 0.100]
     MeshComponent: "data/models/basics/cube.fbx"
     Material:
-      - {Albedo: [0.1, 1.0, 0.1] }
-      - {Metallic: 0.8}
-      - {Roughness: 0.9}
-      - {EmissiveColor: [0.0, 0.0, 0.0]}
-      - {EmissiveIntensity: 0.0}
-  Wall1:
+      - {Albedo: [0.730, 0.710, 0.680]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.92}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  LeftWall:
     Transform:
-      Position: [11.0, 9.0, 0.0]
-      Rotation: [0.0, 0.0, 0.0]
-      Scale: [1.0, 10.0, 10.0]
+      Position: [-5.100, 5.000, 5.000]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.100, 5.200, 5.200]
     MeshComponent: "data/models/basics/cube.fbx"
     Material:
-      - {Albedo: [1.0, 0.1, 0.1] }
-      - {Metallic: 0.8}
-      - {Roughness: 0.9}
-      - {EmissiveColor: [0.0, 0.0, 0.0]}
-      - {EmissiveIntensity: 0.0}
-  Wall2:
+      - {Albedo: [0.630, 0.065, 0.050]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.92}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  RightWall:
     Transform:
-      Position: [0.0, 9.0, -11.0]
-      Rotation: [0.0, 90.0, 0.0]
-      Scale: [1.0, 10.0, 10.0]
+      Position: [5.100, 5.000, 5.000]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.100, 5.200, 5.200]
     MeshComponent: "data/models/basics/cube.fbx"
     Material:
-      - {Albedo: [0.1, 0.1, 1.0] }
-      - {Metallic: 0.8}
-      - {Roughness: 0.9}
-      - {EmissiveColor: [0.0, 0.0, 0.0]}
-      - {EmissiveIntensity: 0.0}
-  Cube1:
+      - {Albedo: [0.140, 0.450, 0.090]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.92}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  LightPanel:
     Transform:
-      Position: [0.0, 1.9, 2.5]
-      Rotation: [0.0, 0.0, 0.0]
-      Scale: [1.0, 1.0, 1.0]
+      Position: [0.000, 9.985, 5.000]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [1.300, 0.020, 1.050]
     MeshComponent: "data/models/basics/cube.fbx"
     Material:
-      - {Albedo: [0.8, 0.8, 0.8] }
-      - {Metallic: 0.5}
-      - {Roughness: 0.9}
-      - {EmissiveColor: [0.0, 0.0, 0.0]}
-      - {EmissiveIntensity: 0.0}
-  Cube2:
+      - {Albedo: [0.900, 0.900, 0.900]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.50}
+      - {EmissiveColor: [1.000, 0.860, 0.680]}
+      - {EmissiveIntensity: 6.00}
+      - {EmissiveBloom: 0.35}
+  TallBlock:
     Transform:
-      Position: [1.9, 1.9, 4.0]
-      Rotation: [0.0, 0.0, 0.0]
-      Scale: [1.0, 1.0, 1.0]
+      Position: [-1.750, 3.000, 6.300]
+      Rotation: [0.000, 17.000, 0.000]
+      Scale: [1.500, 3.000, 1.500]
     MeshComponent: "data/models/basics/cube.fbx"
     Material:
-      - {Albedo: [0.8, 0.8, 0.8] }
-      - {Metallic: 0.5}
-      - {Roughness: 0.9}
-      - {EmissiveColor: [0.0, 0.0, 0.0]}
-      - {EmissiveIntensity: 0.0}
-  
-
-  
+      - {Albedo: [0.730, 0.710, 0.680]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.85}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  ShortBlock:
+    Transform:
+      Position: [1.750, 1.500, 3.600]
+      Rotation: [0.000, -18.000, 0.000]
+      Scale: [1.500, 1.500, 1.500]
+    MeshComponent: "data/models/basics/cube.fbx"
+    Material:
+      - {Albedo: [0.730, 0.710, 0.680]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.85}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  GoldSphere:
+    Transform:
+      Position: [1.750, 4.050, 3.600]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [1.050, 1.050, 1.050]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [1.000, 0.770, 0.340]}
+      - {Metallic: 1.00}
+      - {Roughness: 0.30}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  BlueSphere:
+    Transform:
+      Position: [-2.600, 0.900, 2.300]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [0.900, 0.900, 0.900]
+    MeshComponent: "data/models/basics/sphere_low.obj"
+    Material:
+      - {Albedo: [0.080, 0.220, 0.800]}
+      - {Metallic: 0.00}
+      - {Roughness: 0.15}
+      - {EmissiveIntensity: 0.00}
+      - {EmissiveBloom: 0.50}
+  CeilingLight:
+    Light:
+      Type: "Point"
+      Position: [0.000, 9.400, 5.000]
+      Color: [1.000, 0.860, 0.680]
+      Distance: 30.0
+      Intensity: 9.00
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.6
+      Constant: 1.0
+      Linear: 0.09
+      Quadratic: 0.032
+      Enabled: true
+  BounceRed:
+    Light:
+      Type: "Point"
+      Position: [-4.300, 4.500, 5.000]
+      Color: [1.000, 0.250, 0.200]
+      Distance: 12.0
+      Intensity: 0.80
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.6
+      Constant: 1.0
+      Linear: 0.09
+      Quadratic: 0.032
+      Enabled: true
+  BounceGreen:
+    Light:
+      Type: "Point"
+      Position: [4.300, 4.500, 5.000]
+      Color: [0.350, 1.000, 0.300]
+      Distance: 12.0
+      Intensity: 0.80
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.6
+      Constant: 1.0
+      Linear: 0.09
+      Quadratic: 0.032
+      Enabled: true
+  BounceFloor:
+    Light:
+      Type: "Point"
+      Position: [0.000, 0.800, 4.000]
+      Color: [1.000, 0.900, 0.800]
+      Distance: 12.0
+      Intensity: 0.90
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.6
+      Constant: 1.0
+      Linear: 0.09
+      Quadratic: 0.032
+      Enabled: true
+  FrontFill:
+    Light:
+      Type: "Point"
+      Position: [0.000, 5.000, -1.500]
+      Color: [1.000, 0.950, 0.900]
+      Distance: 20.0
+      Intensity: 1.60
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.6
+      Constant: 1.0
+      Linear: 0.09
+      Quadratic: 0.032
+      Enabled: true

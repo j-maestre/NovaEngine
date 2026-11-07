@@ -6,10 +6,10 @@ struct PS_INPUT
 
 Texture2D ssao_texture : register(t0);
 
-// Media 4x4 a resolucion completa. Coincide con el tile 4x4 del ruido del SSAO:
+// Media 4x4 a la resolucion del SSAO. Coincide con el tile 4x4 del ruido del SSAO:
 // cada ventana contiene todas las rotaciones, asi que el patron se cancela sin
-// ensanchar la oclusion mas de 2 pixeles.
-float PShader(PS_INPUT input) : SV_TARGET
+// ensanchar la oclusion mas de 2 pixeles. La distancia (G) se copia del pixel central.
+float2 PShader(PS_INPUT input) : SV_TARGET
 {
     int2 size;
     ssao_texture.GetDimensions(size.x, size.y);
@@ -26,5 +26,5 @@ float PShader(PS_INPUT input) : SV_TARGET
         }
     }
 
-    return sum / 16.0f;
+    return float2(sum / 16.0f, ssao_texture.Load(int3(pixel, 0)).g);
 }

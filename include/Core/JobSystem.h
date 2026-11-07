@@ -2,6 +2,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <mutex>
+#include <atomic>
+#include <condition_variable>
 #include <vector>
 #include <functional>
 #include <thread>
@@ -29,8 +31,7 @@ public:
             // Call result callback passing return value as parameter
             T result = func(args...);
             callback(result);
-            m_active_tasks--;
-            m_condition_variable.notify_all();
+            finish_task();
             };
 
         {
@@ -47,8 +48,7 @@ public:
         auto task = [func, args..., callback,this]() {
             func(args...);
             callback();
-            m_active_tasks--;
-            m_condition_variable.notify_all();
+            finish_task();
             };
 
         {
@@ -64,8 +64,7 @@ public:
         m_active_tasks++;
         auto task = [func, args...,this]() {
             func(args...);
-            m_active_tasks--;
-            m_condition_variable.notify_all();
+            finish_task();
             };
 
 
@@ -85,8 +84,7 @@ public:
         m_active_tasks++;
         auto task = [func,this]() {
             func();
-            m_active_tasks--;
-            m_condition_variable.notify_all();
+            finish_task();
             };
 
 
@@ -136,8 +134,7 @@ public:
 
                 auto task = [f, this]() {
                     f();
-                    m_active_tasks--;
-                    m_condition_variable.notify_all();
+                    finish_task();
                 };
                 m_tasks_queue.push(task);
             }
@@ -149,17 +146,31 @@ public:
 
     void wait_until_finish();
 
-    void terminate() { m_stop = true; }
+    void terminate() {
+        m_stop = true;
+        std::lock_guard<std::mutex> locked{ m_mutex_tasks };
+        m_condition_variable.notify_all();
+    }
 
 
 private:
+    // Se baja bajo el mutex: si no, wait_until_finish podria comprobar justo antes y perder el aviso
+    void finish_task() {
+        {
+            std::lock_guard<std::mutex> locked{ m_mutex_tasks };
+            m_active_tasks--;
+        }
+        m_condition_finished.notify_all();
+    }
+
     std::vector<std::thread> m_thread_vector;
     std::queue<std::function<void()>> m_tasks_queue;
     std::mutex m_mutex_tasks;
     std::condition_variable m_condition_variable;
+    std::condition_variable m_condition_finished;
     bool m_ready = false;
-    bool m_stop = false;
-    std::atomic<int> m_active_tasks;
+    std::atomic<bool> m_stop{ false };
+    std::atomic<int> m_active_tasks{ 0 };
 };
 
 
