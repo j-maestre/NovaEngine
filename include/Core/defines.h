@@ -96,6 +96,10 @@ struct ShaderFiles {
 	ID3D11PixelShader* PS_SSAO = nullptr;
 	ID3D11VertexShader* VS_SSAO = nullptr;
 	ID3D11PixelShader* PS_SSAO_Blur_blend = nullptr;
+
+	// Sondas de reflexion
+	ID3D11PixelShader* PS_probe_capture = nullptr;
+	ID3D11PixelShader* PS_probe_prefilter = nullptr;
 };
 
 enum class ShaderType {
@@ -112,6 +116,8 @@ enum class ShaderType {
 	EntityId,
 	SSAO,
 	BlurSSAO,
+	ProbeCapture,
+	ProbePrefilter,
 };
 
 enum class DrawMode {
@@ -160,7 +166,8 @@ struct CameraConstantBuffer {
 	Mat4 normal_matrix;
 	Vec2 uv_scale;
 	float emissive_bloom;
-	float padding_object;
+	float reflectance;	// Dielectricos: 0.5 = F0 de 0.04
+	Vec4 layers;		// Clear coat, su rugosidad, sheen, tinte del sheen
 };
 
 struct CameraDeferredConstantBuffer {
@@ -222,9 +229,39 @@ struct GPULight {
 	float constant_att;
 	float linear_att;
 	float quadratic_att;
-	Vec2 padding;
+	float source_radius;	// Point: radio de la esfera que emite (0 = punto)
+	float source_length;	// Point: largo del tubo, a lo largo de direction (0 = sin tubo)
 };
 static_assert(sizeof(GPULight) == 80, "GPULight debe coincidir con el shader");
+
+// Sondas de reflexion: cubemaps capturados desde dentro de la escena, con proyeccion de caja
+constexpr unsigned int MAX_REFLECTION_PROBES = 4;
+constexpr unsigned int PROBE_RESOLUTION = 256;
+constexpr unsigned int PROBE_MIPS = 7;			// 256 -> 4: el ultimo es rugosidad 1
+
+// Debe coincidir con ReflectionProbe en ps_deferred_lights.hlsl
+struct GPUReflectionProbe {
+	Vec3 box_min;
+	float blend;
+	Vec3 box_max;
+	float intensity;
+	Vec3 position;
+	float slot;
+};
+
+struct ReflectionProbeConstantBuffer {
+	uint32 probe_count;
+	float probe_max_mip;
+	Vec2 padding;
+	GPUReflectionProbe probes[MAX_REFLECTION_PROBES];
+};
+
+struct ProbePrefilterConstantBuffer {
+	uint32 face;
+	float roughness;
+	float face_size;
+	float source_resolution;
+};
 
 struct LightPassConstantBuffer {
 	uint32 light_count;
@@ -293,6 +330,11 @@ struct DeferredResources {
 	ID3D11Texture2D* gbuffer_emissive_texture;
 	ID3D11ShaderResourceView* gbuffer_emissive_shader_resource_view;
 
+	// Capas del material: normal de la malla para el barniz, clear coat y sheen
+	ID3D11RenderTargetView* gbuffer_layers_render_target_view;
+	ID3D11Texture2D* gbuffer_layers_texture;
+	ID3D11ShaderResourceView* gbuffer_layers_shader_resource_view;
+
 	// Emissive mipmaps
 	ID3D11RenderTargetView* gbuffer_emissive_mipmap_render_target_view[NUM_MIPMAPS_EMISSIVE];
 	ID3D11Texture2D* gbuffer_emissive_mipmap_texture[NUM_MIPMAPS_EMISSIVE];
@@ -347,6 +389,9 @@ struct RenderInfo {
 	bool bloom_active = true;
 	bool fxaa_active = true;
 	bool frustum_culling = true;
+	bool reflection_probes = true;
+	bool probes_realtime = false;		// Recaptura una sonda por frame: ve los emisivos y luces que cambian
+	bool probes_recapture = false;		// Peticion desde el editor; el renderer la consume
 	DrawMode draw_mode = DrawMode::Solid;
 };
 

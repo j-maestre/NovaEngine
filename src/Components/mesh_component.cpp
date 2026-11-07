@@ -12,11 +12,11 @@ MeshComponent::MeshComponent(Model* model){
 }
 
 MeshComponent::MeshComponent(const MeshComponent& other)
-	: m_model(other.m_model), m_materials(other.m_materials), m_model_path(other.m_model_path), m_pending_material(other.m_pending_material) {
+	: m_model(other.m_model), m_materials(other.m_materials), m_model_path(other.m_model_path), m_pending_material(other.m_pending_material), m_visible_in_probes(other.m_visible_in_probes) {
 }
 
 MeshComponent::MeshComponent(MeshComponent&& other)
-	: m_model(std::move(other.m_model)), m_materials(std::move(other.m_materials)), m_model_path(std::move(other.m_model_path)), m_pending_material(other.m_pending_material) {
+	: m_model(std::move(other.m_model)), m_materials(std::move(other.m_materials)), m_model_path(std::move(other.m_model_path)), m_pending_material(other.m_pending_material), m_visible_in_probes(other.m_visible_in_probes) {
 }
 
 MeshComponent::~MeshComponent(){

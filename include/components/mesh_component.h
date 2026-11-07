@@ -36,6 +36,12 @@ public:
 	std::vector<Material>& get_materials() { return m_materials; }
 
 	void set_model_path(const std::string& path) { m_model_path = path; }
+
+	// Si las sondas de reflexion lo capturan. Una sonda ve la escena desde un solo punto y pega todo
+	// lo que ve en las paredes de su caja: un objeto en medio de la habitacion aparece en reflejos donde
+	// no toca. Lo normal es dejarlo solo en lo grande y estatico (paredes, suelo, muebles grandes).
+	void set_visible_in_probes(bool value) { m_visible_in_probes = value; }
+	bool is_visible_in_probes() const { return m_visible_in_probes; }
 	const std::string& get_model_path() const { return m_model_path; }
 
 private:
@@ -46,5 +52,6 @@ private:
 	std::vector<Material> m_materials;
 	std::string m_model_path;
 	bool m_pending_material = true;
+	bool m_visible_in_probes = true;
 
 };

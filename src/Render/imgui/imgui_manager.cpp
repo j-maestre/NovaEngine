@@ -360,6 +360,17 @@ void ImguiManager::show_render_parameters(RenderInfo* info){
 				prop_check("Bloom", &info->bloom_active);
 				prop_check("FXAA", &info->fxaa_active);
 				prop_check("Frustum culling", &info->frustum_culling);
+				prop_check("Reflection probes", &info->reflection_probes);
+				ImGui::BeginDisabled(!info->reflection_probes);
+				prop_check("Realtime probes", &info->probes_realtime);
+				ImGui::SetItemTooltip("Recaptures one probe per frame, so pulsing lights and emissives show in reflections.");
+				prop_label("");
+				if (ImGui::Button("Recapture probes")) info->probes_recapture = true;
+				ImGui::EndDisabled();
+				if (m_probe_recapture_request) {
+					info->probes_recapture = true;
+					m_probe_recapture_request = false;
+				}
 
 				prop_label("Draw mode");
 				int draw_index = static_cast<int>(info->draw_mode);
@@ -866,6 +877,23 @@ void ImguiManager::show_transform(TransformComponent* trans){
 	ImGui::EndTable();
 }
 
+void ImguiManager::show_probe(ReflectionProbeComponent* probe){
+
+	if (!section("Reflection Probe")) return;
+
+	if (begin_props("##probe")) {
+		prop_vec3("Box size", probe->size, 1.0f, 0.05f);
+		ImGui::SetItemTooltip("World-aligned box centered on the probe. Match it to the walls of the room.");
+		probe->size = { std::max(probe->size.x, 0.1f), std::max(probe->size.y, 0.1f), std::max(probe->size.z, 0.1f) };
+		prop_float("Blend", &probe->blend, 0.01f, 0.0f, 10.0f);
+		ImGui::SetItemTooltip("Meters inside the box over which the probe fades in.");
+		prop_float("Intensity", &probe->intensity, 0.01f, 0.0f, 10.0f);
+		ImGui::EndTable();
+	}
+	if (ImGui::Button("Recapture")) m_probe_recapture_request = true;
+	ImGui::SetItemTooltip("Captured on load and when the probe moves. Recapture after editing lights or materials.");
+}
+
 void ImguiManager::show_light(PointLight* light){
 
 	if (!section("Point Light")) return;
@@ -902,6 +930,16 @@ void ImguiManager::show_light(PointLight* light){
 		if (pulse_speed != 0.0f) {
 			prop_label("Current intensity");
 			ImGui::Text("%.2f", light->get_current_intensity());
+		}
+		float source_radius = light->get_source_radius();
+		float source_length = light->get_source_length();
+		if (prop_float("Source radius", &source_radius, 0.01f, 0.0f, 100.0f)) light->set_source_radius(source_radius);
+		ImGui::SetItemTooltip("Size of the bulb. Bigger makes highlights wider and softer.");
+		if (prop_float("Source length", &source_length, 0.01f, 0.0f, 1000.0f)) light->set_source_length(source_length);
+		ImGui::SetItemTooltip("Turns the light into a tube, for LED strips and neon.");
+		if (source_length > 0.0f) {
+			Vec3 axis = light->get_source_axis();
+			if (prop_vec3("Tube axis", axis, 0.0f, 0.01f)) light->set_source_axis(axis);
 		}
 		ImGui::EndTable();
 	}
@@ -1059,6 +1097,18 @@ void ImguiManager::show_light(DirectionalLight* light){
 
 void ImguiManager::show_mesh_comp(MeshComponent* mesh_comp){
 
+	if (section("Rendering")) {
+		if (begin_props("##rendering")) {
+			bool visible_in_probes = mesh_comp->is_visible_in_probes();
+			if (prop_check("Visible in probes", &visible_in_probes)) {
+				mesh_comp->set_visible_in_probes(visible_in_probes);
+				m_probe_recapture_request = true;
+			}
+			ImGui::SetItemTooltip("Captured by reflection probes. Turn off for objects in the middle of the room:\na probe sees them from its center and pastes them onto the walls of its box.");
+			ImGui::EndTable();
+		}
+	}
+
 	if (!section("Material")) return;
 
 	auto& meshes = mesh_comp->get_model()->meshes;
@@ -1096,6 +1146,11 @@ void ImguiManager::show_mesh_comp(MeshComponent* mesh_comp){
 		float uv[2] = { uv_scale.x, uv_scale.y };
 		float emissive_intensity = material.get_emissive_intensity();
 		float emissive_bloom = material.get_emissive_bloom();
+		float reflectance = material.get_reflectance();
+		float clear_coat = material.get_clear_coat();
+		float clear_coat_roughness = material.get_clear_coat_roughness();
+		float sheen = material.get_sheen();
+		float sheen_tint = material.get_sheen_tint();
 		float pulse_speed = material.get_emissive_pulse_speed();
 		float pulse_min = material.get_emissive_pulse_min();
 		float metallic = material.get_metallic_value();
@@ -1110,6 +1165,19 @@ void ImguiManager::show_mesh_comp(MeshComponent* mesh_comp){
 			changed |= prop_color("Albedo", color);
 			changed |= prop_slider("Metallic", &metallic, 0.0f, 1.0f);
 			changed |= prop_slider("Roughness", &roughness, 0.0f, 1.0f);
+			changed |= prop_slider("Reflectance", &reflectance, 0.0f, 1.0f);
+			ImGui::SetItemTooltip("Non-metals only. 0.5 = 4%% (plastic, most materials), 0.35 = water, 1.0 = gems.");
+			changed |= prop_slider("Clear coat", &clear_coat, 0.0f, 1.0f);
+			ImGui::SetItemTooltip("Clear varnish on top: car paint, lacquered wood, carbon fiber. A second, sharper reflection.");
+			if (clear_coat > 0.0f) {
+				changed |= prop_slider("Coat roughness", &clear_coat_roughness, 0.0f, 1.0f);
+			}
+			changed |= prop_slider("Sheen", &sheen, 0.0f, 1.0f);
+			ImGui::SetItemTooltip("Fabric glow at grazing angles: velvet, cotton, upholstery.");
+			if (sheen > 0.0f) {
+				changed |= prop_slider("Sheen tint", &sheen_tint, 0.0f, 1.0f);
+				ImGui::SetItemTooltip("0 = white sheen, 1 = sheen with the albedo color.");
+			}
 			changed |= prop_color("Emissive", emissive);
 			changed |= prop_float("Emissive int.", &emissive_intensity, 0.1f, 0.0f, 100000.0f);
 			changed |= prop_slider("Emissive bloom", &emissive_bloom, 0.0f, 1.0f);
@@ -1132,6 +1200,11 @@ void ImguiManager::show_mesh_comp(MeshComponent* mesh_comp){
 				m.material.set_emissive_value({ emissive[0], emissive[1], emissive[2] });
 				m.material.set_emissive_intensity(emissive_intensity);
 				m.material.set_emissive_bloom(emissive_bloom);
+				m.material.set_reflectance(reflectance);
+				m.material.set_clear_coat(clear_coat);
+				m.material.set_clear_coat_roughness(clear_coat_roughness);
+				m.material.set_sheen(sheen);
+				m.material.set_sheen_tint(sheen_tint);
 				m.material.set_emissive_pulse(pulse_speed, pulse_min);
 				m.material.set_metallic_value(metallic);
 				m.material.set_roughness_value(roughness);
@@ -1220,6 +1293,8 @@ void ImguiManager::create_menu_items(Scene* scene){
 	if (ImGui::MenuItem("Point Light")) scene->create_entity_from_template(EntityTemplate::PointLight, position);
 	if (ImGui::MenuItem("Spot Light")) scene->create_entity_from_template(EntityTemplate::SpotLight, position);
 	if (ImGui::MenuItem("Directional Light")) scene->create_entity_from_template(EntityTemplate::DirectionalLight, position);
+	ImGui::Separator();
+	if (ImGui::MenuItem("Reflection Probe")) scene->create_entity_from_template(EntityTemplate::ReflectionProbe, position);
 }
 
 void ImguiManager::handle_shortcuts(Scene* scene){
@@ -1526,6 +1601,7 @@ void ImguiManager::show_inspector(Scene* scene){
 			if (DirectionalLight* light = ecs.get_component<DirectionalLight>(e)) show_light(light);
 			if (PointLight* light = ecs.get_component<PointLight>(e)) show_light(light);
 			if (SpotLight* light = ecs.get_component<SpotLight>(e)) show_light(light);
+			if (ReflectionProbeComponent* probe = ecs.get_component<ReflectionProbeComponent>(e)) show_probe(probe);
 			if (MeshComponent* mesh = ecs.get_component<MeshComponent>(e)) show_mesh_comp(mesh);
 		}
 	}

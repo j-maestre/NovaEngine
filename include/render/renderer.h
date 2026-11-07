@@ -5,6 +5,7 @@
 #include <components/camera_component.h>
 #include <components/transform_component.h>
 #include <components/mesh_component.h>
+#include <components/reflection_probe_component.h>
 #include <render/material.h>
 #include <render/gpu_profiler.h>
 #include <Core/ECS.h>
@@ -47,6 +48,13 @@ private:
 	void pick_entity(EntityComponentSystem& ecs, int x, int y);
 	void update_light_buffer(EntityComponentSystem& ecs);
 	void draw_skybox();
+	void draw_skybox_to(ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv, const Mat4& view, const Mat4& proj, const Vec3& position);
+
+	// Sondas de reflexion
+	void init_reflection_probes();
+	void release_reflection_probes();
+	void update_reflection_probes(EntityComponentSystem& ecs);
+	void capture_probe(unsigned int slot, const Vec3& position);
 
 	void clear_shader_reources(int size = 5);
 	__forceinline void clear_rtv(int size);
@@ -126,6 +134,32 @@ private:
 		unsigned int slot;		// Posicion de la malla en la geometria del prepass
 	};
 	std::vector<VisibleMesh> m_visible_meshes;
+	std::vector<VisibleMesh> m_scene_meshes;	// Todas, visibles o no: las sondas ven en todas direcciones
+
+	// Sondas de reflexion. Cada sonda tiene un hueco fijo en el array de cubos.
+	struct ProbeSlot {
+		bool captured = false;
+		Vec3 position = { 0.0f, 0.0f, 0.0f };	// Desde donde se capturo
+	};
+	ProbeSlot m_probe_slots[MAX_REFLECTION_PROBES];
+	// Captura en bruto: un cubo con todos sus mips, que lee el prefiltrado
+	ID3D11Texture2D* m_probe_capture_texture = nullptr;
+	ID3D11RenderTargetView* m_probe_capture_rtv[6] = {};
+	ID3D11ShaderResourceView* m_probe_capture_srv = nullptr;
+	ID3D11Texture2D* m_probe_depth_texture = nullptr;
+	ID3D11DepthStencilView* m_probe_dsv = nullptr;
+	// Prefiltradas: un array de cubos, un mip por rugosidad
+	ID3D11Texture2D* m_probe_array_texture = nullptr;
+	ID3D11RenderTargetView* m_probe_array_rtv[MAX_REFLECTION_PROBES * 6 * PROBE_MIPS] = {};
+	ID3D11ShaderResourceView* m_probe_array_srv = nullptr;
+	ID3D11Buffer* m_pVBuffer_probes = nullptr;
+	ID3D11Buffer* m_pVBuffer_probe_prefilter = nullptr;
+	Scene* m_probe_scene = nullptr;
+	std::string m_probe_scene_path;
+	float m_probe_scene_time = 0.0f;		// Segundos desde que se abrio la escena
+	bool m_probe_was_loading = false;
+	size_t m_probe_geometry_key = 0;
+	unsigned int m_probe_realtime_next = 0;
 
 	// Prepass en un solo draw call. Cada malla de cada entidad copia sus posiciones en un buffer comun,
 	// y cada frame el index buffer se rellena solo con los rangos de las mallas visibles.

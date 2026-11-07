@@ -1,3 +1,5 @@
+#include "pbr_common.hlsli"
+
 struct PS_INPUT
 {
     float4 position : SV_POSITION;
@@ -14,6 +16,8 @@ struct PS_INPUT
     float3 emissive_value : EMISSIVE;
     float emissive_intensity : EMISSIVE_INTENSITY;
     float emissive_bloom : EMISSIVE_BLOOM;
+    float reflectance : REFLECTANCE;
+    float4 layers : LAYERS;
 };
 
 struct PS_OUT
@@ -22,6 +26,7 @@ struct PS_OUT
     float4 out_normal : SV_Target1;
     float4 out_material : SV_Target2;
     float4 out_emissive : SV_Target3;
+    float4 out_layers : SV_Target4; // RG = normal de la malla, B = clear coat | rugosidad, A = sheen | tinte
 };
 
 
@@ -74,7 +79,6 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
 {
     float4 out_color;
     
-    const float PI = 3.14159265359;
   
     const float3 view_dir = normalize(input.cam_pos - input.world_position);
     const float4 texture_color = max((albedo_tex.Sample(mySampler, input.uv)), input.color_value);
@@ -90,7 +94,8 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
    
     
     PS_OUT out_textures;
-    out_textures.out_albedo = texture_color;
+    // A: reflectance de los dielectricos (el canal alfa del albedo no se usaba)
+    out_textures.out_albedo = float4(texture_color.rgb, input.reflectance);
     //out_textures.out_position = float4(input.position.rgb, 1.0);
     out_textures.out_normal = float4(normal_procesed, 1.0);
     // Horizonte: el mapa de normales puede mandar el reflejo por debajo de la superficie real.
@@ -100,6 +105,10 @@ PS_OUT PShader(PS_INPUT input) : SV_TARGET
     out_textures.out_material = float4(texture_metallic, FilterRoughness(normal_procesed, texture_roughness), texture_ao, horizon * horizon); // Last parameter is for specular map or brithness
     // RGB: emisivo con su intensidad. A: cuanto de el entra en el bloom.
     out_textures.out_emissive = float4(max(input.emissive_value.rgb, texture_emissive) * input.emissive_intensity, input.emissive_bloom);
+    // RG: normal de la malla, sin el mapa de normales. El barniz es una capa lisa por encima:
+    // no sigue las juntas ni los poros del material de debajo.
+    // B: clear coat y su rugosidad. A: sheen y su tinte. Dos valores de 8 bits en cada canal.
+    out_textures.out_layers = float4(EncodeOctahedron(normalize(input.normal)), PackTwo(input.layers.x, input.layers.y), PackTwo(input.layers.z, input.layers.w));
 
     return out_textures;
 }

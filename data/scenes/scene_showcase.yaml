@@ -641,6 +641,9 @@ Entities:
       Position: [0.00, 4.70, 30.00]
       Color: [0.05, 0.75, 1.00]
       Distance: 16.0
+      Radius: 0.15
+      Length: 20.0
+      Axis: [1, 0, 0]
       Intensity: 6.0
       Attenuation: 1.0
       FallOff: 7.5
@@ -653,6 +656,7 @@ Entities:
       Position: [-8.00, -1.00, 14.00]
       Color: [1.00, 0.65, 0.35]
       Distance: 16.0
+      Radius: 0.8
       Intensity: 3.0
       Attenuation: 1.0
       FallOff: 7.5
@@ -664,6 +668,7 @@ Entities:
       Position: [8.00, -1.00, 14.00]
       Color: [0.35, 0.60, 1.00]
       Distance: 16.0
+      Radius: 0.8
       Intensity: 3.0
       Attenuation: 1.0
       FallOff: 7.5
@@ -675,8 +680,18 @@ Entities:
       Position: [0.00, 2.00, 20.00]
       Color: [1.00, 1.00, 1.00]
       Distance: 14.0
+      Radius: 0.5
       Intensity: 3.0
       Attenuation: 1.0
       FallOff: 7.5
       FallStart: 0.2
       Enabled: true
+  ShowcaseProbe:
+    Transform:
+      Position: [0.00, 1.00, 18.00]
+      Rotation: [0.0, 0.0, 0.0]
+      Scale: [1.00, 1.00, 1.00]
+    ReflectionProbe:
+      Size: [32.00, 14.00, 28.00]
+      Blend: 1.0
+      Intensity: 1.0

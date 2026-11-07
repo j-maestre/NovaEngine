@@ -21,6 +21,8 @@ struct VOut{
     float3 emissive_value : EMISSIVE;
     float emissive_intensity : EMISSIVE_INTENSITY;
     float emissive_bloom : EMISSIVE_BLOOM;
+    float reflectance : REFLECTANCE;
+    float4 layers : LAYERS;
 };
 
 cbuffer CameraObject : register(b0){
@@ -36,7 +38,8 @@ cbuffer CameraObject : register(b0){
     float4x4 normal_matrix; // Inversa transpuesta de model: mantiene la normal correcta con escala no uniforme
     float2 uv_scale;
     float emissive_bloom;
-    float padding_object;
+    float reflectance;
+    float4 layers; // Clear coat, su rugosidad, sheen, tinte del sheen
 }
 
 
@@ -67,6 +70,8 @@ VOut VShader(VS_IN input){
     output.emissive_value = emissive_value;
     output.emissive_intensity = emissive_intensity;
     output.emissive_bloom = emissive_bloom;
+    output.reflectance = reflectance;
+    output.layers = layers;
 
     return output;
 }

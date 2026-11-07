@@ -9,11 +9,11 @@ PointLight::PointLight(float aspect_ratio) : Light(aspect_ratio){
 	init_buffers();
 }
 
-PointLight::PointLight(const PointLight& other) : Light(other), m_buffer(other.m_buffer), m_pulse_speed(other.m_pulse_speed), m_pulse_min(other.m_pulse_min) {
+PointLight::PointLight(const PointLight& other) : Light(other), m_buffer(other.m_buffer), m_pulse_speed(other.m_pulse_speed), m_pulse_min(other.m_pulse_min), m_source_radius(other.m_source_radius), m_source_length(other.m_source_length), m_source_axis(other.m_source_axis) {
 	init_buffers();
 }
 
-PointLight::PointLight(PointLight&& other) : Light(std::move(other)), m_buffer(other.m_buffer), m_light_desc_constant_buffer(other.m_light_desc_constant_buffer), m_constant_buffer_light(other.m_constant_buffer_light), m_pulse_speed(other.m_pulse_speed), m_pulse_min(other.m_pulse_min) {
+PointLight::PointLight(PointLight&& other) : Light(std::move(other)), m_buffer(other.m_buffer), m_light_desc_constant_buffer(other.m_light_desc_constant_buffer), m_constant_buffer_light(other.m_constant_buffer_light), m_pulse_speed(other.m_pulse_speed), m_pulse_min(other.m_pulse_min), m_source_radius(other.m_source_radius), m_source_length(other.m_source_length), m_source_axis(other.m_source_axis) {
 	other.m_constant_buffer_light = nullptr;
 }
 

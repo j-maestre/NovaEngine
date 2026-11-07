@@ -37,6 +37,9 @@ private:
 	float m_pulse_speed = 0.0f;
 	float m_pulse_min = 0.0f;
 	float m_current_intensity = 0.0f;
+	float m_source_radius = 0.0f;
+	float m_source_length = 0.0f;
+	Vec3 m_source_axis = { 1.0f, 0.0f, 0.0f };
 
 public:
 
@@ -57,6 +60,13 @@ public:
     // Intensidad de este frame. La base (get_intensity) es la que se edita y se guarda.
     void update_pulse(float time) { m_current_intensity = get_intensity() * pulse_factor(time, m_pulse_speed, m_pulse_min); }
     float get_current_intensity() const { return m_current_intensity; }
+    // Tamano de la fuente: una esfera de este radio, estirada en un tubo de este largo a lo largo del eje
+    float get_source_radius() const { return m_source_radius; }
+    float get_source_length() const { return m_source_length; }
+    Vec3 get_source_axis() const { return m_source_axis; }
+    void set_source_radius(float value) { m_source_radius = value < 0.0f ? 0.0f : value; }
+    void set_source_length(float value) { m_source_length = value < 0.0f ? 0.0f : value; }
+    void set_source_axis(Vec3 value) { m_source_axis = value; }
     Vec3  get_color() { return m_buffer.diffuse_color; }
     float get_specular_strenght() { return m_buffer.specular_strength; }
     Vec3  get_specular_color() { return m_buffer.specular_color; }

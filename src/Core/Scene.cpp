@@ -3,6 +3,7 @@
 #include "Core/defines.h"
 #include "components/transform_component.h"
 #include "components/camera_component.h"
+#include "components/reflection_probe_component.h"
 #include "render/imgui/imgui_manager.h"
 #include "ryml.hpp"
 #include "ryml_std.hpp"
@@ -23,6 +24,7 @@ static std::string format_vec3(const Vec3& v);
 bool load_mesh_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
 bool load_material_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
 bool load_light_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
+bool load_probe_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs);
 
 
 Scene::Scene(const std::string& path_scene) : m_ecs(), m_selected_entity(-1,"") {
@@ -159,6 +161,7 @@ void Scene::load_text(const std::string& text){
         succes &= load_mesh_component(entity, e, m_ecs);
         succes &= load_material_component(entity, e, m_ecs);
         succes &= load_light_component(entity, e, m_ecs);
+        succes &= load_probe_component(entity, e, m_ecs);
 
         if (!succes) {
             ImguiManager::get_instance()->add_resource_loaded("Error loading entity " + entity_name);
@@ -252,6 +255,7 @@ bool load_mesh_component(const ryml::NodeRef& entity_node, Entity& entity, Entit
         std::string model_name(entity_node["MeshComponent"].val().data(), entity_node["MeshComponent"].val().size());
         printf("Loading %s\n", model_name.c_str());
         mesh->set_model_path(model_name);
+        if (entity_node.has_child("VisibleInProbes")) mesh->set_visible_in_probes(get_value_from_yaml<bool>(entity_node["VisibleInProbes"]));
 
         Engine::get_instance()->m_resource.load_mesh_async(model_name, mesh);
         //Model* m = Engine::get_instance()->m_resource.load_mesh(model_name);
@@ -295,6 +299,11 @@ static Material parse_material(ryml::ConstNodeRef properties){
 
             if (t.has_child("EmissiveIntensity")) material.set_emissive_intensity(get_value_from_yaml<float>(t["EmissiveIntensity"]));
             if (t.has_child("EmissiveBloom")) material.set_emissive_bloom(get_value_from_yaml<float>(t["EmissiveBloom"]));
+            if (t.has_child("Reflectance")) material.set_reflectance(get_value_from_yaml<float>(t["Reflectance"]));
+            if (t.has_child("ClearCoat")) material.set_clear_coat(get_value_from_yaml<float>(t["ClearCoat"]));
+            if (t.has_child("ClearCoatRoughness")) material.set_clear_coat_roughness(get_value_from_yaml<float>(t["ClearCoatRoughness"]));
+            if (t.has_child("Sheen")) material.set_sheen(get_value_from_yaml<float>(t["Sheen"]));
+            if (t.has_child("SheenTint")) material.set_sheen_tint(get_value_from_yaml<float>(t["SheenTint"]));
             if (t.has_child("EmissivePulse")) {
                 Vec3 pulse = vec3FromYAML(t["EmissivePulse"]);
                 material.set_emissive_pulse(pulse.x, pulse.y);
@@ -352,6 +361,21 @@ static void read_optional(ryml::ConstNodeRef node, const char* key, const std::f
 
     ryml::csubstr name = ryml::to_csubstr(key);
     if (node.has_child(name)) setter(get_value_from_yaml<float>(node[name]));
+}
+
+bool load_probe_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs) {
+
+    if (!entity_node.has_child("ReflectionProbe")) return true;
+
+    const auto node = entity_node["ReflectionProbe"];
+    ReflectionProbeComponent& probe = ecs.add_component<ReflectionProbeComponent>(entity);
+    if (node.has_child("Size")) probe.size = vec3FromYAML(node["Size"]);
+    read_optional(node, "Blend", [&](float v) { probe.blend = v; });
+    read_optional(node, "Intensity", [&](float v) { probe.intensity = v; });
+
+    // La sonda se captura desde su transform: sin el no sabria donde esta
+    if (!ecs.get_component<TransformComponent>(entity)) ecs.add_component<TransformComponent>(entity);
+    return true;
 }
 
 bool load_light_component(const ryml::NodeRef& entity_node, Entity& entity, EntityComponentSystem& ecs) {
@@ -421,6 +445,9 @@ bool load_light_component(const ryml::NodeRef& entity_node, Entity& entity, Enti
                 Vec3 pulse = vec3FromYAML(light_component["Pulse"]);
                 light.set_pulse(pulse.x, pulse.y);
             }
+            read_optional(light_component, "Radius", [&](float v) { light.set_source_radius(v); });
+            read_optional(light_component, "Length", [&](float v) { light.set_source_length(v); });
+            if (light_component.has_child("Axis")) light.set_source_axis(vec3FromYAML(light_component["Axis"]));
         }
 
         if (light_type == "Spot") {
@@ -514,6 +541,15 @@ static void write_material(std::string& out, Material& m, const std::string& fir
     lines += "{EmissiveColor: " + format_vec3(m.get_emissive_value()) + "}\n";
     lines += "{EmissiveIntensity: " + format_float(m.get_emissive_intensity()) + "}\n";
     if (m.get_emissive_bloom() != 1.0f) lines += "{EmissiveBloom: " + format_float(m.get_emissive_bloom()) + "}\n";
+    if (m.get_reflectance() != 0.5f) lines += "{Reflectance: " + format_float(m.get_reflectance()) + "}\n";
+    if (m.get_clear_coat() != 0.0f) {
+        lines += "{ClearCoat: " + format_float(m.get_clear_coat()) + "}\n";
+        lines += "{ClearCoatRoughness: " + format_float(m.get_clear_coat_roughness()) + "}\n";
+    }
+    if (m.get_sheen() != 0.0f) {
+        lines += "{Sheen: " + format_float(m.get_sheen()) + "}\n";
+        lines += "{SheenTint: " + format_float(m.get_sheen_tint()) + "}\n";
+    }
     if (m.get_emissive_pulse_speed() != 0.0f) lines += "{EmissivePulse: [" + format_float(m.get_emissive_pulse_speed()) + ", " + format_float(m.get_emissive_pulse_min()) + "]}\n";
     lines += "{UVScale: [" + format_float(uv.x) + ", " + format_float(uv.y) + "]}\n";
 
@@ -553,6 +589,7 @@ void Scene::write_entity(std::string& out, Entity& e, const std::string& name, c
 
     if (MeshComponent* mesh = ecs.get_component<MeshComponent>(e)) {
         out += "    MeshComponent: " + yaml_string(mesh->get_model_path()) + "\n";
+        if (!mesh->is_visible_in_probes()) out += "    VisibleInProbes: false\n";
 
         if (mesh->has_own_materials()) {
             std::vector<Material>& materials = mesh->get_materials();
@@ -589,10 +626,22 @@ void Scene::write_entity(std::string& out, Entity& e, const std::string& name, c
         out += "      FallOff: " + format_float(l->get_fall_off()) + "\n";
         out += "      FallStart: " + format_float(l->get_fall_start()) + "\n";
         if (l->get_pulse_speed() != 0.0f) out += "      Pulse: [" + format_float(l->get_pulse_speed()) + ", " + format_float(l->get_pulse_min()) + "]\n";
+        if (l->get_source_radius() > 0.0f) out += "      Radius: " + format_float(l->get_source_radius()) + "\n";
+        if (l->get_source_length() > 0.0f) {
+            out += "      Length: " + format_float(l->get_source_length()) + "\n";
+            out += "      Axis: " + format_vec3(l->get_source_axis()) + "\n";
+        }
         out += "      Constant: " + format_float(l->get_constant_attenuation()) + "\n";
         out += "      Linear: " + format_float(l->get_linear_attenuation()) + "\n";
         out += "      Quadratic: " + format_float(l->get_quadratic_attenuation()) + "\n";
         out += std::string("      Enabled: ") + bool_text(l->get_enabled() > 0.0f) + "\n";
+    }
+
+    if (ReflectionProbeComponent* p = ecs.get_component<ReflectionProbeComponent>(e)) {
+        out += "    ReflectionProbe:\n";
+        out += "      Size: " + format_vec3(p->size) + "\n";
+        out += "      Blend: " + format_float(p->blend) + "\n";
+        out += "      Intensity: " + format_float(p->intensity) + "\n";
     }
 
     if (SpotLight* l = ecs.get_component<SpotLight>(e)) {
@@ -725,6 +774,10 @@ void Scene::create_entity_from_template(EntityTemplate type, Vec3 position){
             base = "Spot Light";
             body = "    Light:\n      Type: \"Spot\"\n      Direction: [0, -1, 0]\n      Color: [1, 1, 1]\n      Distance: 20\n"
                    "      Intensity: 5\n      InnerAngle: 25\n      OuterAngle: 40\n      Enabled: true\n";
+            break;
+        case EntityTemplate::ReflectionProbe:
+            base = "Reflection Probe";
+            body = "    ReflectionProbe:\n      Size: [4, 3, 4]\n      Blend: 0.3\n      Intensity: 1\n";
             break;
         case EntityTemplate::DirectionalLight:
             base = "Directional Light";

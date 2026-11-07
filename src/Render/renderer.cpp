@@ -149,6 +149,13 @@ bool Renderer::init_pipeline(Window* win){
 	if (!compile(L"data/shaders/deferred/ps_deferred_ssao_blur.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_SSAO_Blur_blend);
 
+	// Sondas de reflexion: captura de la escena y prefiltrado por rugosidad
+	if (!compile(L"data/shaders/deferred/ps_probe_capture.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_probe_capture);
+
+	if (!compile(L"data/shaders/deferred/ps_probe_prefilter.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
+	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_probe_prefilter);
+
 	// Seleccion con clic
 	if (!compile(L"data/shaders/ps_entity_id.hlsl", "PShader", m_pixel_shader_model, PS)) return false;
 	m_engine_ptr->get_engine_props()->deviceInterface->CreatePixelShader(PS->GetBufferPointer(), PS->GetBufferSize(), NULL, &m_shader_files.PS_entity_id);
@@ -516,6 +523,7 @@ bool Renderer::init_pipeline(Window* win){
 	clear_depth();
 
 	init_ssao();
+	init_reflection_probes();
 
 	return m_isInitialized;
 }
@@ -574,6 +582,14 @@ void Renderer::active_shader(ShaderType type){
 	case ShaderType::BlurSSAO:
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
 		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_SSAO_Blur_blend, nullptr, 0);
+		break;
+	case ShaderType::ProbeCapture:
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_probe_capture, nullptr, 0);
+		break;
+	case ShaderType::ProbePrefilter:
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->VSSetShader(m_shader_files.VS_deferred_common, nullptr, 0);
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->PSSetShader(m_shader_files.PS_probe_prefilter, nullptr, 0);
 		break;
 
 	default:break;
@@ -706,6 +722,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 
 	m_time += m_engine_ptr->get_delta_time();
 	update_visible_meshes(ecs);
+	update_reflection_probes(ecs);
 
 #ifdef DEPTH_PREPASS
 	depth_pass(ecs);
@@ -726,6 +743,7 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 		m_deferred_resources.gbuffer_normals_render_target_view,
 		m_deferred_resources.gbuffer_material_render_target_view,
 		m_deferred_resources.gbuffer_emissive_render_target_view,
+		m_deferred_resources.gbuffer_layers_render_target_view,
 	};
 
 	auto props = Engine::get_instance()->get_engine_props();
@@ -818,6 +836,13 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	props->inmediateDeviceContext->PSSetShaderResources(0, ARRAYSIZE(srvs), srvs);
 	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
 
+	ID3D11ShaderResourceView* extra_srvs[] = {
+		m_deferred_resources.gbuffer_layers_shader_resource_view,
+		m_probe_array_srv,
+	};
+	props->inmediateDeviceContext->PSSetShaderResources(10, ARRAYSIZE(extra_srvs), extra_srvs);
+	props->inmediateDeviceContext->PSSetConstantBuffers(2, 1, &m_pVBuffer_probes);
+
 	CameraDeferredConstantBuffer cam_buffer_light;
 	Mat4 view_proj = (*view) * (*proj);
 	cam_buffer_light.inv_view_proj = DirectX::XMMatrixTranspose(DirectX::XMMatrixInverse(nullptr, view_proj));;
@@ -838,8 +863,8 @@ void Renderer::render_deferred(EntityComponentSystem& ecs_old){
 	add_draw_call();
 
 	// El blur se vuelve a usar como render target en el siguiente frame
-	ID3D11ShaderResourceView* null_ssao_srv = nullptr;
-	props->inmediateDeviceContext->PSSetShaderResources(9, 1, &null_ssao_srv);
+	ID3D11ShaderResourceView* null_srvs[3] = { nullptr, nullptr, nullptr };
+	props->inmediateDeviceContext->PSSetShaderResources(9, 3, null_srvs);
 
 	m_gpu_profiler.mark(gpu_context, GpuPass::Lights);
 
@@ -994,6 +1019,10 @@ void Renderer::update_light_buffer(EntityComponentSystem& ecs){
 		gpu.constant_att = light.get_constant_attenuation();
 		gpu.linear_att = light.get_linear_attenuation();
 		gpu.quadratic_att = light.get_quadratic_attenuation();
+		gpu.source_radius = light.get_source_radius();
+		gpu.source_length = light.get_source_length();
+		const Vec3 axis = light.get_source_axis();
+		DirectX::XMStoreFloat3(&gpu.direction, DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&axis)));
 		m_gpu_lights.push_back(gpu);
 	}
 
@@ -1116,6 +1145,9 @@ void Renderer::release(){
 	free_shader(m_shader_files.PS_SSAO);
 	free_shader(m_shader_files.VS_SSAO);
 	free_shader(m_shader_files.PS_SSAO_Blur_blend);
+	free_shader(m_shader_files.PS_probe_capture);
+	free_shader(m_shader_files.PS_probe_prefilter);
+	release_reflection_probes();
 }
 
 void Renderer::render_mesh_internal(CameraConstantBuffer* camera_buffer, TransformComponent& trans, Mesh& m){
@@ -1136,6 +1168,8 @@ void Renderer::render_mesh_internal(CameraConstantBuffer* camera_buffer, Transfo
 	m.material.update_emissive_pulse(m_time);
 	camera_buffer->emissive_intensity = m.material.get_current_emissive_intensity();
 	camera_buffer->emissive_bloom = m.material.get_emissive_bloom();
+	camera_buffer->reflectance = m.material.get_reflectance();
+	camera_buffer->layers = m.material.get_layers();
 	
 	// Buffer de la camara con la model del objeto
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, camera_buffer, 0, 0);
@@ -1426,6 +1460,7 @@ void Renderer::update_visible_meshes(EntityComponentSystem& ecs){
 	using namespace DirectX;
 
 	m_visible_meshes.clear();
+	m_scene_meshes.clear();
 	m_depth_all_meshes.clear();
 	m_depth_matrices.clear();
 	unsigned int total = 0;
@@ -1466,6 +1501,8 @@ void Renderer::update_visible_meshes(EntityComponentSystem& ecs){
 			m_depth_matrices.push_back(world_transposed);
 			key = (key ^ reinterpret_cast<size_t>(m.buffer)) * 1099511628211ull;
 			key = (key ^ m.vertices.size()) * 1099511628211ull;
+
+			if (mesh.is_visible_in_probes()) m_scene_meshes.push_back({ &trans, &m, slot });
 
 			bool visible = true;
 			if (m_render_info_parameters.frustum_culling && m.bounds_radius >= 0.0f) {
@@ -1688,6 +1725,10 @@ void Renderer::pick_entity(EntityComponentSystem& ecs, int x, int y){
 }
 
 void Renderer::draw_skybox(){
+	draw_skybox_to(m_deferred_resources.postprocess_render_target_view, m_depth_stencil_view, *m_cam->get_view(), *m_cam->get_projection(), m_cam->get_position());
+}
+
+void Renderer::draw_skybox_to(ID3D11RenderTargetView* rtv, ID3D11DepthStencilView* dsv, const Mat4& view, const Mat4& proj, const Vec3& position){
 	active_shader(ShaderType::Skybox);
 	//clear_depth();
 
@@ -1703,16 +1744,13 @@ void Renderer::draw_skybox(){
 	ID3D11ShaderResourceView* srv = m_engine_ptr->m_resource.get_skybox_srv();
 
 	//props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.gbuffer_albedo_render_target_view, nullptr);
-	props->inmediateDeviceContext->OMSetRenderTargets(1, &m_deferred_resources.postprocess_render_target_view, m_depth_stencil_view);
+	props->inmediateDeviceContext->OMSetRenderTargets(1, &rtv, dsv);
 	props->inmediateDeviceContext->PSSetSamplers(0, 1, &m_sampler_state);
 
-	const Mat4* view = m_cam->get_view();
-	const Mat4* proj = m_cam->get_projection();
-
-	CameraConstantBuffer cam_buffer;
-	cam_buffer.view = DirectX::XMMatrixTranspose(*view);
-	cam_buffer.projection = DirectX::XMMatrixTranspose(*proj);
-	cam_buffer.camera_position = m_cam->get_position();
+	CameraConstantBuffer cam_buffer{};
+	cam_buffer.view = DirectX::XMMatrixTranspose(view);
+	cam_buffer.projection = DirectX::XMMatrixTranspose(proj);
+	cam_buffer.camera_position = position;
 	props->inmediateDeviceContext->UpdateSubresource(m_pVBufferConstantCamera, 0, nullptr, &cam_buffer, 0, 0);
 
 	UINT stride = sizeof(float) * 3;
@@ -1860,6 +1898,14 @@ void Renderer::create_deferred_resources(unsigned int width, unsigned int height
 		&m_deferred_resources.gbuffer_emissive_render_target_view,
 		&m_deferred_resources.gbuffer_emissive_shader_resource_view
 	);
+
+	// Capas del material. RG: normal de la malla (octaedro), para el barniz. B: clear coat y su rugosidad.
+	// A: sheen y su tinte. B y A llevan dos valores de 8 bits cada uno.
+	create_render_target(DXGI_FORMAT_R16G16B16A16_UNORM,
+		&m_deferred_resources.gbuffer_layers_texture,
+		&m_deferred_resources.gbuffer_layers_render_target_view,
+		&m_deferred_resources.gbuffer_layers_shader_resource_view
+	);
 	
 	// Emissive Mipmaps
 	for (unsigned int i = 0; i < NUM_MIPMAPS_EMISSIVE; i++) {
@@ -1926,6 +1972,7 @@ void Renderer::release_deferred_resources(){
 	func(&m_deferred_resources.gbuffer_normals_texture, &m_deferred_resources.gbuffer_normals_render_target_view, &m_deferred_resources.gbuffer_normals_shader_resource_view);
 	func(&m_deferred_resources.gbuffer_material_texture, &m_deferred_resources.gbuffer_material_render_target_view, &m_deferred_resources.gbuffer_material_shader_resource_view);
 	func(&m_deferred_resources.gbuffer_emissive_texture, &m_deferred_resources.gbuffer_emissive_render_target_view, &m_deferred_resources.gbuffer_emissive_shader_resource_view);
+	func(&m_deferred_resources.gbuffer_layers_texture, &m_deferred_resources.gbuffer_layers_render_target_view, &m_deferred_resources.gbuffer_layers_shader_resource_view);
 	
 	for (unsigned int i = 0; i < NUM_MIPMAPS_EMISSIVE; i++) {
 		func(&m_deferred_resources.gbuffer_emissive_mipmap_texture[i], &m_deferred_resources.gbuffer_emissive_mipmap_render_target_view[i], &m_deferred_resources.gbuffer_emissive_mipmap_shader_resource_view[i]);
@@ -2041,6 +2088,7 @@ void Renderer::clear_render_target(){
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_material_render_target_view, m_clear_emissive_color);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_normals_render_target_view, m_clear_emissive_color);
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_albedo_render_target_view, m_clear_emissive_color);
+	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.gbuffer_layers_render_target_view, m_clear_emissive_color);
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->ClearRenderTargetView(m_deferred_resources.ssao_render_target_view, m_clear_emissive_color);
 
@@ -2081,4 +2129,330 @@ void Renderer::set_viewport(unsigned int width, unsigned int height){
 	viewport.TopLeftY = 0;
 
 	m_engine_ptr->get_engine_props()->inmediateDeviceContext->RSSetViewports(1, &viewport);
+}
+
+// ---------------------------------------------------------------------------
+// Sondas de reflexion
+// ---------------------------------------------------------------------------
+
+void Renderer::init_reflection_probes(){
+
+	auto device = m_engine_ptr->get_engine_props()->deviceInterface;
+	auto context = m_engine_ptr->get_engine_props()->inmediateDeviceContext;
+	HRESULT hr = S_OK;
+
+	// Captura: cubo HDR con todos los mips, que rellena GenerateMips para el prefiltrado
+	D3D11_TEXTURE2D_DESC capture_desc = {};
+	capture_desc.Width = PROBE_RESOLUTION;
+	capture_desc.Height = PROBE_RESOLUTION;
+	capture_desc.MipLevels = 0;
+	capture_desc.ArraySize = 6;
+	capture_desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	capture_desc.SampleDesc.Count = 1;
+	capture_desc.Usage = D3D11_USAGE_DEFAULT;
+	capture_desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	capture_desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE | D3D11_RESOURCE_MISC_GENERATE_MIPS;
+	hr = device->CreateTexture2D(&capture_desc, nullptr, &m_probe_capture_texture);
+	assert(SUCCEEDED(hr) && "Failed to create probe capture texture");
+
+	for (unsigned int face = 0; face < 6; face++) {
+		D3D11_RENDER_TARGET_VIEW_DESC rtv_desc = {};
+		rtv_desc.Format = capture_desc.Format;
+		rtv_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+		rtv_desc.Texture2DArray.MipSlice = 0;
+		rtv_desc.Texture2DArray.FirstArraySlice = face;
+		rtv_desc.Texture2DArray.ArraySize = 1;
+		hr = device->CreateRenderTargetView(m_probe_capture_texture, &rtv_desc, &m_probe_capture_rtv[face]);
+		assert(SUCCEEDED(hr) && "Failed to create probe capture RTV");
+	}
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC capture_srv_desc = {};
+	capture_srv_desc.Format = capture_desc.Format;
+	capture_srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+	capture_srv_desc.TextureCube.MostDetailedMip = 0;
+	capture_srv_desc.TextureCube.MipLevels = static_cast<UINT>(-1);
+	hr = device->CreateShaderResourceView(m_probe_capture_texture, &capture_srv_desc, &m_probe_capture_srv);
+	assert(SUCCEEDED(hr) && "Failed to create probe capture SRV");
+
+	D3D11_TEXTURE2D_DESC depth_desc = {};
+	depth_desc.Width = PROBE_RESOLUTION;
+	depth_desc.Height = PROBE_RESOLUTION;
+	depth_desc.MipLevels = 1;
+	depth_desc.ArraySize = 1;
+	depth_desc.Format = DXGI_FORMAT_D32_FLOAT;
+	depth_desc.SampleDesc.Count = 1;
+	depth_desc.Usage = D3D11_USAGE_DEFAULT;
+	depth_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	hr = device->CreateTexture2D(&depth_desc, nullptr, &m_probe_depth_texture);
+	assert(SUCCEEDED(hr) && "Failed to create probe depth texture");
+	hr = device->CreateDepthStencilView(m_probe_depth_texture, nullptr, &m_probe_dsv);
+	assert(SUCCEEDED(hr) && "Failed to create probe DSV");
+
+	// Prefiltradas: un cubo por sonda, en un solo array para leerlas todas en el pase de luces
+	D3D11_TEXTURE2D_DESC array_desc = capture_desc;
+	array_desc.MipLevels = PROBE_MIPS;
+	array_desc.ArraySize = 6 * MAX_REFLECTION_PROBES;
+	array_desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+	hr = device->CreateTexture2D(&array_desc, nullptr, &m_probe_array_texture);
+	assert(SUCCEEDED(hr) && "Failed to create probe array texture");
+
+	const float black[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	for (unsigned int slot = 0; slot < MAX_REFLECTION_PROBES; slot++) {
+		for (unsigned int face = 0; face < 6; face++) {
+			for (unsigned int mip = 0; mip < PROBE_MIPS; mip++) {
+				D3D11_RENDER_TARGET_VIEW_DESC rtv_desc = {};
+				rtv_desc.Format = array_desc.Format;
+				rtv_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+				rtv_desc.Texture2DArray.MipSlice = mip;
+				rtv_desc.Texture2DArray.FirstArraySlice = slot * 6 + face;
+				rtv_desc.Texture2DArray.ArraySize = 1;
+				ID3D11RenderTargetView*& rtv = m_probe_array_rtv[(slot * 6 + face) * PROBE_MIPS + mip];
+				hr = device->CreateRenderTargetView(m_probe_array_texture, &rtv_desc, &rtv);
+				assert(SUCCEEDED(hr) && "Failed to create probe array RTV");
+				context->ClearRenderTargetView(rtv, black);
+			}
+		}
+	}
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC array_srv_desc = {};
+	array_srv_desc.Format = array_desc.Format;
+	array_srv_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBEARRAY;
+	array_srv_desc.TextureCubeArray.MostDetailedMip = 0;
+	array_srv_desc.TextureCubeArray.MipLevels = PROBE_MIPS;
+	array_srv_desc.TextureCubeArray.First2DArrayFace = 0;
+	array_srv_desc.TextureCubeArray.NumCubes = MAX_REFLECTION_PROBES;
+	hr = device->CreateShaderResourceView(m_probe_array_texture, &array_srv_desc, &m_probe_array_srv);
+	assert(SUCCEEDED(hr) && "Failed to create probe array SRV");
+
+	D3D11_BUFFER_DESC buffer_desc = {};
+	buffer_desc.Usage = D3D11_USAGE_DEFAULT;
+	buffer_desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	buffer_desc.ByteWidth = sizeof(ReflectionProbeConstantBuffer);
+	device->CreateBuffer(&buffer_desc, nullptr, &m_pVBuffer_probes);
+	buffer_desc.ByteWidth = sizeof(ProbePrefilterConstantBuffer);
+	device->CreateBuffer(&buffer_desc, nullptr, &m_pVBuffer_probe_prefilter);
+
+	ReflectionProbeConstantBuffer empty = {};
+	context->UpdateSubresource(m_pVBuffer_probes, 0, nullptr, &empty, 0, 0);
+}
+
+void Renderer::release_reflection_probes(){
+
+	const auto free = [](auto*& resource) {
+		if (resource) resource->Release();
+		resource = nullptr;
+	};
+
+	free(m_probe_capture_texture);
+	for (auto*& rtv : m_probe_capture_rtv) free(rtv);
+	free(m_probe_capture_srv);
+	free(m_probe_depth_texture);
+	free(m_probe_dsv);
+	free(m_probe_array_texture);
+	for (auto*& rtv : m_probe_array_rtv) free(rtv);
+	free(m_probe_array_srv);
+	free(m_pVBuffer_probes);
+	free(m_pVBuffer_probe_prefilter);
+}
+
+void Renderer::update_reflection_probes(EntityComponentSystem& ecs){
+
+	using namespace DirectX;
+
+	ReflectionProbeConstantBuffer constants = {};
+	constants.probe_max_mip = static_cast<float>(PROBE_MIPS - 1);
+	const auto upload = [&]() {
+		m_engine_ptr->get_engine_props()->inmediateDeviceContext->UpdateSubresource(m_pVBuffer_probes, 0, nullptr, &constants, 0, 0);
+	};
+	if (!m_probe_array_srv) return;
+
+	// Escena nueva: lo capturado es de la anterior
+	Scene* scene = m_engine_ptr->get_scene();
+	const std::string scene_path = scene ? scene->get_path() : "";
+	if (scene != m_probe_scene || scene_path != m_probe_scene_path) {
+		m_probe_scene = scene;
+		m_probe_scene_path = scene_path;
+		m_probe_scene_time = 0.0f;
+		for (ProbeSlot& slot : m_probe_slots) slot.captured = false;
+	}
+
+	// Los modelos y las texturas se cargan en otro hilo: lo que ve la sonda cambia al terminar.
+	// Se recaptura al acabar de cargar modelos, cuando cambia la geometria y un par de veces al principio.
+	bool recapture_all = m_render_info_parameters.probes_recapture;
+	m_render_info_parameters.probes_recapture = false;
+
+	const float previous_time = m_probe_scene_time;
+	m_probe_scene_time += m_engine_ptr->get_delta_time();
+	for (float moment : { 1.0f, 3.0f }) {
+		if (previous_time < moment && m_probe_scene_time >= moment) recapture_all = true;
+	}
+
+	const bool loading = m_engine_ptr->m_resource.is_loading_models();
+	if (m_probe_was_loading && !loading) recapture_all = true;
+	m_probe_was_loading = loading;
+
+	if (m_probe_geometry_key != m_depth_geometry_key) {
+		m_probe_geometry_key = m_depth_geometry_key;
+		recapture_all = true;
+	}
+
+	if (!m_render_info_parameters.reflection_probes) {
+		upload();
+		return;
+	}
+
+	struct FoundProbe {
+		unsigned int slot;
+		Vec3 position;
+		ReflectionProbeComponent* probe;
+	};
+	std::vector<FoundProbe> found;
+	for (auto [entity, probe, transform] : ecs.viewComponents<ReflectionProbeComponent, TransformComponent>().each()) {
+		if (found.size() >= MAX_REFLECTION_PROBES) break;
+		XMFLOAT4X4 world;
+		XMStoreFloat4x4(&world, transform.get_transform());
+		found.push_back({ static_cast<unsigned int>(found.size()), Vec3(world._41, world._42, world._43), &probe });
+	}
+
+	std::vector<unsigned int> to_capture;
+	for (const FoundProbe& f : found) {
+		const ProbeSlot& slot = m_probe_slots[f.slot];
+		const bool moved = fabsf(slot.position.x - f.position.x) > 1e-4f || fabsf(slot.position.y - f.position.y) > 1e-4f || fabsf(slot.position.z - f.position.z) > 1e-4f;
+		if (recapture_all || !slot.captured || moved) to_capture.push_back(f.slot);
+	}
+
+	// En tiempo real, una sonda por frame para repartir el coste
+	if (to_capture.empty() && m_render_info_parameters.probes_realtime && !found.empty()) {
+		to_capture.push_back(m_probe_realtime_next++ % found.size());
+	}
+
+	if (!to_capture.empty()) {
+		update_light_buffer(ecs);
+		for (unsigned int slot : to_capture) capture_probe(slot, found[slot].position);
+	}
+
+	// De la caja mas pequena a la mas grande: una sonda dentro de otra manda en su zona
+	std::sort(found.begin(), found.end(), [](const FoundProbe& a, const FoundProbe& b) {
+		return a.probe->size.x * a.probe->size.y * a.probe->size.z < b.probe->size.x * b.probe->size.y * b.probe->size.z;
+	});
+
+	for (const FoundProbe& f : found) {
+		const Vec3 half = { f.probe->size.x * 0.5f, f.probe->size.y * 0.5f, f.probe->size.z * 0.5f };
+		GPUReflectionProbe& gpu = constants.probes[constants.probe_count++];
+		gpu.box_min = { f.position.x - half.x, f.position.y - half.y, f.position.z - half.z };
+		gpu.box_max = { f.position.x + half.x, f.position.y + half.y, f.position.z + half.z };
+		gpu.blend = f.probe->blend;
+		gpu.intensity = f.probe->intensity;
+		gpu.position = f.position;
+		gpu.slot = static_cast<float>(f.slot);
+	}
+	upload();
+}
+
+void Renderer::capture_probe(unsigned int slot, const Vec3& position){
+
+	using namespace DirectX;
+
+	auto context = m_engine_ptr->get_engine_props()->inmediateDeviceContext;
+
+	// La captura se va a escribir: que no siga enlazada como textura de un pase anterior
+	ID3D11ShaderResourceView* null_srvs[12] = {};
+	context->PSSetShaderResources(0, 12, null_srvs);
+
+	D3D11_VIEWPORT viewport = {};
+	viewport.Width = static_cast<float>(PROBE_RESOLUTION);
+	viewport.Height = static_cast<float>(PROBE_RESOLUTION);
+	viewport.MaxDepth = 1.0f;
+	context->RSSetViewports(1, &viewport);
+
+	// El cielo para los metales y el ambiente, con los mismos mips que el pase de luces
+	CameraDeferredConstantBuffer deferred = {};
+	deferred.inv_view_proj = XMMatrixIdentity();
+	deferred.camera_position = position;
+	deferred.cubemap_max_mip_level = static_cast<float>(m_engine_ptr->m_resource.get_specular_max_miplevel());
+	context->UpdateSubresource(m_pVBufferDeferredConstantCamera, 0, nullptr, &deferred, 0, 0);
+
+	// Una camara de 90 grados por cara, con el convenio de caras de D3D: +X, -X, +Y, -Y, +Z, -Z
+	const Mat4 projection = XMMatrixPerspectiveFovLH(XM_PIDIV2, 1.0f, 0.05f, 500.0f);
+	const XMFLOAT3 looks[6] = { { 1, 0, 0 }, { -1, 0, 0 }, { 0, 1, 0 }, { 0, -1, 0 }, { 0, 0, 1 }, { 0, 0, -1 } };
+	const XMFLOAT3 ups[6] = { { 0, 1, 0 }, { 0, 1, 0 }, { 0, 0, -1 }, { 0, 0, 1 }, { 0, 1, 0 }, { 0, 1, 0 } };
+	const FVector eye = XMLoadFloat3(&position);
+	const float black[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
+
+	for (unsigned int face = 0; face < 6; face++) {
+		const Mat4 view = XMMatrixLookToLH(eye, XMLoadFloat3(&looks[face]), XMLoadFloat3(&ups[face]));
+
+		context->ClearRenderTargetView(m_probe_capture_rtv[face], black);
+		context->ClearDepthStencilView(m_probe_dsv, D3D11_CLEAR_DEPTH, 1.0f, 0);
+		context->OMSetRenderTargets(1, &m_probe_capture_rtv[face], m_probe_dsv);
+		context->OMSetDepthStencilState(m_depth_only_state, 1);
+		context->OMSetBlendState(m_blend_state_overwrite, nullptr, 0xffffffff);
+		context->RSSetState(m_engine_ptr->m_raster_state);
+		context->IASetInputLayout(m_pLayout);
+		context->VSSetConstantBuffers(0, 1, &m_pVBufferConstantCamera);
+		context->PSSetConstantBuffers(0, 1, &m_pVBuffer_light_pass);
+		context->PSSetConstantBuffers(1, 1, &m_pVBufferDeferredConstantCamera);
+
+		ID3D11ShaderResourceView* environment[] = {
+			m_engine_ptr->m_resource.get_specular_srv(),
+			m_light_buffer_srv,
+			m_engine_ptr->m_resource.get_irradiance_srv(),
+		};
+		context->PSSetShaderResources(6, ARRAYSIZE(environment), environment);
+		active_shader(ShaderType::ProbeCapture);
+
+		CameraConstantBuffer camera = {};
+		camera.view = XMMatrixTranspose(view);
+		camera.projection = XMMatrixTranspose(projection);
+		camera.camera_position = position;
+		for (VisibleMesh& mesh : m_scene_meshes) {
+			render_mesh_internal(&camera, *mesh.transform, *mesh.mesh);
+		}
+
+		draw_skybox_to(m_probe_capture_rtv[face], m_probe_dsv, view, projection, position);
+	}
+
+	context->OMSetRenderTargets(0, nullptr, nullptr);
+	context->PSSetShaderResources(0, 12, null_srvs);
+	context->GenerateMips(m_probe_capture_srv);
+
+	// Prefiltrado: cada mip del cubo de la sonda es el reflejo para una rugosidad
+	active_shader(ShaderType::ProbePrefilter);
+	UINT stride = sizeof(VertexQuad);
+	UINT offset = 0;
+	context->IASetInputLayout(m_pLayout_deferred);
+	context->IASetVertexBuffers(0, 1, &m_pVBuffer_full_triangle, &stride, &offset);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	context->OMSetDepthStencilState(m_depth_stencil_ssao, 0);
+	context->RSSetState(m_engine_ptr->m_raster_state);
+	context->PSSetSamplers(0, 1, &m_sampler_state_emissive);
+	context->PSSetShaderResources(0, 1, &m_probe_capture_srv);
+	context->PSSetConstantBuffers(0, 1, &m_pVBuffer_probe_prefilter);
+
+	for (unsigned int mip = 0; mip < PROBE_MIPS; mip++) {
+		const unsigned int size = std::max(1u, PROBE_RESOLUTION >> mip);
+		viewport.Width = static_cast<float>(size);
+		viewport.Height = static_cast<float>(size);
+		context->RSSetViewports(1, &viewport);
+
+		for (unsigned int face = 0; face < 6; face++) {
+			ProbePrefilterConstantBuffer prefilter = {};
+			prefilter.face = face;
+			prefilter.roughness = static_cast<float>(mip) / static_cast<float>(PROBE_MIPS - 1);
+			prefilter.face_size = static_cast<float>(size);
+			prefilter.source_resolution = static_cast<float>(PROBE_RESOLUTION);
+			context->UpdateSubresource(m_pVBuffer_probe_prefilter, 0, nullptr, &prefilter, 0, 0);
+
+			context->OMSetRenderTargets(1, &m_probe_array_rtv[(slot * 6 + face) * PROBE_MIPS + mip], nullptr);
+			context->Draw(3, 0);
+			add_draw_call();
+		}
+	}
+
+	context->OMSetRenderTargets(0, nullptr, nullptr);
+	context->PSSetShaderResources(0, 1, null_srvs);
+	context->RSSetViewports(1, &m_engine_ptr->m_viewport);
+
+	m_probe_slots[slot].captured = true;
+	m_probe_slots[slot].position = position;
 }

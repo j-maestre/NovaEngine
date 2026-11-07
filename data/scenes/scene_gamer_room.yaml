@@ -28,6 +28,8 @@ Entities:
       - {Texture: "data/materials/wood_floor/ao.jpg", Type: "AO"}
       - {Metallic: 0.00}
       - {Roughness: 0.00}
+      - {ClearCoat: 0.50}
+      - {ClearCoatRoughness: 0.08}
       - {EmissiveIntensity: 0.00}
       - {EmissiveBloom: 0.00}
       - {UVScale: [3.000, 3.000]}
@@ -101,6 +103,8 @@ Entities:
       - {Texture: "data/materials/gamer_room/rug_albedo.png", Type: "Albedo"}
       - {Metallic: 0.00}
       - {Roughness: 1.00}
+      - {Sheen: 0.25}
+      - {SheenTint: 0.40}
       - {EmissiveIntensity: 0.00}
       - {EmissiveBloom: 0.00}
       - {UVScale: [1.000, 1.000]}
@@ -114,6 +118,8 @@ Entities:
       - {Albedo: [0.020, 0.020, 0.025]}
       - {Metallic: 0.20}
       - {Roughness: 0.35}
+      - {ClearCoat: 0.80}
+      - {ClearCoatRoughness: 0.05}
       - {EmissiveIntensity: 0.00}
       - {EmissiveBloom: 0.50}
   DeskLegL:
@@ -393,6 +399,8 @@ Entities:
       - {Albedo: [0.025, 0.025, 0.028]}
       - {Metallic: 0.00}
       - {Roughness: 0.55}
+      - {Sheen: 0.30}
+      - {SheenTint: 0.00}
       - {EmissiveIntensity: 0.00}
       - {EmissiveBloom: 0.50}
   ChairAccent:
@@ -405,6 +413,8 @@ Entities:
       - {Albedo: [0.600, 0.040, 0.070]}
       - {Metallic: 0.00}
       - {Roughness: 0.50}
+      - {Sheen: 0.35}
+      - {SheenTint: 0.40}
       - {EmissiveIntensity: 0.00}
       - {EmissiveBloom: 0.50}
   Shelves:
@@ -581,6 +591,9 @@ Entities:
       Position: [0.000, 1.200, 3.360]
       Color: [0.600, 0.200, 1.000]
       Distance: 4.0
+      Radius: 0.05
+      Length: 0.55
+      Axis: [1, 0, 0]
       Intensity: 2.50
       Attenuation: 1.0
       FallOff: 7.5
@@ -595,6 +608,7 @@ Entities:
       Position: [0.000, 1.100, 2.750]
       Color: [0.700, 0.600, 1.000]
       Distance: 3.5
+      Radius: 0.25
       Intensity: 1.20
       Attenuation: 1.0
       FallOff: 7.5
@@ -609,6 +623,7 @@ Entities:
       Position: [1.600, 1.800, 3.100]
       Color: [0.300, 0.600, 1.000]
       Distance: 4.5
+      Radius: 0.35
       Intensity: 2.20
       Attenuation: 1.0
       FallOff: 7.5
@@ -620,9 +635,12 @@ Entities:
   NeonLight:
     Light:
       Type: "Point"
-      Position: [-1.550, 1.800, 3.100]
+      Position: [-1.550, 1.800, 3.300]
       Color: [1.000, 0.250, 0.600]
       Distance: 4.5
+      Radius: 0.04
+      Length: 0.8
+      Axis: [1, 0, 0]
       Intensity: 2.00
       Attenuation: 1.0
       FallOff: 7.5
@@ -637,6 +655,7 @@ Entities:
       Position: [0.500, 1.000, 2.800]
       Color: [1.000, 0.250, 0.800]
       Distance: 2.5
+      Radius: 0.12
       Intensity: 0.90
       Attenuation: 1.0
       FallOff: 7.5
@@ -648,10 +667,13 @@ Entities:
   CeilingCove:
     Light:
       Type: "Point"
-      Position: [0.000, 2.500, 3.100]
+      Position: [0.000, 2.550, 3.250]
       Color: [0.550, 0.200, 1.000]
       Distance: 6.0
-      Intensity: 2.00
+      Radius: 0.02
+      Length: 5.1
+      Axis: [1, 0, 0]
+      Intensity: 3.20
       Attenuation: 1.0
       FallOff: 7.5
       FallStart: 0.6
@@ -662,9 +684,12 @@ Entities:
   ShelfLight:
     Light:
       Type: "Point"
-      Position: [-2.150, 1.450, 1.600]
+      Position: [-2.200, 1.550, 1.600]
       Color: [1.000, 0.550, 0.250]
       Distance: 3.0
+      Radius: 0.02
+      Length: 1.05
+      Axis: [0, 0, 1]
       Intensity: 1.40
       Attenuation: 1.0
       FallOff: 7.5
@@ -679,6 +704,7 @@ Entities:
       Position: [0.300, 2.300, 0.400]
       Color: [0.750, 0.720, 0.950]
       Distance: 7.0
+      Radius: 0.4
       Intensity: 1.60
       Attenuation: 1.0
       FallOff: 7.5
@@ -687,3 +713,29 @@ Entities:
       Linear: 0.35
       Quadratic: 0.44
       Enabled: true
+  DeskLedLight:
+    Light:
+      Type: "Point"
+      Position: [0.000, 0.700, 2.640]
+      Color: [0.550, 0.120, 1.000]
+      Distance: 3.0
+      Radius: 0.01
+      Length: 1.8
+      Axis: [1, 0, 0]
+      Intensity: 0.80
+      Attenuation: 1.0
+      FallOff: 7.5
+      FallStart: 0.6
+      Constant: 1.0
+      Linear: 0.35
+      Quadratic: 0.44
+      Enabled: true
+  RoomProbe:
+    Transform:
+      Position: [0.000, 1.350, 0.900]
+      Rotation: [0.000, 0.000, 0.000]
+      Scale: [1.000, 1.000, 1.000]
+    ReflectionProbe:
+      Size: [5.200, 2.700, 5.000]
+      Blend: 0.3
+      Intensity: 1.0

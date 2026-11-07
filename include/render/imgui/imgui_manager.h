@@ -22,6 +22,7 @@
 #include "components/Lights/DirectionalLight.h"
 #include "components/Lights/PointLight.h"
 #include "components/Lights/SpotLight.h"
+#include "components/reflection_probe_component.h"
 
 
 
@@ -94,6 +95,7 @@ private:
 	void show_light(DirectionalLight* light);
 	void show_light(PointLight* light);
 	void show_light(SpotLight* light);
+	void show_probe(ReflectionProbeComponent* probe);
 	void show_mesh_comp(MeshComponent* mesh_comp);
 
 	std::vector<std::string> m_resources_loaded;
@@ -108,6 +110,7 @@ private:
 	bool m_show_inspector = true;
 	bool m_show_camera = true;
 	bool m_show_render = true;
+	bool m_probe_recapture_request = false;	// Boton del Inspector; el panel de render lo pasa a RenderInfo
 	bool m_show_stats = true;
 	bool m_show_gbuffer = true;
 	bool m_reset_layout = false;
